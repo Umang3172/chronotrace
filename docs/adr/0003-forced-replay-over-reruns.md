@@ -41,5 +41,10 @@ harness unchanged between them. One half alone proves nothing.
 
 ## Alternatives considered
 
-- **Reruns only, with a large N.** Rejected on cost and on strength: it cannot
-  distinguish a repair from a timing change that merely makes the race rarer.
+- **Reruns only, with a large N.** This is what the shipping products do —
+  Datadog's attempt-to-fix flow retries a candidate fix 20 times, and BuildPulse
+  confirms through PR checks. Rejected here on strength rather than on
+  correctness: a rerun gate establishes that the test stopped failing, but
+  cannot separate "fixed the race" from "made it rarer". Forcing the ordering
+  can, and a patch that merely shifts the timing fails Tier 1 while passing a
+  rerun gate.

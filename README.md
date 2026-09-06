@@ -30,14 +30,21 @@ approaches do not have. FlakyCat found concurrency the hardest category to
 classify at F1 39%, precisely because it depends on interaction rather than
 text.⁶
 
-Existing tools **detect and quarantine**: Datadog Test Visibility, Trunk,
-Gradle Develocity, CircleCI, BuildPulse, Launchable. None repair. General coding
-assistants do attempt repairs, and reach for `time.sleep(2)`, which makes the
-test green, leaves the race in place, and adds permanent CI cost forever.
+Most CI tooling **detects and quarantines**: Trunk, Gradle Develocity, Harness,
+Buildkite and CircleCI find flaky tests and isolate them from the gate. That
+stops the bleeding; the race is still there.
+
+A second group now **attempts repairs**. BuildPulse ships an opt-in
+Claude-powered agent that opens fix PRs with a diff and a root-cause
+explanation, and Datadog's Bits AI Dev Agent delivers a patch as a draft PR
+labelled "Attempt to Fix". Both are real products and both do more than
+quarantine. General coding assistants attempt repairs too, and reach for
+`time.sleep(2)` — which makes the test green, leaves the race in place, and adds
+permanent CI cost forever.
 
 ## The pitch
 
-ChronoTrace is structurally prevented from doing either.
+ChronoTrace is structurally prevented from taking that shortcut.
 
 It aligns a passing and a failing execution trace from the same commit, ranks
 the orderings that differ, and then **forces** each candidate to decide which
@@ -46,9 +53,11 @@ pattern and return typed JSON; deterministic code applies it, and a policy gate
 rejects sleeps, retries, timeout inflation and weakened assertions before
 anything runs.
 
-We found no comparable system in the reviewed literature combining
-trace-differential diagnosis, deterministic synchronization patching, an
-explicit anti-band-aid policy gate, and adversarial replay.
+ChronoTrace is not the only system that repairs flaky tests — see
+[prior work](#prior-work), where several do. What we did not find, in the
+literature or in shipping products, is one that combines trace-differential
+localisation, causality proven by forced replay, a deterministic anti-band-aid
+gate, and a deterministic regression test as the artifact.
 
 ## 60-second demo
 
@@ -159,9 +168,55 @@ non-race green is worse than no patch, because it buries the real cause under a
 green build.
 
 **Causal precision** is the fraction of proposed candidate orderings that
-actually reproduced the failure when forced — 8 of the 10 candidates that were
-forced were causally sufficient. The other two were the depth-2 case, correctly
-classified as necessary-but-insufficient rather than patched.
+reproduced the failure on every attempt when forced — 8 of the 10 candidates
+that were forced. The remaining 20% is worth reading in full, because it is the
+mechanism working rather than failing.
+
+### Where the missing 20% went
+
+Every candidate that was forced, across the whole benchmark:
+
+| Case | Candidate ordering | Suspiciousness | Fails when forced | Verdict |
+|---|---|---|---|---|
+| R01 | `read_value` → `commit_value` | 1.00 | 100% | causally sufficient |
+| R02 | `db_select` → `db_commit` | 1.00 | 100% | causally sufficient |
+| R03 | `read_status` → `finalize_report` | 1.00 | 100% | causally sufficient |
+| R04 | `use_token` → `refresh_token` | 1.00 | 100% | causally sufficient |
+| R05 | `subscribe` → `publish_ready` | 1.00 | 100% | causally sufficient |
+| R06 | `drain_queue` → `enqueue_job` | 1.00 | 100% | causally sufficient |
+| R08 | `finish_beta` → `finish_alpha` | 1.00 | 100% | causally sufficient |
+| R13 | `cache_get` → `cache_fill` | 1.00 | 100% | causally sufficient |
+| **R12** | **`read_secondary` → `set_secondary`** | **1.00** | **60%** | **necessary, not sufficient** |
+| **R12** | **`read_primary` → `set_primary`** | **0.87** | **40%** | **necessary, not sufficient** |
+
+Both shortfalls are the same case, `R12_depth2_two_constraints`, and neither was
+noise. No candidate in the corpus scored 0% when forced.
+
+**Why they were proposed.** R12 brings up two replicas concurrently and asserts
+`primary or secondary`. In the failing runs the test reads both flags before
+either replica has published, so `read_secondary` before `set_secondary` appears
+in *every* failing trace and in *no* passing trace. That is an Ochiai
+suspiciousness of exactly 1.00 — a perfect statistical score. On ranking alone
+it is indistinguishable from R01, which really is a single sufficient cause.
+
+**Why forcing was right to withhold it.** The assertion fails only when *both*
+reads are stale. Forcing one of the two orderings leaves the other a coin flip,
+so the test fails some of the time and passes the rest — 60% and 40% across five
+forced runs each. A rate strictly between 0 and 1 means the ordering is
+*necessary but not sufficient*: it is part of the cause, not the whole of it.
+ChronoTrace reports depth ≥ 2 and generates no patch.
+
+**What that prevented.** Patching on the suspiciousness score would have
+synchronised one replica and left the bug live. The test would then have failed
+roughly half as often — which reads as improvement on any rerun-based metric,
+and is exactly the "patched a symptom" outcome. Tier 1 catches it because a
+symptom fix cannot make a forced ordering pass; a rerun gate cannot, because
+half as flaky still looks better.
+
+So 80% is not "20% of our candidates were wrong". It is "20% of our candidates
+were partial causes, and the system said so instead of guessing". A tool that
+always patched its top-ranked candidate would score 100% on repair rate here and
+be wrong about R12.
 
 **Overhead** is a measured median delta in test-call duration, natural runs
 before the patch versus after. ChronoTrace does not claim zero added cost: a
@@ -205,38 +260,79 @@ applied automatically.
 
 ## Prior work
 
-| Work | Venue | Scope |
+### Research
+
+| Work | Venue | Result and scope |
 |---|---|---|
-| **FlakeSync** | ICSE 2024 | Closest prior art: repairs *asynchronous* flaky tests by finding critical points and inserting barriers at runtime |
-| **FlakyGuard** | arXiv:2511.14002 (UT Austin + Uber) | 47.6% repair rate, 51.8% developer acceptance; graph-based context selection |
-| **FlakyDoctor** | ISSTA 2024, arXiv:2404.09398 | 57% OD / 59% ID on 873 tests; neuro-symbolic, code-static |
-| **FlakyFix** | arXiv:2307.00012 | Fix-category driven, first full LLM automation attempt |
+| **FlakeSync** | Rahman & Shi, ICSE 2024, [doi:10.1145/3597503.3639115](https://doi.org/10.1145/3597503.3639115) | **The closest prior work.** Repairs async flaky tests by identifying a *critical point* — code that must run early relative to concurrent code — and a *barrier point* that waits for it, then synchronising the two. 83.75% repair rate, median 1.00× original test runtime. |
+| **FlakyGuard** | arXiv:2511.14002 (UT Austin + Uber) | 47.6% repair rate, 51.8% developer acceptance; graph-based context selection at industry scale |
+| **FlakyDoctor** | ISSTA 2024, arXiv:2404.09398 | 57% order-dependent / 59% implementation-dependent on 873 tests from 243 projects; neuro-symbolic, code-static |
+| **FlakyFix** | arXiv:2307.00012 | Fix-category driven; first full LLM automation attempt |
 | **iFixFlakies** | ESEC/FSE 2019 | Order-dependent flakiness only, symbolic |
 
-How ChronoTrace differs, stated narrowly:
+**FlakeSync is structurally similar to our `INJECT_ASYNC_EVENT`.** Its critical
+point and barrier point are, in our vocabulary, the signal site and the wait
+site, and it synchronises them exactly as we do. Four differences, stated
+plainly:
 
-1. **Runtime, not code.** FlakyDoctor extracts test code; FlakyGuard explores the
-   code graph. Neither ingests execution traces. For a concurrency bug the defect
-   lives in the interleaving, not the code text.
-2. **Causality is tested, not inferred.** FlakeSync searches for critical points
-   at runtime; ChronoTrace diffs *paired* pass/fail traces and then forces the
-   candidate ordering to decide. Pre-patch under forced ordering must fail;
-   post-patch under the identical ordering must pass.
-3. **The anti-band-aid governor.** No prior work has a deterministic gate that
-   rejects sleeps, retries and timeout inflation, with a positive check that a
-   real primitive was actually added.
-4. **Abstention, deadlock pre-checking, and a regression artifact.** FlakeSync
-   has none of these.
+1. **We localise by diffing paired pass/fail execution traces**, rather than by
+   searching for a critical point at runtime. The pair is the instrument: an
+   ordering present in every failure and no pass is a candidate, and one present
+   in half of each is noise.
+2. **We prove causality by forcing the interleaving**, rather than validating by
+   rerun. Pre-patch under the forced ordering must fail and post-patch under the
+   identical ordering must pass, with the harness unchanged between the two.
+   That is a controlled experiment; a rerun is a sample.
+3. **We abstain when the evidence is insufficient.** Non-race flakiness, no
+   observable inversion, a race needing two constraints, a race in production
+   code — each is a documented refusal with a reason, not a patch.
+4. **We emit a deterministic regression test as the artifact.** A race that
+   appeared once in a few runs gets a test that reproduces it every run.
+
+FlakeSync's 83.75% and our 100% are **not comparable**: different corpora,
+different languages, and ours is 6 seeded cases. Theirs is the serious number.
 
 FlakyGuard names the "context problem" — too little context misses critical
 code, too much overwhelms the model. The trace diff *is* a context-selection
 mechanism, which reframes this as a different solution to a problem the state of
 the art already identified.
 
-> **On FlakeSync's reported numbers:** the ~83.75% repair rate and ~1.00× median
-> overhead figures circulating for FlakeSync came to this project through a
-> secondary review, not a primary source check. Verify them against the paper
-> before quoting them anywhere.
+### Production tools
+
+Flaky-test repair is a shipping product category, not an open problem.
+
+| Product | What it does |
+|---|---|
+| **BuildPulse** | Opt-in Claude-powered agent that opens flaky-test **fix PRs**, with a diff and a root-cause explanation, working from JUnit XML |
+| **Datadog** | Test Optimization's **attempt-to-fix** remediation flow, which retries a candidate fix 20 times to confirm it; the Bits AI Dev Agent delivers a patch as a draft PR labelled "Attempt to Fix" |
+| **Trunk, Gradle Develocity, Harness, Buildkite, CircleCI** | Detect and quarantine only — isolate the test from the gate without repairing it |
+
+### Honest positioning
+
+The shipping auto-fix products run largely unconstrained agents from **test
+results** — a JUnit XML report, a failure message, the test source — and confirm
+the result by rerunning. That is a reasonable design, and it is a different one
+from ours in three specific ways:
+
+- **Input.** ChronoTrace works from paired *execution traces*, not from test
+  results. For a concurrency bug the defect lives in the interleaving, and a
+  results file does not contain one.
+- **Confirmation.** ChronoTrace proves causality by *forced replay*. Datadog's
+  20 retries and BuildPulse's PR checks establish that a patch made the test
+  stop failing; they cannot separate "fixed the race" from "made it rarer".
+  Forcing the ordering can, and a patch that merely moves the timing fails our
+  Tier 1 while passing a rerun gate.
+- **Constraint.** Every ChronoTrace patch passes a deterministic policy checker
+  that rejects sleeps — including aliased imports — retries, timeout inflation
+  and weakened assertions, and separately requires that a real synchronization
+  primitive reachable from both sites was actually added. An unconstrained agent
+  optimising for a green rerun has every incentive to reach for exactly the
+  constructs that gate rejects.
+
+We make no claim to be the only system that repairs flaky tests. Several do, in
+research and in production. The combination we did not find elsewhere is
+trace-differential localisation, causality proven by forced replay, a
+deterministic anti-band-aid gate, and a regression test as the shipped artifact.
 
 ## Limitations
 
@@ -366,6 +462,10 @@ remote log query mid-demo is a stalled demo.
 8. Luo et al. *An Empirical Analysis of Flaky Tests.* FSE 2014.
 9. Alshammari et al. *FlakeFlagger.* ICSE 2021.
 10. Lamport. *Time, Clocks, and the Ordering of Events in a Distributed System.* CACM 1978.
+11. Rahman & Shi. *FlakeSync: Automatically Repairing Async Flaky Tests.* ICSE 2024. doi:10.1145/3597503.3639115
+12. BuildPulse, [flaky test product documentation](https://docs.buildpulse.io/flaky-tests/overview).
+13. Datadog, [Flaky Tests Management](https://docs.datadoghq.com/tests/flaky_management/) and [Bits AI Dev Agent for Test Optimization](https://www.datadoghq.com/blog/bits-ai-test-optimization/).
+14. Gradle, [Develocity flaky test detection guide](https://docs.develocity.ai/2026.2/guides/flaky-test-detection-guide/); Trunk, [Flaky Tests](https://trunk.io/flaky-tests).
 
 ## License
 
