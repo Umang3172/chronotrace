@@ -1,6 +1,6 @@
 # ChronoTrace
 
-[![CI](https://github.com/OWNER/chronotrace/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/chronotrace/actions/workflows/ci.yml)
+[![CI](https://github.com/Umang3172/chronotrace/actions/workflows/ci.yml/badge.svg)](https://github.com/Umang3172/chronotrace/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
 
@@ -53,7 +53,7 @@ explicit anti-band-aid policy gate, and adversarial replay.
 ## 60-second demo
 
 ```bash
-git clone https://github.com/OWNER/chronotrace && cd chronotrace
+git clone https://github.com/Umang3172/chronotrace && cd chronotrace
 uv sync
 uv run chronotrace repair --demo
 ```

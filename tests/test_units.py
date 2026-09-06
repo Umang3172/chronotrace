@@ -308,3 +308,84 @@ async def test_recorder_captures_occurrence_indexed_spans():
     assert keys[:2] == ["probe#0", "probe#1"]
     assert recorder.failing_resource == "p.v"
     assert recorder.spans[-1].attributes["ct.failed"] is True
+
+
+# --------------------------------------------------------------------------- #
+# capture and eval paths that only fire on failure
+# --------------------------------------------------------------------------- #
+
+
+def test_capture_discards_runs_from_a_different_environment(tmp_path, monkeypatch):
+    """E2: traces captured in different environments are not comparable."""
+    from chronotrace.capture import collect as collect_mod
+    from chronotrace.capture.fingerprint import compute
+    from chronotrace.contracts import TraceCapture
+    from chronotrace.verify.runner import RunOutcome
+
+    base = compute("t::t")
+    other = base.model_copy(update={"python_version": "3.99.0"})
+    outcomes = [
+        RunOutcome(
+            passed=False,
+            timed_out=False,
+            duration_s=0.1,
+            capture=TraceCapture(run_id="a", outcome="FAIL", fingerprint=base),
+        ),
+        RunOutcome(
+            passed=True,
+            timed_out=False,
+            duration_s=0.1,
+            capture=TraceCapture(run_id="b", outcome="PASS", fingerprint=other),
+        ),
+    ]
+    calls = iter(outcomes)
+    monkeypatch.setattr(collect_mod, "run_test", lambda *a, **k: next(calls))
+    bundle = collect_mod.collect("t::t", cwd=tmp_path, runs=2)
+    assert bundle.fingerprint_conflicts == 1
+    assert not bundle.has_pair
+
+
+def test_capture_counts_timeouts_separately_from_failures(tmp_path, monkeypatch):
+    """A hung run is a deadlock signal, not a flaky failure (INV-4)."""
+    from chronotrace.capture import collect as collect_mod
+    from chronotrace.verify.runner import RunOutcome
+
+    monkeypatch.setattr(
+        collect_mod,
+        "run_test",
+        lambda *a, **k: RunOutcome(passed=False, timed_out=True, duration_s=30.0),
+    )
+    bundle = collect_mod.collect("t::t", cwd=tmp_path, runs=3)
+    assert bundle.runs_timed_out == 3
+    assert not bundle.has_pair
+
+
+def test_baseline_arms_are_refused_on_the_reference_policy(tmp_path):
+    """A baseline drawn from our own policy would describe this repo, not a model."""
+    from chronotrace.config import Settings
+    from chronotrace.eval.arms import run_arm
+
+    for arm in ("A", "B"):
+        result = run_arm(
+            arm,
+            [],
+            cwd=tmp_path,
+            provider=LocalModelProvider(),
+            settings=Settings(),
+        )
+        assert result.results == []
+        assert result.skipped_reason is not None
+        assert "deterministic reference policy" in result.skipped_reason
+
+
+def test_report_names_the_arm_that_could_not_run(tmp_path):
+    from chronotrace.eval.arms import ArmResult
+    from chronotrace.eval.report import render_markdown, summarise, write_report
+
+    skipped = ArmResult(arm="A", provider="local", results=[], skipped_reason="needs a model")
+    markdown = render_markdown([skipped], summarise([skipped]))
+    assert "Arm A did not run" in markdown
+    assert "needs a model" in markdown
+    markdown_path, json_path = write_report([skipped], tmp_path / "out")
+    assert markdown_path.exists() and json_path.exists()
+    assert json.loads(json_path.read_text())["arms"][0]["skipped_reason"] == "needs a model"
