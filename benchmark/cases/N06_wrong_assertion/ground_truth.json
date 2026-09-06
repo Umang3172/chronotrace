@@ -1,0 +1,8 @@
+{
+  "id": "N06", "name": "wrong_assertion", "true_cause": "incorrect test",
+  "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total",
+  "expected_ui_state": "ABSTAINED", "expected_transformation": null,
+  "expected_abstain_reason": "NO_TRACE_PAIR", "control": true,
+  "band_aid_would_pass": false,
+  "notes": "Fails 100% of the time. Not flaky; no pass trace exists to diff against."
+}

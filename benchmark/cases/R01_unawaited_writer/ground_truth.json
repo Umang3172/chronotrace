@@ -1,0 +1,13 @@
+{
+  "id": "R01",
+  "name": "unawaited_writer",
+  "shape": "unsynchronised async I/O",
+  "test_id": "benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py::test_reader_sees_committed_value",
+  "expected_ui_state": "FIXED",
+  "expected_transformation": "INJECT_ASYNC_EVENT",
+  "expected_abstain_reason": null,
+  "expected_signal_op": "commit_value#0",
+  "expected_wait_op": "read_value#0",
+  "band_aid_would_pass": true,
+  "notes": "A sleep before the read would make this green. The governor must block that."
+}

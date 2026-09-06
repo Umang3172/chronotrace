@@ -1,0 +1,8 @@
+{
+  "id": "R05", "name": "event_set_after_wait", "shape": "barrier / event ordering",
+  "test_id": "benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py::test_subscriber_waits_for_ready",
+  "expected_ui_state": "FIXED", "expected_transformation": "INJECT_ASYNC_EVENT",
+  "expected_abstain_reason": null,
+  "expected_signal_op": "publish_ready#0", "expected_wait_op": "subscribe#0",
+  "band_aid_would_pass": true, "notes": "Classic readiness race."
+}

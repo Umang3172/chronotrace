@@ -1,0 +1,103 @@
+{
+  "provider": "local",
+  "request": {
+    "diagnosis": {
+      "abstain_reason": null,
+      "bug_depth": 1,
+      "candidates": [
+        {
+          "causal_position": 0,
+          "classification": "CAUSALLY_SUFFICIENT",
+          "failing_order": [
+            "subscribe#0",
+            "publish_ready#0"
+          ],
+          "forced_failure_rate": 1.0,
+          "in_backward_slice": true,
+          "ochiai_score": 1.0,
+          "op_a": {
+            "access": "read",
+            "is_test_scope": true,
+            "occurrence": 0,
+            "qualname": "subscribe",
+            "resource": "broker.ready",
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+            "source_line": 19,
+            "span_name": "subscribe"
+          },
+          "op_b": {
+            "access": "write",
+            "is_test_scope": true,
+            "occurrence": 0,
+            "qualname": "publish_ready",
+            "resource": "broker.ready",
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+            "source_line": 13,
+            "span_name": "publish_ready"
+          }
+        }
+      ],
+      "candidates_evaluated": 1,
+      "explanation": "Forcing subscribe to start before publish_ready reproduced the failure on every attempt, so that ordering is a sufficient condition for the failure.",
+      "proven_inversion": {
+        "causal_position": 0,
+        "classification": "CAUSALLY_SUFFICIENT",
+        "failing_order": [
+          "subscribe#0",
+          "publish_ready#0"
+        ],
+        "forced_failure_rate": 1.0,
+        "in_backward_slice": true,
+        "ochiai_score": 1.0,
+        "op_a": {
+          "access": "read",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "subscribe",
+          "resource": "broker.ready",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+          "source_line": 19,
+          "span_name": "subscribe"
+        },
+        "op_b": {
+          "access": "write",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "publish_ready",
+          "resource": "broker.ready",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+          "source_line": 13,
+          "span_name": "publish_ready"
+        }
+      },
+      "status": "RACE_PROVEN"
+    }
+  },
+  "response": {
+    "primitive": "asyncio.Event",
+    "rationale": "subscribe read state that publish_ready publishes. Forcing that order reproduced the failure every time, so the reader must wait for the writer to signal rather than assume it has already run.",
+    "scope_target": null,
+    "shared_scope": "FIXTURE",
+    "signal_site": {
+      "access": "write",
+      "is_test_scope": true,
+      "occurrence": 0,
+      "qualname": "publish_ready",
+      "resource": "broker.ready",
+      "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+      "source_line": 13,
+      "span_name": "publish_ready"
+    },
+    "transformation": "INJECT_ASYNC_EVENT",
+    "wait_site": {
+      "access": "read",
+      "is_test_scope": true,
+      "occurrence": 0,
+      "qualname": "subscribe",
+      "resource": "broker.ready",
+      "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+      "source_line": 19,
+      "span_name": "subscribe"
+    }
+  }
+}

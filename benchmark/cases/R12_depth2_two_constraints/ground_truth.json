@@ -1,0 +1,9 @@
+{
+  "id": "R12", "name": "depth2_two_constraints", "shape": "depth-2 race",
+  "test_id": "benchmark/cases/R12_depth2_two_constraints/test_R12_depth2_two_constraints.py::test_at_least_one_replica_is_up",
+  "expected_ui_state": "NEEDS_INVESTIGATION", "expected_transformation": null,
+  "expected_abstain_reason": "DEPTH_GE_2_UNRESOLVED",
+  "expected_signal_op": null, "expected_wait_op": null,
+  "band_aid_would_pass": true,
+  "notes": "No single forced constraint is sufficient. Reporting depth beats patching the symptom."
+}

@@ -1,0 +1,9 @@
+{
+  "id": "R02", "name": "commit_before_select", "shape": "unsynchronised async I/O",
+  "test_id": "benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py::test_select_sees_committed_row",
+  "expected_ui_state": "FIXED", "expected_transformation": "INJECT_ASYNC_EVENT",
+  "expected_abstain_reason": null,
+  "expected_signal_op": "db_commit#0", "expected_wait_op": "db_select#0",
+  "band_aid_would_pass": true,
+  "notes": "Retry-until-found around the select also passes and hides the missing ordering."
+}

@@ -1,0 +1,9 @@
+{
+  "id": "R03", "name": "taskgroup_teardown", "shape": "task lifecycle race",
+  "test_id": "benchmark/cases/R03_taskgroup_teardown/test_R03_taskgroup_teardown.py::test_report_is_finalized",
+  "expected_ui_state": "FIXED", "expected_transformation": "INJECT_ASYNC_EVENT",
+  "expected_abstain_reason": null,
+  "expected_signal_op": "finalize_report#0", "expected_wait_op": "read_status#0",
+  "band_aid_would_pass": true,
+  "notes": "AWAIT_UNFINISHED_TASK (moving the existing await above the assertion) is an equally correct ground-truth repair for this shape."
+}

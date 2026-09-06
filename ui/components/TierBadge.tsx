@@ -1,0 +1,44 @@
+import type { Tier } from "@/lib/types";
+
+// The tier reached travels with every result. A lower tier is never presented
+// as proof of causality, so the wording differs per tier by design.
+const TIERS: Record<Tier, { label: string; claim: string; className: string }> = {
+  FORCED: {
+    label: "Reproduced on demand",
+    claim: "cause established",
+    className: "text-pass border-pass/40 bg-pass/10",
+  },
+  INFEASIBLE: {
+    label: "Ordering unreachable",
+    claim: "candidate discarded",
+    className: "text-muted border-border bg-surface",
+  },
+  PCT: {
+    label: "Adversarial schedules",
+    claim: "probabilistic bound, not proof",
+    className: "text-warn border-warn/40 bg-warn/10",
+  },
+  STATISTICAL: {
+    label: "Repeat runs only",
+    claim: "residual check, not proof",
+    className: "text-warn border-warn/40 bg-warn/10",
+  },
+  FAILED: {
+    label: "Not verified",
+    claim: "no claim made",
+    className: "text-fail border-fail/40 bg-fail/10",
+  },
+};
+
+export function TierBadge({ tier }: { tier: Tier }) {
+  const meta = TIERS[tier];
+  return (
+    <span
+      className={`inline-flex items-baseline gap-2 rounded border px-2 py-1 text-xs ${meta.className}`}
+      title={meta.claim}
+    >
+      <span className="font-medium">{meta.label}</span>
+      <span className="opacity-70">{meta.claim}</span>
+    </span>
+  );
+}

@@ -1,0 +1,8 @@
+{
+  "id": "N02", "name": "network_timeout", "true_cause": "external service instability",
+  "test_id": "benchmark/cases/N02_network_timeout/test_N02_network_timeout.py::test_upstream_returns_ok",
+  "expected_ui_state": "ABSTAINED", "expected_transformation": null,
+  "expected_abstain_reason": "NOT_A_RACE", "control": true,
+  "band_aid_would_pass": false,
+  "notes": "The failure is a raised exception from an external call, not an assertion on shared state."
+}

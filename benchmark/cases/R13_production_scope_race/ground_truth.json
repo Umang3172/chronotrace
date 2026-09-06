@@ -1,0 +1,9 @@
+{
+  "id": "R13", "name": "production_scope_race", "shape": "production-scope race",
+  "test_id": "benchmark/cases/R13_production_scope_race/test_R13_production_scope_race.py::test_service_serves_warm_config",
+  "expected_ui_state": "ABSTAINED", "expected_transformation": null,
+  "expected_abstain_reason": "PRODUCTION_SCOPE_RACE",
+  "expected_signal_op": null, "expected_wait_op": null,
+  "band_aid_would_pass": true,
+  "notes": "The defect is in app_service.py. Making the test green would hide a real product bug (D8)."
+}

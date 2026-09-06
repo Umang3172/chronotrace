@@ -1,0 +1,8 @@
+{
+  "id": "N03", "name": "dict_iteration_order", "true_cause": "unordered collection",
+  "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha",
+  "expected_ui_state": "ABSTAINED", "expected_transformation": null,
+  "expected_abstain_reason": "NO_TRACE_PAIR", "control": true,
+  "band_aid_would_pass": false,
+  "notes": "With PYTHONHASHSEED pinned this is deterministic, so no comparable pass/fail pair exists (E1)."
+}

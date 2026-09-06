@@ -1,0 +1,103 @@
+{
+  "provider": "local",
+  "request": {
+    "diagnosis": {
+      "abstain_reason": null,
+      "bug_depth": 1,
+      "candidates": [
+        {
+          "causal_position": 0,
+          "classification": "CAUSALLY_SUFFICIENT",
+          "failing_order": [
+            "read_value#0",
+            "commit_value#0"
+          ],
+          "forced_failure_rate": 1.0,
+          "in_backward_slice": true,
+          "ochiai_score": 1.0,
+          "op_a": {
+            "access": "read",
+            "is_test_scope": true,
+            "occurrence": 0,
+            "qualname": "read_value",
+            "resource": "store.value",
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 23,
+            "span_name": "read_value"
+          },
+          "op_b": {
+            "access": "write",
+            "is_test_scope": true,
+            "occurrence": 0,
+            "qualname": "commit_value",
+            "resource": "store.value",
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 17,
+            "span_name": "commit_value"
+          }
+        }
+      ],
+      "candidates_evaluated": 1,
+      "explanation": "Forcing read_value to start before commit_value reproduced the failure on every attempt, so that ordering is a sufficient condition for the failure.",
+      "proven_inversion": {
+        "causal_position": 0,
+        "classification": "CAUSALLY_SUFFICIENT",
+        "failing_order": [
+          "read_value#0",
+          "commit_value#0"
+        ],
+        "forced_failure_rate": 1.0,
+        "in_backward_slice": true,
+        "ochiai_score": 1.0,
+        "op_a": {
+          "access": "read",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "read_value",
+          "resource": "store.value",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+          "source_line": 23,
+          "span_name": "read_value"
+        },
+        "op_b": {
+          "access": "write",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "commit_value",
+          "resource": "store.value",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+          "source_line": 17,
+          "span_name": "commit_value"
+        }
+      },
+      "status": "RACE_PROVEN"
+    }
+  },
+  "response": {
+    "primitive": "asyncio.Event",
+    "rationale": "read_value read state that commit_value publishes. Forcing that order reproduced the failure every time, so the reader must wait for the writer to signal rather than assume it has already run.",
+    "scope_target": null,
+    "shared_scope": "FIXTURE",
+    "signal_site": {
+      "access": "write",
+      "is_test_scope": true,
+      "occurrence": 0,
+      "qualname": "commit_value",
+      "resource": "store.value",
+      "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+      "source_line": 17,
+      "span_name": "commit_value"
+    },
+    "transformation": "INJECT_ASYNC_EVENT",
+    "wait_site": {
+      "access": "read",
+      "is_test_scope": true,
+      "occurrence": 0,
+      "qualname": "read_value",
+      "resource": "store.value",
+      "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+      "source_line": 23,
+      "span_name": "read_value"
+    }
+  }
+}

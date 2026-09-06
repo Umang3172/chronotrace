@@ -1,0 +1,103 @@
+{
+  "provider": "local",
+  "request": {
+    "diagnosis": {
+      "abstain_reason": null,
+      "bug_depth": 1,
+      "candidates": [
+        {
+          "causal_position": 0,
+          "classification": "CAUSALLY_SUFFICIENT",
+          "failing_order": [
+            "db_select#0",
+            "db_commit#0"
+          ],
+          "forced_failure_rate": 1.0,
+          "in_backward_slice": true,
+          "ochiai_score": 1.0,
+          "op_a": {
+            "access": "read",
+            "is_test_scope": true,
+            "occurrence": 0,
+            "qualname": "db_select",
+            "resource": "db.rows",
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+            "source_line": 19,
+            "span_name": "db_select"
+          },
+          "op_b": {
+            "access": "write",
+            "is_test_scope": true,
+            "occurrence": 0,
+            "qualname": "db_commit",
+            "resource": "db.rows",
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+            "source_line": 13,
+            "span_name": "db_commit"
+          }
+        }
+      ],
+      "candidates_evaluated": 1,
+      "explanation": "Forcing db_select to start before db_commit reproduced the failure on every attempt, so that ordering is a sufficient condition for the failure.",
+      "proven_inversion": {
+        "causal_position": 0,
+        "classification": "CAUSALLY_SUFFICIENT",
+        "failing_order": [
+          "db_select#0",
+          "db_commit#0"
+        ],
+        "forced_failure_rate": 1.0,
+        "in_backward_slice": true,
+        "ochiai_score": 1.0,
+        "op_a": {
+          "access": "read",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "db_select",
+          "resource": "db.rows",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+          "source_line": 19,
+          "span_name": "db_select"
+        },
+        "op_b": {
+          "access": "write",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "db_commit",
+          "resource": "db.rows",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+          "source_line": 13,
+          "span_name": "db_commit"
+        }
+      },
+      "status": "RACE_PROVEN"
+    }
+  },
+  "response": {
+    "primitive": "asyncio.Event",
+    "rationale": "db_select read state that db_commit publishes. Forcing that order reproduced the failure every time, so the reader must wait for the writer to signal rather than assume it has already run.",
+    "scope_target": null,
+    "shared_scope": "FIXTURE",
+    "signal_site": {
+      "access": "write",
+      "is_test_scope": true,
+      "occurrence": 0,
+      "qualname": "db_commit",
+      "resource": "db.rows",
+      "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+      "source_line": 13,
+      "span_name": "db_commit"
+    },
+    "transformation": "INJECT_ASYNC_EVENT",
+    "wait_site": {
+      "access": "read",
+      "is_test_scope": true,
+      "occurrence": 0,
+      "qualname": "db_select",
+      "resource": "db.rows",
+      "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+      "source_line": 19,
+      "span_name": "db_select"
+    }
+  }
+}

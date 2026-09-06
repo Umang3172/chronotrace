@@ -1,0 +1,9 @@
+{
+  "id": "R08", "name": "gather_order_assumption", "shape": "over-constrained assertion",
+  "test_id": "benchmark/cases/R08_gather_order_assumption/test_R08_gather_order_assumption.py::test_completion_order_is_alpha_then_beta",
+  "expected_ui_state": "NEEDS_INVESTIGATION", "expected_transformation": "RELAX_ASSERTION",
+  "expected_abstain_reason": null,
+  "expected_signal_op": null, "expected_wait_op": null,
+  "band_aid_would_pass": true,
+  "notes": "Synchronising here would destroy real concurrency to satisfy a wrong assertion. The proposed relaxation is never auto-applied; it goes to a human."
+}

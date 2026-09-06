@@ -1,0 +1,8 @@
+{
+  "id": "R06", "name": "queue_consumer_early", "shape": "barrier / event ordering",
+  "test_id": "benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py::test_consumer_drains_produced_job",
+  "expected_ui_state": "FIXED", "expected_transformation": "INJECT_ASYNC_EVENT",
+  "expected_abstain_reason": null,
+  "expected_signal_op": "enqueue_job#0", "expected_wait_op": "drain_queue#0",
+  "band_aid_would_pass": true, "notes": "Consumer/producer ordering."
+}

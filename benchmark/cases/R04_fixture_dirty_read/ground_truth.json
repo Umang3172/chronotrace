@@ -1,0 +1,9 @@
+{
+  "id": "R04", "name": "fixture_dirty_read", "shape": "shared mutable fixture",
+  "test_id": "benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py::test_request_uses_refreshed_token",
+  "expected_ui_state": "FIXED", "expected_transformation": "INJECT_ASYNC_EVENT",
+  "expected_abstain_reason": null,
+  "expected_signal_op": "refresh_token#0", "expected_wait_op": "use_token#0",
+  "band_aid_would_pass": true,
+  "notes": "Fixture-scoped state: the blast radius of the repair is every test using this fixture."
+}

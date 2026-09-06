@@ -1,0 +1,8 @@
+{
+  "id": "N07", "name": "threading_race", "true_cause": "threading race (out of scope)",
+  "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total",
+  "expected_ui_state": "ABSTAINED", "expected_transformation": null,
+  "expected_abstain_reason": "NON_ASYNCIO_PARADIGM", "control": true,
+  "band_aid_would_pass": true,
+  "notes": "A genuine data race, but threads cannot be scheduled from user space in CPython. Detected and refused."
+}

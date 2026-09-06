@@ -1,0 +1,8 @@
+{
+  "id": "N01", "name": "random_seed_flake", "true_cause": "unseeded random",
+  "test_id": "benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py::test_sample_is_above_threshold",
+  "expected_ui_state": "ABSTAINED", "expected_transformation": null,
+  "expected_abstain_reason": "NOT_A_RACE", "control": true,
+  "band_aid_would_pass": false,
+  "notes": "Identical ordering every run; the divergence is in a drawn value."
+}

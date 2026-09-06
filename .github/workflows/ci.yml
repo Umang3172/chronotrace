@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+      - name: Sync dependencies
+        run: uv sync --extra dev
+      - name: Lint
+        run: uv run ruff check .
+      - name: Format check
+        run: uv run ruff format --check .
+      - name: Type check
+        run: uv run mypy chronotrace
+      - name: Unit and property tests
+        run: uv run pytest tests -m "not benchmark" -q
+      - name: Adversarial governor gauntlet
+        run: uv run chronotrace gauntlet
+      - name: Public API imports cleanly
+        run: uv run python -c "import chronotrace; print(chronotrace.__version__)"
+
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+      - run: uv sync --extra dev
+      - name: End-to-end benchmark cases, with coverage
+        # coverage run, not pytest --cov: the pytest11 entry point imports the
+        # package during plugin loading, before pytest-cov would start.
+        run: uv run coverage run -m pytest tests -q
+      - name: Coverage gate
+        run: uv run coverage report

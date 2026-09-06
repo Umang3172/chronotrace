@@ -1,0 +1,28 @@
+# AgentCore Runtime configuration.
+#
+# The runtime hosts the agent loop; every stage it calls remains local and
+# deterministic. Agent state is sanitized to primitive JSON before it crosses
+# this boundary: a raw span or CST node in the payload is how a runtime ends up
+# serializing an object into a fallback string and exceeding its payload limit.
+name: chronotrace
+entrypoint: chronotrace.agent.graph:handler
+runtime: python3.11
+
+environment:
+  CHRONOTRACE_PROVIDER: bedrock
+  CHRONOTRACE_TELEMETRY: cloudwatch
+  CHRONOTRACE_REGISTRY: dynamodb
+  # Model ids are deliberately unset here. They differ by region and change
+  # between releases, so they are supplied at deploy time after being verified
+  # against the target region rather than baked into a file that goes stale.
+  CHRONOTRACE_MODEL_ID_LARGE: ""
+  CHRONOTRACE_AWS_REGION: ap-south-1
+
+permissions:
+  - bedrock:InvokeModel
+  - logs:CreateLogGroup
+  - logs:CreateLogStream
+  - logs:PutLogEvents
+  - dynamodb:GetItem
+  - dynamodb:PutItem
+  - dynamodb:Query
