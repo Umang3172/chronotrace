@@ -1,0 +1,675 @@
+{
+  "bundle": {
+    "failing": [
+      {
+        "complete": true,
+        "failing_resource": "db.rows",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_select_sees_committed_row() -> None:\n        ROWS.clear()\n        tx = asyncio.create_task(transaction())\n        await io_latency()\n        row = await db_select(\"u1\")\n        with assertion(\"db.rows\"):\n>           assert row is not None\nE           assert None is not None\n\nbenchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py:38: AssertionError",
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py::test_select_sees_committed_row"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "a1235529a7ca",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "db_select",
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125643088683666,
+            "name": "db_select",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+            "source_line": 19,
+            "span_id": "293e50f041b94b16",
+            "start_ns": 125643088674375,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125643088819875,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "ab8fc79b098a4d06",
+            "start_ns": 125643088747833,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "db_commit",
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125643088863250,
+            "name": "db_commit",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+            "source_line": 13,
+            "span_id": "6cef6c820e9c448f",
+            "start_ns": 125643088861541,
+            "task_name": "Task-2"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "db.rows",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_select_sees_committed_row() -> None:\n        ROWS.clear()\n        tx = asyncio.create_task(transaction())\n        await io_latency()\n        row = await db_select(\"u1\")\n        with assertion(\"db.rows\"):\n>           assert row is not None\nE           assert None is not None\n\nbenchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py:38: AssertionError",
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py::test_select_sees_committed_row"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "f5540a6434ad",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "db_select",
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125643866202000,
+            "name": "db_select",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+            "source_line": 19,
+            "span_id": "7db2bf1c265a40d2",
+            "start_ns": 125643866192208,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125643866419500,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "56e670d9265446e6",
+            "start_ns": 125643866315833,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "db.rows",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_select_sees_committed_row() -> None:\n        ROWS.clear()\n        tx = asyncio.create_task(transaction())\n        await io_latency()\n        row = await db_select(\"u1\")\n        with assertion(\"db.rows\"):\n>           assert row is not None\nE           assert None is not None\n\nbenchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py:38: AssertionError",
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py::test_select_sees_committed_row"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "ec94ef25042e",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "db_select",
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125644639379875,
+            "name": "db_select",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+            "source_line": 19,
+            "span_id": "7cf0eab8b7bc4a63",
+            "start_ns": 125644639371791,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125644639532125,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "1681f4a34f324ccc",
+            "start_ns": 125644639449916,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "db_commit",
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125644639579500,
+            "name": "db_commit",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+            "source_line": 13,
+            "span_id": "984c0cc2b8af41d4",
+            "start_ns": 125644639577625,
+            "task_name": "Task-2"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "db.rows",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_select_sees_committed_row() -> None:\n        ROWS.clear()\n        tx = asyncio.create_task(transaction())\n        await io_latency()\n        row = await db_select(\"u1\")\n        with assertion(\"db.rows\"):\n>           assert row is not None\nE           assert None is not None\n\nbenchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py:38: AssertionError",
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py::test_select_sees_committed_row"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "5c412f4a636d",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "db_select",
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125646179964416,
+            "name": "db_select",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+            "source_line": 19,
+            "span_id": "71357f55a08f4050",
+            "start_ns": 125646179956750,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125646180109875,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "dcb8f759642a42b1",
+            "start_ns": 125646180030666,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "db_commit",
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125646180156583,
+            "name": "db_commit",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+            "source_line": 13,
+            "span_id": "3637729087f247e0",
+            "start_ns": 125646180154750,
+            "task_name": "Task-2"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "db.rows",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_select_sees_committed_row() -> None:\n        ROWS.clear()\n        tx = asyncio.create_task(transaction())\n        await io_latency()\n        row = await db_select(\"u1\")\n        with assertion(\"db.rows\"):\n>           assert row is not None\nE           assert None is not None\n\nbenchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py:38: AssertionError",
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py::test_select_sees_committed_row"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "3093336c4755",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "db_select",
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125646970038208,
+            "name": "db_select",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+            "source_line": 19,
+            "span_id": "782a6bbc9df74ed5",
+            "start_ns": 125646970030458,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125646970181666,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "8dbd8c8ab3c343f2",
+            "start_ns": 125646970107416,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "db.rows",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_select_sees_committed_row() -> None:\n        ROWS.clear()\n        tx = asyncio.create_task(transaction())\n        await io_latency()\n        row = await db_select(\"u1\")\n        with assertion(\"db.rows\"):\n>           assert row is not None\nE           assert None is not None\n\nbenchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py:38: AssertionError",
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py::test_select_sees_committed_row"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "e4fdcbcef997",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "db_select",
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125647765657833,
+            "name": "db_select",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+            "source_line": 19,
+            "span_id": "c2635ee406ad41d5",
+            "start_ns": 125647765650291,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125647765814291,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "a04aa88719334852",
+            "start_ns": 125647765735833,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "db.rows",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_select_sees_committed_row() -> None:\n        ROWS.clear()\n        tx = asyncio.create_task(transaction())\n        await io_latency()\n        row = await db_select(\"u1\")\n        with assertion(\"db.rows\"):\n>           assert row is not None\nE           assert None is not None\n\nbenchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py:38: AssertionError",
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py::test_select_sees_committed_row"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "27c08302af38",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "db_select",
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125648553363875,
+            "name": "db_select",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+            "source_line": 19,
+            "span_id": "ce1e2b05d08e4a06",
+            "start_ns": 125648553356666,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125648553505208,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "410992278eab478b",
+            "start_ns": 125648553431041,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "db.rows",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_select_sees_committed_row() -> None:\n        ROWS.clear()\n        tx = asyncio.create_task(transaction())\n        await io_latency()\n        row = await db_select(\"u1\")\n        with assertion(\"db.rows\"):\n>           assert row is not None\nE           assert None is not None\n\nbenchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py:38: AssertionError",
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py::test_select_sees_committed_row"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "33a208c3b6c1",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "db_select",
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125649344640916,
+            "name": "db_select",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+            "source_line": 19,
+            "span_id": "a4e6549a07494818",
+            "start_ns": 125649344633166,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125649344782708,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "0a1e9bcb3ce6420b",
+            "start_ns": 125649344710750,
+            "task_name": "Task-1"
+          }
+        ]
+      }
+    ],
+    "fingerprint_conflicts": 0,
+    "natural_flake_rate": 0.8,
+    "passing": [
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py::test_select_sees_committed_row"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "1228949f335f",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "db_commit",
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125645427066125,
+            "name": "db_commit",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+            "source_line": 13,
+            "span_id": "4e6a92feaf014e6e",
+            "start_ns": 125645427059208,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "db_select",
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125645427141708,
+            "name": "db_select",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+            "source_line": 19,
+            "span_id": "545c3985351b446d",
+            "start_ns": 125645427138375,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125645427156333,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "0d31de8e7e2f4ea5",
+            "start_ns": 125645427155500,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py::test_select_sees_committed_row"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "8a36bacb60ee",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "db_commit",
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125650131619500,
+            "name": "db_commit",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+            "source_line": 13,
+            "span_id": "9c3f2493eb234454",
+            "start_ns": 125650131612625,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "db_select",
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125650132748750,
+            "name": "db_select",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+            "source_line": 19,
+            "span_id": "0a96521cbbc244cb",
+            "start_ns": 125650132745125,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "db.rows"
+            },
+            "end_ns": 125650132765416,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "8ee1cfe281b940d0",
+            "start_ns": 125650132764458,
+            "task_name": "Task-1"
+          }
+        ]
+      }
+    ],
+    "runs_executed": 10,
+    "runs_timed_out": 0,
+    "test_id": "benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py::test_select_sees_committed_row",
+    "uninstrumented_flake_rate": null
+  },
+  "diagnosis": {
+    "abstain_reason": null,
+    "bug_depth": 1,
+    "candidates": [
+      {
+        "causal_position": 0,
+        "classification": "CAUSALLY_SUFFICIENT",
+        "failing_order": [
+          "db_select#0",
+          "db_commit#0"
+        ],
+        "forced_failure_rate": 1.0,
+        "in_backward_slice": true,
+        "ochiai_score": 1.0,
+        "op_a": {
+          "access": "read",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "db_select",
+          "resource": "db.rows",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+          "source_line": 19,
+          "span_name": "db_select"
+        },
+        "op_b": {
+          "access": "write",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "db_commit",
+          "resource": "db.rows",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+          "source_line": 13,
+          "span_name": "db_commit"
+        }
+      }
+    ],
+    "candidates_evaluated": 1,
+    "explanation": "Forcing db_select to start before db_commit reproduced the failure on every attempt, so that ordering is a sufficient condition for the failure.",
+    "proven_inversion": {
+      "causal_position": 0,
+      "classification": "CAUSALLY_SUFFICIENT",
+      "failing_order": [
+        "db_select#0",
+        "db_commit#0"
+      ],
+      "forced_failure_rate": 1.0,
+      "in_backward_slice": true,
+      "ochiai_score": 1.0,
+      "op_a": {
+        "access": "read",
+        "is_test_scope": true,
+        "occurrence": 0,
+        "qualname": "db_select",
+        "resource": "db.rows",
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+        "source_line": 19,
+        "span_name": "db_select"
+      },
+      "op_b": {
+        "access": "write",
+        "is_test_scope": true,
+        "occurrence": 0,
+        "qualname": "db_commit",
+        "resource": "db.rows",
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+        "source_line": 13,
+        "span_name": "db_commit"
+      }
+    },
+    "status": "RACE_PROVEN"
+  }
+}

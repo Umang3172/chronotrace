@@ -1,0 +1,1362 @@
+{
+  "bundle": {
+    "failing": [],
+    "fingerprint_conflicts": 0,
+    "natural_flake_rate": 0.0,
+    "passing": [
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "f3910b027ae0",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125328390184791,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "7e18ef22469a4cc3",
+            "start_ns": 125328390176708,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125328390282041,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "8ea85ba469644b90",
+            "start_ns": 125328390279833,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125328390298416,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "47dbe0307fc54c89",
+            "start_ns": 125328390297208,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "70f0d06aecc7",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125329283147208,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "69d4da3efdad40c2",
+            "start_ns": 125329283132500,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125329283308791,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "3f9c657aff8b438f",
+            "start_ns": 125329283306375,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125329283327791,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "8691d3bd057d4539",
+            "start_ns": 125329283326333,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "ccea5e673fd1",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125330100118500,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "80486a6fabd6447f",
+            "start_ns": 125330100111291,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125330100202333,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "7758859d894549dd",
+            "start_ns": 125330100200500,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125330100222041,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "00115ddbf00a4724",
+            "start_ns": 125330100220916,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "6b199acb8637",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125330961022750,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "0208915faec24edb",
+            "start_ns": 125330961012875,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125330961167666,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "d69d372007c44952",
+            "start_ns": 125330961164708,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125330961188125,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "7660a943e662469a",
+            "start_ns": 125330961186666,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "b3d157dad3a2",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125331819880125,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "63e1cfc23de34c36",
+            "start_ns": 125331819870916,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125331819970416,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "49168c68ea3b4f29",
+            "start_ns": 125331819968375,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125331819985375,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "df3b6675b9e44152",
+            "start_ns": 125331819984250,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "21607df2afbd",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125332671882958,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "5e13570080954aa1",
+            "start_ns": 125332671874166,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125332671973666,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "871189857cbe46b8",
+            "start_ns": 125332671971625,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125332671988583,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "a5ea0fbe69854ae8",
+            "start_ns": 125332671987458,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "469cc526f69f",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125333512478833,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "e65226883c434398",
+            "start_ns": 125333512470958,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125333512565458,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "da11cd83d71e420f",
+            "start_ns": 125333512563625,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125333512580541,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "749aa403f6f6400a",
+            "start_ns": 125333512579375,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "df5455a3f256",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125334333032625,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "0e0d0236ef3c4efd",
+            "start_ns": 125334333026416,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125334333106500,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "07915f9c086142ee",
+            "start_ns": 125334333104416,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125334333120708,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "bf91033574a942b6",
+            "start_ns": 125334333119500,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "e0b9a52858ec",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125335155961958,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "42911ae0af034664",
+            "start_ns": 125335155954541,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125335156041375,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "79a4d8da15614c6c",
+            "start_ns": 125335156039541,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125335156055958,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "89dd959550a04c1b",
+            "start_ns": 125335156054875,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "c64ecceab10b",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125335975223958,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "b3195875ecf14407",
+            "start_ns": 125335975216458,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125335975318708,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "14746cde1bda4d4b",
+            "start_ns": 125335975316750,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125335975333958,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "2e53ebebc29a4802",
+            "start_ns": 125335975332833,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "3b10dedccd25",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125336822665291,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "a71fa112bae642d0",
+            "start_ns": 125336822657958,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125336822757208,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "b9a45781cecf485c",
+            "start_ns": 125336822755250,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125336822772125,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "d6918e0e7d954757",
+            "start_ns": 125336822771041,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "2aae1fde3611",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125337680241041,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "e6cd45317de24597",
+            "start_ns": 125337680233000,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125337680328291,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "8b55a6c546b2418f",
+            "start_ns": 125337680326291,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125337680342625,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "8f040de06e544e88",
+            "start_ns": 125337680341500,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "aa1ead25bc0c",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125338534204958,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "f4b1c77ce6484442",
+            "start_ns": 125338534196333,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125338534308416,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "58af8dd13c954e12",
+            "start_ns": 125338534306625,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125338534324000,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "eba433fdce654283",
+            "start_ns": 125338534322833,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "6ea069944529",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125339367273416,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "7affcb8cb8324fef",
+            "start_ns": 125339367266166,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125339367351833,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "48f7d529dccf4c70",
+            "start_ns": 125339367349791,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125339367368041,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "5442c33d0a0a4e9f",
+            "start_ns": 125339367366750,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "173f5d61cd92",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125340200620291,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "9fecdd81a6c74b60",
+            "start_ns": 125340200613541,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125340200699666,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "3b6477f5c70e42f2",
+            "start_ns": 125340200697625,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125340200714958,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "b903fd7371b54771",
+            "start_ns": 125340200713875,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "0574d41e7ce6",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125341071455083,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "33de34379010411d",
+            "start_ns": 125341071446958,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125341071551500,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "831046429e7d4873",
+            "start_ns": 125341071549416,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125341071565958,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "29662dc385bc4303",
+            "start_ns": 125341071564791,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "7e8756094f1c",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125341929542916,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "31fcf0d9070c4b7d",
+            "start_ns": 125341929534541,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125341929634375,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "ac58fe2dac1b45dd",
+            "start_ns": 125341929632500,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125341929652708,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "762268a48aeb4f60",
+            "start_ns": 125341929651416,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "ee1d324134c1",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125342786266583,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "864e47bebf324bac",
+            "start_ns": 125342786259000,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125342786360541,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "92a557a4651a4754",
+            "start_ns": 125342786358583,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125342786375083,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "f6ed8f7a50c84a9c",
+            "start_ns": 125342786373958,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "38b5068352cb",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125343656422375,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "3a68d654611b4ecf",
+            "start_ns": 125343656415708,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125343656501916,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "11c9bd081a7c4f95",
+            "start_ns": 125343656491458,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125343656516291,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "288726a20b4747b8",
+            "start_ns": 125343656515083,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "7c6b0c11a325",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "collect_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125344508062958,
+            "name": "collect_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 17,
+            "span_id": "54c7eeb0a86b4b10",
+            "start_ns": 125344508055916,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_tags",
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125344508132625,
+            "name": "read_tags",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py",
+            "source_line": 23,
+            "span_id": "bbfe21e6c911429f",
+            "start_ns": 125344508130541,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "tags.order"
+            },
+            "end_ns": 125344508146583,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "4bd3db89b27040bd",
+            "start_ns": 125344508145541,
+            "task_name": "Task-1"
+          }
+        ]
+      }
+    ],
+    "runs_executed": 20,
+    "runs_timed_out": 0,
+    "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha",
+    "uninstrumented_flake_rate": null
+  },
+  "diagnosis": {
+    "abstain_reason": "NO_TRACE_PAIR",
+    "bug_depth": null,
+    "candidates": [],
+    "candidates_evaluated": 0,
+    "explanation": "The capture budget produced only passing runs (20 runs). Diagnosis compares a passing execution against a failing one; there is nothing to compare.",
+    "proven_inversion": null,
+    "status": "ABSTAINED"
+  }
+}

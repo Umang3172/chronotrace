@@ -47,7 +47,23 @@ def _provider(settings: Settings) -> ModelProvider:
         from chronotrace.providers.bedrock import BedrockProvider
 
         return BedrockProvider(settings)
+    if settings.provider == "ollama":
+        return _ollama(settings)
     return LocalModelProvider(fixtures_dir=settings.fixtures_dir)
+
+
+def _ollama(settings: Settings, recorder: object = None) -> ModelProvider:
+    from chronotrace.providers.ollama import OllamaProvider
+
+    return OllamaProvider(
+        host=settings.ollama_host,
+        model=settings.ollama_model,
+        temperature=settings.model_temperature,
+        seed=settings.model_seed,
+        max_tokens=settings.model_max_tokens,
+        timeout_s=settings.model_timeout_s,
+        recorder=recorder,  # type: ignore[arg-type]
+    )
 
 
 def _store(settings: Settings) -> IncidentStore:
@@ -265,6 +281,71 @@ def eval_cmd(
     markdown_path, json_path = write_report(results, out)
     typer.echo(markdown_path.read_text())
     typer.echo(f"written: {markdown_path} and {json_path}")
+
+
+@app.command(name="three-arm")
+def three_arm(
+    provider: Annotated[str, typer.Option(help="ollama | fixture")] = "ollama",
+    model: Annotated[str, typer.Option(help="model tag for ollama")] = "qwen3:8b",
+    runs: Annotated[int, typer.Option(help="capture budget per case")] = 20,
+    cases: Annotated[str, typer.Option(help="case ids, or all")] = "all",
+    out: Annotated[Path, typer.Option(help="results directory")] = Path("eval/results"),
+    fixtures: Annotated[Path, typer.Option(help="call recording directory")] = Path(
+        "fixtures/three_arm"
+    ),
+) -> None:
+    """Run the three-arm baseline: code only, code plus traces, full ChronoTrace."""
+    configure()
+    settings = _settings(provider=provider, ollama_model=model)
+    from chronotrace.eval.three_arm import run_sweep
+    from chronotrace.eval.three_arm_report import write_results
+    from chronotrace.providers.record import FixtureProvider, FixtureRecorder
+
+    corpus = load_cases(DEFAULT_CASES)
+    if cases != "all":
+        wanted = {item.strip().upper() for item in cases.split(",")}
+        corpus = [case for case in corpus if case.case_id.upper() in wanted]
+    if not corpus:
+        typer.echo("no matching benchmark cases", err=True)
+        raise typer.Exit(1)
+
+    label = f"ollama:{model}"
+    if provider == "fixture":
+        engine: object = FixtureProvider(fixtures, provider_label=label)
+    else:
+        engine = _ollama(settings, FixtureRecorder(fixtures))
+
+    sweep = run_sweep(
+        corpus,
+        cwd=Path.cwd(),
+        provider=engine,  # type: ignore[arg-type]
+        settings=settings,
+        capture_runs=runs,
+        model_label=model,
+        evidence_dir=fixtures / "evidence",
+        replay=provider == "fixture",
+    )
+    drift = getattr(engine, "prompt_drift", [])
+    if drift:
+        typer.echo(f"prompt drift on replay: {', '.join(sorted(set(drift)))}", err=True)
+    json_path, markdown_path = write_results(sweep, out)
+    typer.echo(markdown_path.read_text())
+    typer.echo(f"\nwritten: {json_path} and {markdown_path}")
+
+
+@app.command(name="replay-check")
+def replay_check(
+    live: Annotated[Path, typer.Option(help="results JSON from the model-backed run")],
+    replay: Annotated[Path, typer.Option(help="results JSON from the fixture replay")],
+) -> None:
+    """Confirm a fixture replay reproduces the model-derived numbers exactly."""
+    configure(quiet=True)
+    from chronotrace.eval.replay_check import compare
+
+    comparison = compare(live, replay)
+    typer.echo(comparison.render())
+    if not comparison.model_derived_identical:
+        raise typer.Exit(1)
 
 
 def _print_report(report: IncidentReport) -> None:

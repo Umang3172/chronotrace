@@ -15,3 +15,7 @@ eval-results/
 node_modules/
 .next/
 .env
+
+# Three-arm sweep recordings are committed deliberately (fixtures/three_arm),
+# so a reader can replay the published numbers with no model and no GPU.
+!fixtures/three_arm/

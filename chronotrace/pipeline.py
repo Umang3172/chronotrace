@@ -19,7 +19,14 @@ from typing import Literal
 
 from chronotrace.capture.collect import collect
 from chronotrace.config import Settings
-from chronotrace.contracts import Diagnosis, IncidentReport, LaneSpan, TraceCapture, TraceLane
+from chronotrace.contracts import (
+    CaptureBundle,
+    Diagnosis,
+    IncidentReport,
+    LaneSpan,
+    TraceCapture,
+    TraceLane,
+)
 from chronotrace.diagnose.depth import ConfirmationBudget
 from chronotrace.diagnose.engine import diagnose
 from chronotrace.errors import PatchError
@@ -44,6 +51,8 @@ def repair(
     capture_runs: int = 30,
     probe_runs: int = 0,
     apply: bool = False,
+    bundle: CaptureBundle | None = None,
+    diagnosis: Diagnosis | None = None,
 ) -> IncidentReport:
     """Run the full pipeline for one flaky test.
 
@@ -56,30 +65,39 @@ def repair(
         probe_runs: Uninstrumented runs for the probe-effect measurement (D3).
         apply: Leave the patch on disk. Off by default — ChronoTrace proposes a
             diff, it does not write to your repository.
+        bundle: Pre-captured traces. Supplied by the three-arm harness so every
+            arm reasons about the identical execution evidence; captured here
+            when omitted.
+        diagnosis: Pre-computed diagnosis, for the same reason. Diagnosis is
+            deterministic and involves no model call, so sharing it across arms
+            changes nothing except that they are compared on the same evidence.
 
     Returns:
         The incident report, whatever the outcome.
 
     """
     started = time.monotonic()
+    calls_before = provider.calls
     incident_id = uuid.uuid4().hex[:8]
     log.info("pipeline.start", incident=incident_id, test_id=test_id)
 
-    bundle = collect(
-        test_id,
-        cwd=cwd,
-        runs=capture_runs,
-        timeout_s=settings.run_timeout_s,
-        probe_runs=probe_runs,
-    )
-    diagnosis = diagnose(
-        bundle,
-        cwd=cwd,
-        budget=ConfirmationBudget(),
-        timeout_s=settings.run_timeout_s,
-        gate_timeout_s=settings.gate_timeout_s,
-        allow_production_repair=settings.allow_production_repair,
-    )
+    if bundle is None:
+        bundle = collect(
+            test_id,
+            cwd=cwd,
+            runs=capture_runs,
+            timeout_s=settings.run_timeout_s,
+            probe_runs=probe_runs,
+        )
+    if diagnosis is None:
+        diagnosis = diagnose(
+            bundle,
+            cwd=cwd,
+            budget=ConfirmationBudget(),
+            timeout_s=settings.run_timeout_s,
+            gate_timeout_s=settings.gate_timeout_s,
+            allow_production_repair=settings.allow_production_repair,
+        )
     highlighted = _highlighted_keys(diagnosis)
     report = IncidentReport(
         incident_id=incident_id,
@@ -93,7 +111,7 @@ def repair(
         fail_lane=_lane(bundle.failing[0], highlighted) if bundle.failing else None,
     )
     if diagnosis.status != "RACE_PROVEN" or diagnosis.proven_inversion is None:
-        return _finish(report, started, provider)
+        return _finish(report, started, provider, calls_before)
 
     inversion = diagnosis.proven_inversion
     target = cwd / inversion.op_a.source_file
@@ -105,7 +123,7 @@ def repair(
     report.intent = intent
     if intent.transformation in {"NO_REPAIR", "RELAX_ASSERTION"}:
         report.ui_state = "NEEDS_INVESTIGATION"
-        return _finish(report, started, provider)
+        return _finish(report, started, provider, calls_before)
 
     try:
         patch = apply_intent(
@@ -118,7 +136,7 @@ def repair(
         log.warning("pipeline.patch_failed", incident=incident_id, error=str(exc))
         report.ui_state = "NEEDS_INVESTIGATION"
         report.diagnosis.explanation += f" No patch could be applied: {exc}"
-        return _finish(report, started, provider)
+        return _finish(report, started, provider, calls_before)
 
     verdict = gate.review(
         before=patch.original,
@@ -130,7 +148,7 @@ def repair(
     if not verdict.approved:
         report.rejected_attempts.append(verdict)
         report.ui_state = "NEEDS_INVESTIGATION"
-        return _finish(report, started, provider)
+        return _finish(report, started, provider, calls_before)
 
     guarded = regression.append_regression_test(
         patch.patched,
@@ -178,7 +196,7 @@ def repair(
     else:
         report.ui_state = "NEEDS_INVESTIGATION"
 
-    return _finish(report, started, provider)
+    return _finish(report, started, provider, calls_before)
 
 
 def _highlighted_keys(diagnosis: Diagnosis) -> set[str]:
@@ -228,11 +246,19 @@ def _state_for(diagnosis: Diagnosis) -> Literal["FIXED", "NEEDS_INVESTIGATION", 
     return "NEEDS_INVESTIGATION"
 
 
-def _finish(report: IncidentReport, started: float, provider: ModelProvider) -> IncidentReport:
+def _finish(
+    report: IncidentReport,
+    started: float,
+    provider: ModelProvider,
+    calls_before: int,
+) -> IncidentReport:
     tokens_in, tokens_out = provider.last_usage
     report.tokens_input = tokens_in
     report.tokens_output = tokens_out
-    report.llm_calls = provider.calls
+    # Calls made for *this* incident. ``provider.calls`` is cumulative across the
+    # provider's lifetime, so reporting it directly inflates every incident after
+    # the first when one provider serves a whole sweep.
+    report.llm_calls = provider.calls - calls_before
     report.wall_clock_s = round(time.monotonic() - started, 2)
     log.info(
         "pipeline.done",

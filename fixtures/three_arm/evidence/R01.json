@@ -1,0 +1,691 @@
+{
+  "bundle": {
+    "failing": [
+      {
+        "complete": true,
+        "failing_resource": "store.value",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_reader_sees_committed_value() -> None:\n        STORE.clear()\n        task = asyncio.create_task(writer_task())\n        await io_latency()\n        observed = await read_value()\n        with assertion(\"store.value\"):\n>           assert observed == \"ready\"\nE           AssertionError: assert None == 'ready'\n\nbenchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py:42: AssertionError",
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py::test_reader_sees_committed_value"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "c76ddfe14228",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_value",
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125515224521791,
+            "name": "read_value",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 23,
+            "span_id": "d16725fcbcdd42de",
+            "start_ns": 125515224515083,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125515224858166,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "904757dae54240dc",
+            "start_ns": 125515224591916,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "store.value",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_reader_sees_committed_value() -> None:\n        STORE.clear()\n        task = asyncio.create_task(writer_task())\n        await io_latency()\n        observed = await read_value()\n        with assertion(\"store.value\"):\n>           assert observed == \"ready\"\nE           AssertionError: assert None == 'ready'\n\nbenchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py:42: AssertionError",
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py::test_reader_sees_committed_value"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "29008550ce21",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_value",
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125516024727625,
+            "name": "read_value",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 23,
+            "span_id": "45571fb246634168",
+            "start_ns": 125516024720125,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125516025022708,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "f2988a413a8442e8",
+            "start_ns": 125516024799583,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "store.value",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_reader_sees_committed_value() -> None:\n        STORE.clear()\n        task = asyncio.create_task(writer_task())\n        await io_latency()\n        observed = await read_value()\n        with assertion(\"store.value\"):\n>           assert observed == \"ready\"\nE           AssertionError: assert None == 'ready'\n\nbenchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py:42: AssertionError",
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py::test_reader_sees_committed_value"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "75356a4eae61",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_value",
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125518312096083,
+            "name": "read_value",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 23,
+            "span_id": "548c430d11084d69",
+            "start_ns": 125518312088833,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125518312402625,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "9e8497ddaa4a4ead",
+            "start_ns": 125518312167375,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "store.value",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_reader_sees_committed_value() -> None:\n        STORE.clear()\n        task = asyncio.create_task(writer_task())\n        await io_latency()\n        observed = await read_value()\n        with assertion(\"store.value\"):\n>           assert observed == \"ready\"\nE           AssertionError: assert None == 'ready'\n\nbenchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py:42: AssertionError",
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py::test_reader_sees_committed_value"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "77d7bb7816fb",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_value",
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125519093360666,
+            "name": "read_value",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 23,
+            "span_id": "dbb0b6cf7bcc4717",
+            "start_ns": 125519093355041,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125519093635458,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "f3dc285f1e664f82",
+            "start_ns": 125519093426833,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "store.value",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_reader_sees_committed_value() -> None:\n        STORE.clear()\n        task = asyncio.create_task(writer_task())\n        await io_latency()\n        observed = await read_value()\n        with assertion(\"store.value\"):\n>           assert observed == \"ready\"\nE           AssertionError: assert None == 'ready'\n\nbenchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py:42: AssertionError",
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py::test_reader_sees_committed_value"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "75a4185c4fb7",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_value",
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125522155557291,
+            "name": "read_value",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 23,
+            "span_id": "28ad5ea1d25040c8",
+            "start_ns": 125522155550208,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125522155868625,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "a86ebb4a239c4958",
+            "start_ns": 125522155634416,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "commit_value",
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125522155916416,
+            "name": "commit_value",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 17,
+            "span_id": "67c6ae9547644119",
+            "start_ns": 125522155914500,
+            "task_name": "Task-2"
+          }
+        ]
+      }
+    ],
+    "fingerprint_conflicts": 0,
+    "natural_flake_rate": 0.5,
+    "passing": [
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py::test_reader_sees_committed_value"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "cca6ea869331",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "commit_value",
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125516813380166,
+            "name": "commit_value",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 17,
+            "span_id": "3421ccda34104a1e",
+            "start_ns": 125516813373250,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_value",
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125516813463583,
+            "name": "read_value",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 23,
+            "span_id": "070e51e41d2a4e6f",
+            "start_ns": 125516813461833,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125516813478750,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "6d360400394c4b05",
+            "start_ns": 125516813477791,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py::test_reader_sees_committed_value"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "263b49246bc6",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "commit_value",
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125517566950958,
+            "name": "commit_value",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 17,
+            "span_id": "524ee5c21722486e",
+            "start_ns": 125517566945666,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_value",
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125517567047666,
+            "name": "read_value",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 23,
+            "span_id": "5fae1bc8880f4335",
+            "start_ns": 125517567045875,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125517567062000,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "fd4b116fb2934bc9",
+            "start_ns": 125517567061083,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py::test_reader_sees_committed_value"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "8882eb59b63a",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "commit_value",
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125519882411833,
+            "name": "commit_value",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 17,
+            "span_id": "6fd67081d8f74d9d",
+            "start_ns": 125519882405833,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_value",
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125519882733958,
+            "name": "read_value",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 23,
+            "span_id": "028fb91d6abf4383",
+            "start_ns": 125519882731958,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125519882749625,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "f09907e38c21452f",
+            "start_ns": 125519882748666,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py::test_reader_sees_committed_value"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "a83edbd7b5da",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "commit_value",
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125520642073291,
+            "name": "commit_value",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 17,
+            "span_id": "9a5b6efe57194653",
+            "start_ns": 125520642059916,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_value",
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125520642777375,
+            "name": "read_value",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 23,
+            "span_id": "58aaa5b1104c48d9",
+            "start_ns": 125520642775291,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125520642793708,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "7e151dfc45ab4115",
+            "start_ns": 125520642792750,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py::test_reader_sees_committed_value"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "a61407853b44",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "commit_value",
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125521382233333,
+            "name": "commit_value",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 17,
+            "span_id": "16c178066a594ce8",
+            "start_ns": 125521382226500,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_value",
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125521383213083,
+            "name": "read_value",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 23,
+            "span_id": "f10e88cbbc564803",
+            "start_ns": 125521383211166,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "store.value"
+            },
+            "end_ns": 125521383229000,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "39243f38ce034687",
+            "start_ns": 125521383228083,
+            "task_name": "Task-1"
+          }
+        ]
+      }
+    ],
+    "runs_executed": 10,
+    "runs_timed_out": 0,
+    "test_id": "benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py::test_reader_sees_committed_value",
+    "uninstrumented_flake_rate": null
+  },
+  "diagnosis": {
+    "abstain_reason": null,
+    "bug_depth": 1,
+    "candidates": [
+      {
+        "causal_position": 0,
+        "classification": "CAUSALLY_SUFFICIENT",
+        "failing_order": [
+          "read_value#0",
+          "commit_value#0"
+        ],
+        "forced_failure_rate": 1.0,
+        "in_backward_slice": true,
+        "ochiai_score": 1.0,
+        "op_a": {
+          "access": "read",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "read_value",
+          "resource": "store.value",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+          "source_line": 23,
+          "span_name": "read_value"
+        },
+        "op_b": {
+          "access": "write",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "commit_value",
+          "resource": "store.value",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+          "source_line": 17,
+          "span_name": "commit_value"
+        }
+      }
+    ],
+    "candidates_evaluated": 1,
+    "explanation": "Forcing read_value to start before commit_value reproduced the failure on every attempt, so that ordering is a sufficient condition for the failure.",
+    "proven_inversion": {
+      "causal_position": 0,
+      "classification": "CAUSALLY_SUFFICIENT",
+      "failing_order": [
+        "read_value#0",
+        "commit_value#0"
+      ],
+      "forced_failure_rate": 1.0,
+      "in_backward_slice": true,
+      "ochiai_score": 1.0,
+      "op_a": {
+        "access": "read",
+        "is_test_scope": true,
+        "occurrence": 0,
+        "qualname": "read_value",
+        "resource": "store.value",
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+        "source_line": 23,
+        "span_name": "read_value"
+      },
+      "op_b": {
+        "access": "write",
+        "is_test_scope": true,
+        "occurrence": 0,
+        "qualname": "commit_value",
+        "resource": "store.value",
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+        "source_line": 17,
+        "span_name": "commit_value"
+      }
+    },
+    "status": "RACE_PROVEN"
+  }
+}

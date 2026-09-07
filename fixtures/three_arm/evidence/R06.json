@@ -1,0 +1,707 @@
+{
+  "bundle": {
+    "failing": [
+      {
+        "complete": true,
+        "failing_resource": "queue.items",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_consumer_drains_produced_job() -> None:\n        QUEUE.clear()\n        task = asyncio.create_task(producer())\n        await io_latency()\n        drained = await drain_queue()\n        with assertion(\"queue.items\"):\n>           assert drained == [\"job-1\"]\nE           AssertionError: assert [] == ['job-1']\nE             \nE             Right contains one more item: 'job-1'\nE             Use -v to get more diff\n\nbenchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py:40: AssertionError",
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py::test_consumer_drains_produced_job"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "82f24857db1d",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "drain_queue",
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126117932152500,
+            "name": "drain_queue",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+            "source_line": 19,
+            "span_id": "a581e380bcad4c3e",
+            "start_ns": 126117931932875,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126117932369208,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "8c20572e55bf44be",
+            "start_ns": 126117932229416,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "enqueue_job",
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126117932760625,
+            "name": "enqueue_job",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+            "source_line": 13,
+            "span_id": "0ad8d594573b42ac",
+            "start_ns": 126117932758625,
+            "task_name": "Task-2"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "queue.items",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_consumer_drains_produced_job() -> None:\n        QUEUE.clear()\n        task = asyncio.create_task(producer())\n        await io_latency()\n        drained = await drain_queue()\n        with assertion(\"queue.items\"):\n>           assert drained == [\"job-1\"]\nE           AssertionError: assert [] == ['job-1']\nE             \nE             Right contains one more item: 'job-1'\nE             Use -v to get more diff\n\nbenchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py:40: AssertionError",
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py::test_consumer_drains_produced_job"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "b7bc53cdf183",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "drain_queue",
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126118741870250,
+            "name": "drain_queue",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+            "source_line": 19,
+            "span_id": "44c7f0c712f54f95",
+            "start_ns": 126118741863458,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126118742079500,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "537af4d4c84c4686",
+            "start_ns": 126118741943666,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "enqueue_job",
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126118742148625,
+            "name": "enqueue_job",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+            "source_line": 13,
+            "span_id": "4d476de804bf4c68",
+            "start_ns": 126118742146625,
+            "task_name": "Task-2"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "queue.items",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_consumer_drains_produced_job() -> None:\n        QUEUE.clear()\n        task = asyncio.create_task(producer())\n        await io_latency()\n        drained = await drain_queue()\n        with assertion(\"queue.items\"):\n>           assert drained == [\"job-1\"]\nE           AssertionError: assert [] == ['job-1']\nE             \nE             Right contains one more item: 'job-1'\nE             Use -v to get more diff\n\nbenchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py:40: AssertionError",
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py::test_consumer_drains_produced_job"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "9c6ee1af08d1",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "drain_queue",
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126120405087083,
+            "name": "drain_queue",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+            "source_line": 19,
+            "span_id": "4d3d7b42d3a141ef",
+            "start_ns": 126120405079250,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126120405364041,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "efc35cd4fb444d60",
+            "start_ns": 126120405197541,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "queue.items",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_consumer_drains_produced_job() -> None:\n        QUEUE.clear()\n        task = asyncio.create_task(producer())\n        await io_latency()\n        drained = await drain_queue()\n        with assertion(\"queue.items\"):\n>           assert drained == [\"job-1\"]\nE           AssertionError: assert [] == ['job-1']\nE             \nE             Right contains one more item: 'job-1'\nE             Use -v to get more diff\n\nbenchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py:40: AssertionError",
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py::test_consumer_drains_produced_job"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "9bcc35c8d8f2",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "drain_queue",
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126122736685666,
+            "name": "drain_queue",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+            "source_line": 19,
+            "span_id": "d5653b0e2b1742fb",
+            "start_ns": 126122736678291,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126122736890333,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "91bf42c9d5824ffa",
+            "start_ns": 126122736756291,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "queue.items",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_consumer_drains_produced_job() -> None:\n        QUEUE.clear()\n        task = asyncio.create_task(producer())\n        await io_latency()\n        drained = await drain_queue()\n        with assertion(\"queue.items\"):\n>           assert drained == [\"job-1\"]\nE           AssertionError: assert [] == ['job-1']\nE             \nE             Right contains one more item: 'job-1'\nE             Use -v to get more diff\n\nbenchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py:40: AssertionError",
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py::test_consumer_drains_produced_job"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "250deb4c33bc",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "drain_queue",
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126124298717083,
+            "name": "drain_queue",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+            "source_line": 19,
+            "span_id": "e613d706a47a4bb2",
+            "start_ns": 126124298709833,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126124298917250,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "ecaccdf19bf64de9",
+            "start_ns": 126124298783541,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "queue.items",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_consumer_drains_produced_job() -> None:\n        QUEUE.clear()\n        task = asyncio.create_task(producer())\n        await io_latency()\n        drained = await drain_queue()\n        with assertion(\"queue.items\"):\n>           assert drained == [\"job-1\"]\nE           AssertionError: assert [] == ['job-1']\nE             \nE             Right contains one more item: 'job-1'\nE             Use -v to get more diff\n\nbenchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py:40: AssertionError",
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py::test_consumer_drains_produced_job"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "a40eb90f69b3",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "drain_queue",
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126125088570375,
+            "name": "drain_queue",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+            "source_line": 19,
+            "span_id": "1ecff4241a294349",
+            "start_ns": 126125088563250,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126125088777541,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "17bb973653c846f8",
+            "start_ns": 126125088643000,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "enqueue_job",
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126125088824541,
+            "name": "enqueue_job",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+            "source_line": 13,
+            "span_id": "4a39b1b5bfc8438a",
+            "start_ns": 126125088822583,
+            "task_name": "Task-2"
+          }
+        ]
+      }
+    ],
+    "fingerprint_conflicts": 0,
+    "natural_flake_rate": 0.6,
+    "passing": [
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py::test_consumer_drains_produced_job"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "f813d3d9b49e",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "enqueue_job",
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126119544318333,
+            "name": "enqueue_job",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+            "source_line": 13,
+            "span_id": "92d8352b6a0d45ac",
+            "start_ns": 126119544311583,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "drain_queue",
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126119544480541,
+            "name": "drain_queue",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+            "source_line": 19,
+            "span_id": "8f58f21ee4d44fa4",
+            "start_ns": 126119544478375,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126119544496416,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "9a2dee49b5684b49",
+            "start_ns": 126119544495166,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py::test_consumer_drains_produced_job"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "a801c5c67c4e",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "enqueue_job",
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126121210728500,
+            "name": "enqueue_job",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+            "source_line": 13,
+            "span_id": "44c17b8ea4ee4d17",
+            "start_ns": 126121210722125,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "drain_queue",
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126121211423125,
+            "name": "drain_queue",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+            "source_line": 19,
+            "span_id": "5062027fdae644d0",
+            "start_ns": 126121211420791,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126121211442625,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "bef7bcb74205458c",
+            "start_ns": 126121211441458,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py::test_consumer_drains_produced_job"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "cd29c9061dd8",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "enqueue_job",
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126121974469791,
+            "name": "enqueue_job",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+            "source_line": 13,
+            "span_id": "6ba90f0e2441451a",
+            "start_ns": 126121974462916,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "drain_queue",
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126121975022750,
+            "name": "drain_queue",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+            "source_line": 19,
+            "span_id": "2d124c2477064f75",
+            "start_ns": 126121975020416,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126121975039166,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "0a58ebf7b0104624",
+            "start_ns": 126121975038125,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "ee1c58dd6bc212bc1ee4352ac0d1ea1d2f48947d",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py::test_consumer_drains_produced_job"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "8c0657d2717d",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "enqueue_job",
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126123526121541,
+            "name": "enqueue_job",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+            "source_line": 13,
+            "span_id": "6f58d3bf2e3d4d13",
+            "start_ns": 126123526114666,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "drain_queue",
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126123527048041,
+            "name": "drain_queue",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+            "source_line": 19,
+            "span_id": "4eeba319a3094b43",
+            "start_ns": 126123527045791,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "queue.items"
+            },
+            "end_ns": 126123527064166,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "2674da81c19c4a45",
+            "start_ns": 126123527063000,
+            "task_name": "Task-1"
+          }
+        ]
+      }
+    ],
+    "runs_executed": 10,
+    "runs_timed_out": 0,
+    "test_id": "benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py::test_consumer_drains_produced_job",
+    "uninstrumented_flake_rate": null
+  },
+  "diagnosis": {
+    "abstain_reason": null,
+    "bug_depth": 1,
+    "candidates": [
+      {
+        "causal_position": 0,
+        "classification": "CAUSALLY_SUFFICIENT",
+        "failing_order": [
+          "drain_queue#0",
+          "enqueue_job#0"
+        ],
+        "forced_failure_rate": 1.0,
+        "in_backward_slice": true,
+        "ochiai_score": 1.0,
+        "op_a": {
+          "access": "read",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "drain_queue",
+          "resource": "queue.items",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+          "source_line": 19,
+          "span_name": "drain_queue"
+        },
+        "op_b": {
+          "access": "write",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "enqueue_job",
+          "resource": "queue.items",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+          "source_line": 13,
+          "span_name": "enqueue_job"
+        }
+      }
+    ],
+    "candidates_evaluated": 1,
+    "explanation": "Forcing drain_queue to start before enqueue_job reproduced the failure on every attempt, so that ordering is a sufficient condition for the failure.",
+    "proven_inversion": {
+      "causal_position": 0,
+      "classification": "CAUSALLY_SUFFICIENT",
+      "failing_order": [
+        "drain_queue#0",
+        "enqueue_job#0"
+      ],
+      "forced_failure_rate": 1.0,
+      "in_backward_slice": true,
+      "ochiai_score": 1.0,
+      "op_a": {
+        "access": "read",
+        "is_test_scope": true,
+        "occurrence": 0,
+        "qualname": "drain_queue",
+        "resource": "queue.items",
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+        "source_line": 19,
+        "span_name": "drain_queue"
+      },
+      "op_b": {
+        "access": "write",
+        "is_test_scope": true,
+        "occurrence": 0,
+        "qualname": "enqueue_job",
+        "resource": "queue.items",
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+        "source_line": 13,
+        "span_name": "enqueue_job"
+      }
+    },
+    "status": "RACE_PROVEN"
+  }
+}

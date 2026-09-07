@@ -19,7 +19,7 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="CHRONOTRACE_", env_file=".env", extra="ignore")
 
-    provider: Literal["local", "bedrock"] = "local"
+    provider: Literal["local", "bedrock", "ollama", "fixture"] = "local"
     telemetry: Literal["jsonl", "cloudwatch"] = "jsonl"
     registry: Literal["sqlite", "dynamodb"] = "sqlite"
     isolation: Literal["process", "docker"] = "process"
@@ -27,6 +27,16 @@ class Settings(BaseSettings):
     aws_region: str = "ap-south-1"
     model_id_small: str = ""
     model_id_large: str = ""
+
+    ollama_host: str = "http://localhost:11434"
+    ollama_model: str = "qwen3:8b"
+
+    model_temperature: float = 0.0
+    model_seed: int = 1729
+    model_max_tokens: int = 4096
+    model_timeout_s: float = 600.0
+    max_attempts: int = 3
+    """Attempts allowed per case to produce usable model output. Binds every arm."""
 
     workdir: Path = Path(".chronotrace")
     fixtures_dir: Path = Path("fixtures")
