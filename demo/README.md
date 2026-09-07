@@ -64,7 +64,12 @@ synchronises would get this wrong and look confident doing it.
 ## Cached traces
 
 Reproducing a 1-in-20 flake takes runs before the pipeline can start. For a
-recorded walkthrough, use the fixture-replay path — every `LocalModelProvider`
-call records its request and response under `fixtures/`, so a run replays
-offline and byte-for-byte. **Say so on camera.** A pre-captured trace presented
-as a live capture is the kind of thing that unravels afterwards.
+recorded walkthrough, use the fixture-replay path — every model call records its
+request and response under `fixtures/`, so a run replays offline and
+byte-for-byte. **Say so on camera.** A pre-captured trace presented as a live
+capture is the kind of thing that unravels afterwards.
+
+**Never record a demo on `provider=reference-policy`.** It is a hand-written
+decision procedure, not a model, and `repair --demo` refuses to run on it for
+that reason. The demo must show a model making the decision, or it is showing
+this repository deciding for itself.

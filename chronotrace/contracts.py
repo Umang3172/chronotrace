@@ -371,8 +371,10 @@ class IncidentReport(BaseModel):
     tokens_output: int = 0
     llm_calls: int = 0
     wall_clock_s: float = 0.0
-    provider: str = "local"
-    """Which ModelProvider produced the intent. Numbers from different providers never mix."""
+    provider: str = "reference-policy"
+    """Which provider produced the intent. Numbers from different providers never
+    mix, and ``reference-policy`` marks a report the hand-written test double
+    produced rather than a model."""
 
 
 IncidentReport.model_rebuild()

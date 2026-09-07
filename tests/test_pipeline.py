@@ -11,7 +11,7 @@ import pytest
 from chronotrace.config import Settings
 from chronotrace.eval.cases import load_cases
 from chronotrace.pipeline import repair
-from chronotrace.providers.local import LocalModelProvider
+from chronotrace.providers.reference_policy import ReferencePolicyProvider
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = {case.case_id: case for case in load_cases(ROOT / "benchmark" / "cases")}
@@ -22,7 +22,7 @@ def _run(case_id: str, **overrides):
     return repair(
         CASES[case_id].test_id,
         cwd=ROOT,
-        provider=LocalModelProvider(),
+        provider=ReferencePolicyProvider(),
         settings=settings,
         capture_runs=14,
     )

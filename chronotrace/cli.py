@@ -24,7 +24,7 @@ from chronotrace.govern.gauntlet import ATTACKS
 from chronotrace.logging import configure
 from chronotrace.pipeline import repair
 from chronotrace.providers.base import ModelProvider
-from chronotrace.providers.local import LocalModelProvider
+from chronotrace.providers.reference_policy import PROVIDER_LABEL, ReferencePolicyProvider
 from chronotrace.registry.store import IncidentStore
 
 app = typer.Typer(
@@ -49,7 +49,7 @@ def _provider(settings: Settings) -> ModelProvider:
         return BedrockProvider(settings)
     if settings.provider == "ollama":
         return _ollama(settings)
-    return LocalModelProvider(fixtures_dir=settings.fixtures_dir)
+    return ReferencePolicyProvider(fixtures_dir=settings.fixtures_dir)
 
 
 def _ollama(settings: Settings, recorder: object = None) -> ModelProvider:
@@ -155,6 +155,17 @@ def repair_cmd(
     """Run the full pipeline: capture, diagnose, prove, patch, govern, verify."""
     configure()
     settings = _settings(allow_production_repair=allow_production_repair)
+    if demo and settings.provider == PROVIDER_LABEL:
+        typer.echo(
+            "refusing to run the demo on the reference policy.\n\n"
+            "CHRONOTRACE_PROVIDER is 'reference-policy', which is a hand-written\n"
+            "decision procedure, not a language model. A demo it produces would show\n"
+            "this repository's own policy making the right choice, not a model making\n"
+            "it, and that is exactly the thing the demo is meant to demonstrate.\n\n"
+            "Set CHRONOTRACE_PROVIDER=ollama or =bedrock and run it against a model.",
+            err=True,
+        )
+        raise typer.Exit(2)
     if demo or not test_id:
         cases = load_cases(DEFAULT_CASES)
         if not cases:

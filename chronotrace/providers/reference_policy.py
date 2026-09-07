@@ -1,9 +1,22 @@
-"""Local provider: recorded-fixture replay over a deterministic reference policy.
+"""A deterministic, hand-written repair policy. This is not a language model.
 
-**This is not a language model and must never be presented as one.** It is the
-offline stand-in that keeps the pipeline, the benchmark and the eval harness
-runnable with no credentials, and it makes fixture-replay demos reproducible at
-zero cost.
+Every decision this module makes was written by a human in :meth:`_select`
+below. It performs no inference, calls no model, and its outputs are a fixed
+function of its input. It exists as a **test double**: it keeps the pipeline,
+the benchmark and the eval harness runnable with no credentials and no GPU.
+
+It must never stand in for a model in a demo, a result, or a claim. A repair it
+produces demonstrates that ChronoTrace's deterministic layers work; it
+demonstrates nothing whatsoever about whether a model can drive them. Fixtures
+it writes are stamped ``provider: "reference-policy"`` so their origin is
+visible on inspection, selecting it logs a warning, and ``chronotrace repair
+--demo`` refuses to run on it outright.
+
+Read that last paragraph as a scar. An earlier version of this file was named
+``LocalModelProvider`` and wrote fixtures stamped ``provider: "local"``, and the
+project's working demo turned out to be replaying one of them — a hand-written
+policy making the right choice, while the actual models under test made the
+wrong one six times out of six.
 
 Two consequences are enforced rather than documented and forgotten:
 
@@ -31,13 +44,16 @@ from chronotrace.logging import get_logger
 
 log = get_logger(__name__)
 
-__all__ = ["LocalModelProvider"]
+__all__ = ["PROVIDER_LABEL", "ReferencePolicyProvider"]
+
+PROVIDER_LABEL = "reference-policy"
+"""Stamped into every fixture this policy writes, so its origin is unmissable."""
 
 
-class LocalModelProvider:
-    """Deterministic reference policy with fixture recording and replay."""
+class ReferencePolicyProvider:
+    """A hand-written decision policy standing in for a model. Not a model."""
 
-    name = "local"
+    name = PROVIDER_LABEL
 
     def __init__(self, fixtures_dir: Path | None = None, *, replay_only: bool = False) -> None:
         """Create the provider.
@@ -54,6 +70,14 @@ class LocalModelProvider:
         self.replay_only = replay_only
         self._usage = (0, 0)
         self._calls = 0
+        log.warning(
+            "provider.reference_policy_selected",
+            detail=(
+                "the reference policy is a hand-written decision procedure, not a "
+                "language model. Results produced with it say nothing about model "
+                "capability."
+            ),
+        )
 
     @property
     def last_usage(self) -> tuple[int, int]:

@@ -17,6 +17,7 @@ from typing import TYPE_CHECKING, Any
 from chronotrace.contracts import Diagnosis, RepairIntent
 from chronotrace.errors import ConfigurationError, ProviderError
 from chronotrace.logging import get_logger
+from chronotrace.providers.prompts import INTENT_SYSTEM
 
 if TYPE_CHECKING:
     from chronotrace.config import Settings
@@ -25,18 +26,6 @@ log = get_logger(__name__)
 
 __all__ = ["BedrockProvider"]
 
-_SYSTEM = """You select a repair pattern for a proven asyncio race in a test.
-
-You never write source code. You return one structured intent describing which
-transformation to apply and where; deterministic tooling applies it and a policy
-gate decides whether it may run at all.
-
-Forbidden as repairs, and rejected automatically if proposed: sleeps of any
-kind, retry loops or decorators, timeout inflation, weakened or deleted
-assertions, skips. If the correct answer is that the assertion over-constrains
-legitimate concurrency, say so with RELAX_ASSERTION rather than synchronising
-two operations that are allowed to interleave. If no repair is appropriate,
-return NO_REPAIR."""
 
 _TOOL_NAME = "emit_repair_intent"
 
@@ -96,7 +85,7 @@ class BedrockProvider:
         }
         response = self.client.converse(
             modelId=self.model_id,
-            system=[{"text": _SYSTEM}],
+            system=[{"text": INTENT_SYSTEM}],
             messages=[{"role": "user", "content": [{"text": json.dumps(payload, indent=2)}]}],
             toolConfig={
                 "tools": [

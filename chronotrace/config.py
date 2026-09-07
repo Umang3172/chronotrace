@@ -19,7 +19,8 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="CHRONOTRACE_", env_file=".env", extra="ignore")
 
-    provider: Literal["local", "bedrock", "ollama", "fixture"] = "local"
+    provider: Literal["reference-policy", "bedrock", "ollama", "fixture"] = "reference-policy"
+    """``reference-policy`` is a hand-written test double, not a model."""
     telemetry: Literal["jsonl", "cloudwatch"] = "jsonl"
     registry: Literal["sqlite", "dynamodb"] = "sqlite"
     isolation: Literal["process", "docker"] = "process"

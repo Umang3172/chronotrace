@@ -25,29 +25,12 @@ from typing import Any
 from chronotrace.contracts import Diagnosis, RepairIntent
 from chronotrace.errors import ProviderError
 from chronotrace.logging import get_logger
+from chronotrace.providers.prompts import INTENT_SYSTEM, PATCH_SYSTEM
 from chronotrace.providers.record import CallRecord, FixtureRecorder
 
 log = get_logger(__name__)
 
 __all__ = ["OllamaProvider"]
-
-_INTENT_SYSTEM = """You select a repair pattern for a proven asyncio race in a test.
-
-You never write source code. You return one structured intent describing which
-transformation to apply and where; deterministic tooling applies it and a policy
-gate decides whether it may run at all.
-
-Forbidden as repairs, and rejected automatically if proposed: sleeps of any
-kind, retry loops or decorators, timeout inflation, weakened or deleted
-assertions, skips. If the correct answer is that the assertion over-constrains
-legitimate concurrency, say so with RELAX_ASSERTION rather than synchronising
-two operations that are allowed to interleave. If no repair is appropriate,
-return NO_REPAIR."""
-
-_PATCH_SYSTEM = """You are a senior Python engineer fixing a failing test.
-
-Return the complete corrected contents of the file, and nothing else. No
-explanation, no markdown fences, no commentary — just the file."""
 
 
 class OllamaProvider:
@@ -119,7 +102,7 @@ class OllamaProvider:
             sort_keys=True,
         )
         raw = self._chat(
-            system=_INTENT_SYSTEM,
+            system=INTENT_SYSTEM,
             user=payload,
             schema=RepairIntent.model_json_schema(),
             schema_name="RepairIntent",
@@ -140,7 +123,7 @@ class OllamaProvider:
             The model's raw response, expected to be file contents.
 
         """
-        system = _PATCH_SYSTEM + (f"\n\n{system_extra}" if system_extra else "")
+        system = PATCH_SYSTEM + (f"\n\n{system_extra}" if system_extra else "")
         return self._chat(system=system, user=user, schema=None, schema_name="source_file")
 
     # ------------------------------------------------------------------ #

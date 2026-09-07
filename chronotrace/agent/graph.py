@@ -22,7 +22,7 @@ from chronotrace.errors import ConfigurationError
 from chronotrace.logging import get_logger
 from chronotrace.pipeline import repair
 from chronotrace.providers.base import ModelProvider
-from chronotrace.providers.local import LocalModelProvider
+from chronotrace.providers.reference_policy import PROVIDER_LABEL, ReferencePolicyProvider
 
 log = get_logger(__name__)
 
@@ -115,8 +115,8 @@ def handler(payload: dict[str, Any]) -> dict[str, Any]:
     cwd = Path(payload.get("cwd", "."))
     settings = get_settings()
     provider = (
-        LocalModelProvider(fixtures_dir=settings.fixtures_dir)
-        if settings.provider == "local"
+        ReferencePolicyProvider(fixtures_dir=settings.fixtures_dir)
+        if settings.provider == PROVIDER_LABEL
         else _bedrock(settings)
     )
     report: IncidentReport = repair(

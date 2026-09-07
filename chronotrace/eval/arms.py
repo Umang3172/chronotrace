@@ -71,7 +71,7 @@ def run_arm(
     if arm in {"A", "B"} and not hasattr(provider, "propose_patch"):
         reason = (
             f"arm {arm} needs a provider that writes code, to measure what an unconstrained "
-            f"model does. The {provider.name!r} provider is a deterministic reference policy, "
+            f"model does. The {provider.name!r} provider is a hand-written decision policy, "
             "so running arm A or B against it would produce a baseline that describes this "
             "repository's own code rather than a model. Set CHRONOTRACE_PROVIDER=bedrock."
         )

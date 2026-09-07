@@ -154,7 +154,7 @@ class FixtureProvider:
     def propose(self, diagnosis: object, source: str) -> object:
         """Replay a typed-intent call."""
         from chronotrace.contracts import Diagnosis, RepairIntent
-        from chronotrace.providers.ollama import _INTENT_SYSTEM
+        from chronotrace.providers.prompts import INTENT_SYSTEM
 
         assert isinstance(diagnosis, Diagnosis)
         payload = json.dumps(
@@ -162,12 +162,12 @@ class FixtureProvider:
             indent=2,
             sort_keys=True,
         )
-        raw = self.replay(system=_INTENT_SYSTEM, user=payload)
+        raw = self.replay(system=INTENT_SYSTEM, user=payload)
         return RepairIntent.model_validate_json(raw)
 
     def propose_patch(self, *, system_extra: str, user: str) -> str:
         """Replay a source-rewriting call."""
-        from chronotrace.providers.ollama import _PATCH_SYSTEM
+        from chronotrace.providers.prompts import PATCH_SYSTEM
 
-        system = _PATCH_SYSTEM + (f"\n\n{system_extra}" if system_extra else "")
+        system = PATCH_SYSTEM + (f"\n\n{system_extra}" if system_extra else "")
         return self.replay(system=system, user=user)

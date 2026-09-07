@@ -334,6 +334,24 @@ research and in production. The combination we did not find elsewhere is
 trace-differential localisation, causality proven by forced replay, a
 deterministic anti-band-aid gate, and a regression test as the shipped artifact.
 
+## The reference policy is a test double
+
+`chronotrace/providers/reference_policy.py` is a **hand-written decision
+procedure, not a language model.** It exists so the pipeline, the benchmark and
+the eval harness run with no credentials and no GPU.
+
+It is not a stand-in for a model in any result or demo. A repair it produces
+shows that the deterministic layers — diagnosis, LibCST patching, the governor,
+forced replay — work as designed. It shows nothing about whether a model can
+make the decision those layers depend on. Anything it writes is stamped
+`provider: "reference-policy"`, selecting it logs a warning, and
+`chronotrace repair --demo` refuses to run on it.
+
+This is enforced rather than merely documented because the project got it wrong
+once: the working demo turned out to be replaying a fixture this policy had
+generated, at a time when the models actually under test were choosing a
+non-repairing transformation on every case.
+
 ## Limitations
 
 These are load-bearing. Removing them to make the project look stronger would

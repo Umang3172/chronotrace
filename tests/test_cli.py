@@ -114,8 +114,20 @@ def test_eval_refuses_an_unknown_case_id(tmp_path, monkeypatch):
     assert "no matching benchmark cases" in result.output
 
 
+def test_demo_refuses_to_run_on_the_reference_policy(tmp_path, monkeypatch):
+    """A demo driven by the hand-written policy shows this repo's own decision,
+    not a model's. It must fail loudly rather than look like a working demo."""
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("CHRONOTRACE_PROVIDER", raising=False)
+    result = runner.invoke(app, ["repair", "--demo"])
+    assert result.exit_code == 2
+    assert "refusing to run the demo on the reference policy" in result.output
+    assert "not a language model" in result.output
+
+
 def test_repair_reports_when_no_benchmark_corpus_is_present(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("CHRONOTRACE_PROVIDER", "ollama")
     result = runner.invoke(app, ["repair", "--demo"])
     assert result.exit_code == 1
     assert "no benchmark cases found" in result.output

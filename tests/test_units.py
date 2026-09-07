@@ -11,7 +11,7 @@ from chronotrace.errors import ProviderError
 from chronotrace.eval.cases import load_cases
 from chronotrace.eval.report import render_markdown, summarise
 from chronotrace.eval.score import _contains_band_aid, score_arm
-from chronotrace.providers.local import LocalModelProvider
+from chronotrace.providers.reference_policy import ReferencePolicyProvider
 from chronotrace.registry.store import IncidentStore
 from chronotrace.schedule import determinism
 from chronotrace.schedule.harness import ScheduleHarness, patch_targets
@@ -177,7 +177,7 @@ def _proven(access_a="read", access_b="write"):
 
 
 def test_read_after_write_selects_an_event():
-    intent = LocalModelProvider().propose(_proven(), "source")
+    intent = ReferencePolicyProvider().propose(_proven(), "source")
     assert intent.transformation == "INJECT_ASYNC_EVENT"
     assert intent.signal_site.span_name == "writer"
     assert intent.wait_site.span_name == "reader"
@@ -185,33 +185,33 @@ def test_read_after_write_selects_an_event():
 
 def test_two_independent_writes_recommend_relaxing_the_assertion():
     """Ordering two independent producers would serialise legitimate concurrency."""
-    intent = LocalModelProvider().propose(_proven("write", "write"), "source")
+    intent = ReferencePolicyProvider().propose(_proven("write", "write"), "source")
     assert intent.transformation == "RELAX_ASSERTION"
     assert intent.primitive == "none"
 
 
 def test_unproven_diagnosis_gets_no_repair():
-    intent = LocalModelProvider().propose(Diagnosis(status="ABSTAINED"), "source")
+    intent = ReferencePolicyProvider().propose(Diagnosis(status="ABSTAINED"), "source")
     assert intent.transformation == "NO_REPAIR"
 
 
 def test_fixtures_are_recorded_and_replayed(tmp_path):
-    provider = LocalModelProvider(fixtures_dir=tmp_path)
+    provider = ReferencePolicyProvider(fixtures_dir=tmp_path)
     first = provider.propose(_proven(), "source")
     assert list(tmp_path.glob("*.json"))
-    replayed = LocalModelProvider(fixtures_dir=tmp_path, replay_only=True)
+    replayed = ReferencePolicyProvider(fixtures_dir=tmp_path, replay_only=True)
     assert replayed.propose(_proven(), "source") == first
 
 
 def test_replay_only_refuses_to_invent_a_response(tmp_path):
-    provider = LocalModelProvider(fixtures_dir=tmp_path, replay_only=True)
+    provider = ReferencePolicyProvider(fixtures_dir=tmp_path, replay_only=True)
     with pytest.raises(ProviderError, match="no recorded fixture"):
         provider.propose(_proven(), "source")
 
 
 def test_local_provider_reports_no_tokens():
     """A token count it made up would be a fabricated metric."""
-    provider = LocalModelProvider()
+    provider = ReferencePolicyProvider()
     provider.propose(_proven(), "source")
     assert provider.last_usage == (0, 0)
     assert provider.calls == 1
@@ -238,7 +238,7 @@ def test_benchmark_corpus_declares_ground_truth():
 
 
 def test_scores_and_report_render_with_no_results():
-    score = score_arm("C", "local", [])
+    score = score_arm("C", "reference-policy", [])
     assert score.repair_rate is None
     assert score.tokens_per_repair is None
     assert score.median_overhead_ms is None
@@ -271,7 +271,7 @@ def test_arm_scoring_counts_a_verified_repair():
         post_patch_forced_passed=True,
         measured_overhead_ms=0.4,
     )
-    score = score_arm("C", "local", [(case, report)])
+    score = score_arm("C", "reference-policy", [(case, report)])
     assert score.repair_rate == 1.0
     assert score.band_aid_rate == 0.0
     assert score.median_overhead_ms == 0.4
@@ -370,12 +370,12 @@ def test_baseline_arms_are_refused_on_the_reference_policy(tmp_path):
             arm,
             [],
             cwd=tmp_path,
-            provider=LocalModelProvider(),
+            provider=ReferencePolicyProvider(),
             settings=Settings(),
         )
         assert result.results == []
         assert result.skipped_reason is not None
-        assert "deterministic reference policy" in result.skipped_reason
+        assert "hand-written decision policy" in result.skipped_reason
 
 
 def test_report_names_the_arm_that_could_not_run(tmp_path):

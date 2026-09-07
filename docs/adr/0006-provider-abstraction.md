@@ -10,16 +10,18 @@ depends on a live model call is a demo that can fail in front of an audience.
 
 Two protocols — `ModelProvider` and `TelemetrySink` — with local implementations
 as the default and cloud implementations selected by a single environment
-variable. `LocalModelProvider` replays recorded fixtures over a deterministic
-reference policy; `BedrockProvider` calls a model with a tool schema that admits
-only a `RepairIntent`.
+variable. `ReferencePolicyProvider` is a hand-written decision procedure used as
+a test double; `OllamaProvider` and `BedrockProvider` call real models with a
+schema that admits only a `RepairIntent`.
 
 ## Consequences
 
-- `uv run chronotrace repair --demo` works with no credentials.
-- Every `LocalModelProvider` call records its (request, response) pair, so a
-  published result is replayable byte-for-byte and offline.
-- **The local provider is not a model and is never presented as one.** It
+- The benchmark and eval harness run with no credentials. `repair --demo`
+  deliberately does *not*: it refuses on the reference policy, because a demo
+  driven by a hand-written policy would misrepresent what the system can do.
+- Every provider call records its (request, response) pair, so a published
+  result is replayable byte-for-byte and offline.
+- **The reference policy is not a model and is never presented as one.** It
   reports no token counts, because a token count it invented would be a
   fabricated metric; the results table prints `n/a` and says why.
 - Comparative arms A and B are *refused* on the local provider rather than run
