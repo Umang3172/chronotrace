@@ -245,6 +245,22 @@ class RepairIntent(BaseModel):
         return self
 
 
+class IntentAttempt(BaseModel):
+    """One attempt at getting a usable intent out of the model.
+
+    Retries are recorded rather than collapsed. A repair that took three tries
+    is a different result from one that took a single call, and averaging them
+    away would hide exactly the thing a reader wants to know.
+    """
+
+    attempt: int
+    accepted: bool
+    transformation: str | None = None
+    error: str | None = None
+    tokens_input: int = 0
+    tokens_output: int = 0
+
+
 # --------------------------------------------------------------------------- #
 # governance
 # --------------------------------------------------------------------------- #
@@ -400,6 +416,12 @@ class IncidentReport(BaseModel):
     fail_lane: TraceLane | None = None
     """One representative execution each, for the divergence view."""
     rejected_attempts: list[GovernorVerdict] = Field(default_factory=list)
+    intent_attempts: list[IntentAttempt] = Field(default_factory=list)
+    """Every call made to get a usable intent, including the ones that failed."""
+    abstain_reason: Literal["INVALID_INTENT_AFTER_RETRY"] | None = None
+    """Why the pipeline abstained *after* diagnosis succeeded. Diagnosis-stage
+    refusals live on ``diagnosis.abstain_reason``; this covers the case where a
+    race was proven but the model never produced a usable intent."""
     tokens_input: int = 0
     tokens_output: int = 0
     llm_calls: int = 0

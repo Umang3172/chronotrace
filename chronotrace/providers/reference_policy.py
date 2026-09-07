@@ -89,13 +89,20 @@ class ReferencePolicyProvider:
         """Number of ``propose`` calls made."""
         return self._calls
 
-    def propose(self, diagnosis: Diagnosis, source: str) -> RepairIntent:
+    def propose(
+        self,
+        diagnosis: Diagnosis,
+        source: str,
+        previous_error: str | None = None,  # noqa: ARG002
+    ) -> RepairIntent:
         """Select a repair pattern for a proven diagnosis.
 
         Args:
             diagnosis: A diagnosis whose status is RACE_PROVEN.
             source: Source of the module holding the racing operations, used
                 only for the fixture key.
+            previous_error: Ignored. A deterministic policy cannot be corrected
+                by feedback; it returns the same answer every time.
 
         Returns:
             The chosen typed intent.

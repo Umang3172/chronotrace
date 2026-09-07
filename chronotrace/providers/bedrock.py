@@ -65,12 +65,15 @@ class BedrockProvider:
         """Number of model calls made."""
         return self._calls
 
-    def propose(self, diagnosis: Diagnosis, source: str) -> RepairIntent:
+    def propose(
+        self, diagnosis: Diagnosis, source: str, previous_error: str | None = None
+    ) -> RepairIntent:
         """Ask the model to select a repair pattern.
 
         Args:
             diagnosis: The proven diagnosis, serialized as the model's evidence.
             source: Source of the module holding the racing operations.
+            previous_error: Validation error from the preceding attempt.
 
         Returns:
             The validated intent.
@@ -83,6 +86,8 @@ class BedrockProvider:
             "diagnosis": diagnosis.model_dump(mode="json"),
             "source": source,
         }
+        if previous_error:
+            payload["validator_rejected_previous_intent"] = previous_error
         response = self.client.converse(
             modelId=self.model_id,
             system=[{"text": INTENT_SYSTEM}],

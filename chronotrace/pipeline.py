@@ -17,19 +17,23 @@ import uuid
 from pathlib import Path
 from typing import Literal
 
+from pydantic import ValidationError
+
 from chronotrace.capture.collect import collect
 from chronotrace.config import Settings
 from chronotrace.contracts import (
     CaptureBundle,
     Diagnosis,
     IncidentReport,
+    IntentAttempt,
     LaneSpan,
+    RepairIntent,
     TraceCapture,
     TraceLane,
 )
 from chronotrace.diagnose.depth import ConfirmationBudget
 from chronotrace.diagnose.engine import diagnose
-from chronotrace.errors import PatchError
+from chronotrace.errors import PatchError, ProviderError
 from chronotrace.govern import gate
 from chronotrace.logging import get_logger
 from chronotrace.providers.base import ModelProvider
@@ -119,7 +123,20 @@ def repair(
         target = Path(inversion.op_a.source_file)
     source = target.read_text()
 
-    intent = provider.propose(diagnosis, source)
+    intent, attempts = _propose_with_retry(
+        provider, diagnosis, source, max_retries=settings.max_intent_retries
+    )
+    report.intent_attempts = attempts
+    report.tokens_input = sum(a.tokens_input for a in attempts)
+    report.tokens_output = sum(a.tokens_output for a in attempts)
+    if intent is None:
+        report.ui_state = "ABSTAINED"
+        report.abstain_reason = "INVALID_INTENT_AFTER_RETRY"
+        report.diagnosis.explanation += (
+            f" The race was proven, but the model did not return a usable intent in "
+            f"{len(attempts)} attempts: {attempts[-1].error if attempts else 'no attempts'}"
+        )
+        return _finish(report, started, provider, calls_before)
     report.intent = intent
     if intent.transformation in {"NO_REPAIR", "RELAX_ASSERTION"}:
         report.ui_state = "NEEDS_INVESTIGATION"
@@ -199,6 +216,70 @@ def repair(
     return _finish(report, started, provider, calls_before)
 
 
+def _propose_with_retry(
+    provider: ModelProvider,
+    diagnosis: Diagnosis,
+    source: str,
+    *,
+    max_retries: int,
+) -> tuple[RepairIntent | None, list[IntentAttempt]]:
+    """Ask for an intent, showing the model the validator's error on a rejection.
+
+    The schema rejects an intent that names a transformation it has not
+    specified, and the message says which field is missing and where to copy it
+    from. That is only useful if the model sees it, so a bounded number of
+    corrections is offered before abstaining. Every attempt is recorded, and
+    every attempt's tokens are counted: a repair that took three calls cost
+    three calls.
+
+    Args:
+        provider: The model provider.
+        diagnosis: The proven diagnosis.
+        source: Source of the module holding the racing operations.
+        max_retries: Corrections offered after the first failure.
+
+    Returns:
+        ``(intent, attempts)``. ``intent`` is None when every attempt failed.
+
+    """
+    attempts: list[IntentAttempt] = []
+    error: str | None = None
+    for number in range(1, max_retries + 2):
+        # Recording providers key each call by attempt, so the retries are
+        # distinguishable in the fixtures. Providers without a context ignore it.
+        context = getattr(provider, "context", None)
+        if isinstance(context, dict):
+            provider.context = {**context, "attempt": str(number)}  # type: ignore[attr-defined]
+        try:
+            intent = provider.propose(diagnosis, source, previous_error=error)
+        except (ProviderError, ValidationError) as exc:
+            error = str(exc)
+            tokens_in, tokens_out = provider.last_usage
+            attempts.append(
+                IntentAttempt(
+                    attempt=number,
+                    accepted=False,
+                    error=error,
+                    tokens_input=tokens_in,
+                    tokens_output=tokens_out,
+                )
+            )
+            log.warning("intent.rejected", attempt=number, error=error[:200])
+            continue
+        tokens_in, tokens_out = provider.last_usage
+        attempts.append(
+            IntentAttempt(
+                attempt=number,
+                accepted=True,
+                transformation=intent.transformation,
+                tokens_input=tokens_in,
+                tokens_output=tokens_out,
+            )
+        )
+        return intent, attempts
+    return None, attempts
+
+
 def _highlighted_keys(diagnosis: Diagnosis) -> set[str]:
     """Operation keys to outline in the divergence view."""
     inversion = diagnosis.proven_inversion or (
@@ -252,9 +333,10 @@ def _finish(
     provider: ModelProvider,
     calls_before: int,
 ) -> IncidentReport:
-    tokens_in, tokens_out = provider.last_usage
-    report.tokens_input = tokens_in
-    report.tokens_output = tokens_out
+    if not report.intent_attempts:
+        tokens_in, tokens_out = provider.last_usage
+        report.tokens_input = tokens_in
+        report.tokens_output = tokens_out
     # Calls made for *this* incident. ``provider.calls`` is cumulative across the
     # provider's lifetime, so reporting it directly inflates every incident after
     # the first when one provider serves a whole sweep.

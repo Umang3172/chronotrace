@@ -389,3 +389,90 @@ def test_report_names_the_arm_that_could_not_run(tmp_path):
     markdown_path, json_path = write_report([skipped], tmp_path / "out")
     assert markdown_path.exists() and json_path.exists()
     assert json.loads(json_path.read_text())["arms"][0]["skipped_reason"] == "needs a model"
+
+
+# --------------------------------------------------------------------------- #
+# intent retry
+# --------------------------------------------------------------------------- #
+
+
+class _ScriptedProvider:
+    """Returns a scripted sequence of results, recording the feedback it saw."""
+
+    name = "scripted"
+
+    def __init__(self, script):
+        self.script = list(script)
+        self.seen_errors = []
+        self.context = {}
+        self._usage = (7, 3)
+        self.calls = 0
+
+    @property
+    def last_usage(self):
+        return self._usage
+
+    def propose(self, diagnosis, source, previous_error=None):
+        self.seen_errors.append(previous_error)
+        self.calls += 1
+        result = self.script.pop(0)
+        if isinstance(result, Exception):
+            raise result
+        return result
+
+
+def _good_intent():
+    from chronotrace.contracts import RepairIntent
+
+    return RepairIntent(
+        transformation="INJECT_ASYNC_EVENT",
+        shared_scope="FIXTURE",
+        primitive="asyncio.Event",
+        signal_site=_ref("writer", "write"),
+        wait_site=_ref("reader", "read"),
+        rationale="x",
+    )
+
+
+def test_a_rejected_intent_is_retried_with_the_validator_error():
+    from chronotrace.errors import ProviderError
+    from chronotrace.pipeline import _propose_with_retry
+
+    provider = _ScriptedProvider([ProviderError("requires wait_site"), _good_intent()])
+    intent, attempts = _propose_with_retry(provider, _proven(), "src", max_retries=2)
+    assert intent is not None
+    assert [a.accepted for a in attempts] == [False, True]
+    assert provider.seen_errors == [None, "requires wait_site"]
+
+
+def test_every_attempt_is_recorded_and_its_tokens_counted():
+    from chronotrace.errors import ProviderError
+    from chronotrace.pipeline import _propose_with_retry
+
+    provider = _ScriptedProvider([ProviderError("bad"), ProviderError("still bad"), _good_intent()])
+    _intent, attempts = _propose_with_retry(provider, _proven(), "src", max_retries=2)
+    assert [a.attempt for a in attempts] == [1, 2, 3]
+    assert sum(a.tokens_input for a in attempts) == 21
+    assert sum(a.tokens_output for a in attempts) == 9
+
+
+def test_retries_are_bounded_and_then_give_up():
+    """An unbounded loop against a model that cannot comply is a spend."""
+    from chronotrace.errors import ProviderError
+    from chronotrace.pipeline import _propose_with_retry
+
+    provider = _ScriptedProvider([ProviderError("nope")] * 5)
+    intent, attempts = _propose_with_retry(provider, _proven(), "src", max_retries=2)
+    assert intent is None
+    assert len(attempts) == 3
+    assert provider.calls == 3
+
+
+def test_each_attempt_is_keyed_separately_for_recording():
+    from chronotrace.errors import ProviderError
+    from chronotrace.pipeline import _propose_with_retry
+
+    provider = _ScriptedProvider([ProviderError("bad"), _good_intent()])
+    provider.context = {"arm": "C", "case": "R01", "attempt": "1"}
+    _propose_with_retry(provider, _proven(), "src", max_retries=2)
+    assert provider.context["attempt"] == "2"

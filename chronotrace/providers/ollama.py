@@ -82,12 +82,17 @@ class OllamaProvider:
         """Number of model calls made."""
         return self._calls
 
-    def propose(self, diagnosis: Diagnosis, source: str) -> RepairIntent:
+    def propose(
+        self, diagnosis: Diagnosis, source: str, previous_error: str | None = None
+    ) -> RepairIntent:
         """Ask for a typed repair intent (the constrained path).
 
         Args:
             diagnosis: The proven diagnosis, serialized as the model's evidence.
             source: Source of the module holding the racing operations.
+            previous_error: Validation error from the preceding attempt. Appended
+                to the request verbatim so the model is corrected by the
+                validator's own words rather than by a paraphrase.
 
         Returns:
             The validated intent.
@@ -101,6 +106,11 @@ class OllamaProvider:
             indent=2,
             sort_keys=True,
         )
+        if previous_error:
+            payload += (
+                "\n\nYour previous intent was rejected by the schema validator:\n\n"
+                f"{previous_error}\n\nReturn a corrected intent."
+            )
         raw = self._chat(
             system=INTENT_SYSTEM,
             user=payload,

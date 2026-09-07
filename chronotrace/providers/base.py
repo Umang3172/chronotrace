@@ -18,8 +18,18 @@ class ModelProvider(Protocol):
 
     name: str
 
-    def propose(self, diagnosis: Diagnosis, source: str) -> RepairIntent:
-        """Return a repair intent for a proven diagnosis."""
+    def propose(
+        self, diagnosis: Diagnosis, source: str, previous_error: str | None = None
+    ) -> RepairIntent:
+        """Return a repair intent for a proven diagnosis.
+
+        Args:
+            diagnosis: The proven diagnosis.
+            source: Source of the module holding the racing operations.
+            previous_error: Validation error from the preceding attempt, shown
+                to the model so it can correct a malformed intent.
+
+        """
         ...
 
     @property
@@ -54,8 +64,10 @@ class BaselineProvider(Protocol):
     name: str
     context: dict[str, str]
 
-    def propose(self, diagnosis: Diagnosis, source: str) -> RepairIntent:
-        """Return a typed repair intent."""
+    def propose(
+        self, diagnosis: Diagnosis, source: str, previous_error: str | None = None
+    ) -> RepairIntent:
+        """Return a typed repair intent, optionally correcting a prior attempt."""
         ...
 
     def propose_patch(self, *, system_extra: str, user: str) -> str:

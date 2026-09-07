@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     model_seed: int = 1729
     model_max_tokens: int = 4096
     model_timeout_s: float = 600.0
+    max_intent_retries: int = 2
+    """Retries allowed after an invalid intent, before abstaining. Bounded: an
+    unbounded loop against a model that cannot comply is a spend, not a repair."""
     max_attempts: int = 3
     """Attempts allowed per case to produce usable model output. Binds every arm."""
 

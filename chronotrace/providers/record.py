@@ -151,8 +151,17 @@ class FixtureProvider:
         self._calls += 1
         return record.response
 
-    def propose(self, diagnosis: object, source: str) -> object:
-        """Replay a typed-intent call."""
+    def propose(
+        self,
+        diagnosis: object,
+        source: str,
+        previous_error: str | None = None,  # noqa: ARG002
+    ) -> object:
+        """Replay a typed-intent call.
+
+        ``previous_error`` changes the prompt but not the identity of the call,
+        which is keyed by attempt number, so the retry replays correctly.
+        """
         from chronotrace.contracts import Diagnosis, RepairIntent
         from chronotrace.providers.prompts import INTENT_SYSTEM
 
