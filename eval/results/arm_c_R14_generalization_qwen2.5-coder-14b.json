@@ -1,0 +1,101 @@
+{
+  "case_diagnoses": {
+    "R14": "RACE_PROVEN"
+  },
+  "case_flake_rates": {
+    "R14": 0.917
+  },
+  "intent_parse_failures": 0,
+  "model": "qwen2.5-coder:14b",
+  "provider": "ollama",
+  "results": [
+    {
+      "abstain_reason": null,
+      "arm": "C",
+      "attempts_used": 1,
+      "band_aid": false,
+      "band_aid_detail": "none",
+      "band_aid_rules": [],
+      "case_id": "R14",
+      "case_name": "batch_completion_lifecycle",
+      "expected_state": "FIXED",
+      "failure_reason": "",
+      "governor_rejected": false,
+      "is_control": false,
+      "model_calls": 1,
+      "modified_file": false,
+      "notes": [],
+      "sleep_seconds_added": 0.0,
+      "tier_reached": null,
+      "tokens_input": 2253,
+      "tokens_output": 94,
+      "ui_state": "NEEDS_INVESTIGATION",
+      "verified_repair": false,
+      "wall_clock_s": 30.54
+    }
+  ],
+  "started_at": 1788773104.491016,
+  "summaries": {
+    "A": {
+      "annual_ci_hours_at_50_runs_per_day": 0.0,
+      "band_aid_cases": [],
+      "band_aids": 0,
+      "controls": 0,
+      "false_repair_cases": [],
+      "false_repairs": 0,
+      "forced_tier_cases": 0,
+      "model_calls": 0,
+      "other_cases": 0,
+      "repairable_cases": 0,
+      "sleep_seconds_per_run": 0.0,
+      "tokens_input": 0,
+      "tokens_output": 0,
+      "tokens_per_verified_repair": null,
+      "unreachable_repairs": 0,
+      "unusable_outputs": 0,
+      "verified_repairs": 0,
+      "wall_clock_s": 0.0
+    },
+    "B": {
+      "annual_ci_hours_at_50_runs_per_day": 0.0,
+      "band_aid_cases": [],
+      "band_aids": 0,
+      "controls": 0,
+      "false_repair_cases": [],
+      "false_repairs": 0,
+      "forced_tier_cases": 0,
+      "model_calls": 0,
+      "other_cases": 0,
+      "repairable_cases": 0,
+      "sleep_seconds_per_run": 0.0,
+      "tokens_input": 0,
+      "tokens_output": 0,
+      "tokens_per_verified_repair": null,
+      "unreachable_repairs": 0,
+      "unusable_outputs": 0,
+      "verified_repairs": 0,
+      "wall_clock_s": 0.0
+    },
+    "C": {
+      "annual_ci_hours_at_50_runs_per_day": 0.0,
+      "band_aid_cases": [],
+      "band_aids": 0,
+      "controls": 0,
+      "false_repair_cases": [],
+      "false_repairs": 0,
+      "forced_tier_cases": 0,
+      "model_calls": 1,
+      "other_cases": 0,
+      "repairable_cases": 1,
+      "sleep_seconds_per_run": 0.0,
+      "tokens_input": 2253,
+      "tokens_output": 94,
+      "tokens_per_verified_repair": null,
+      "unreachable_repairs": 0,
+      "unusable_outputs": 0,
+      "verified_repairs": 0,
+      "wall_clock_s": 30.54
+    }
+  },
+  "wall_clock_s": 45.9
+}

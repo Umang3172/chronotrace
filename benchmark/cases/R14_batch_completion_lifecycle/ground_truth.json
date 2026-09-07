@@ -1,0 +1,12 @@
+{
+  "id": "R14", "name": "batch_completion_lifecycle", "shape": "task lifecycle race",
+  "test_id": "benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py::test_batch_is_complete",
+  "expected_ui_state": "FIXED",
+  "expected_transformation": "AWAIT_UNFINISHED_TASK",
+  "expected_abstain_reason": null,
+  "expected_signal_op": null,
+  "expected_wait_op": null,
+  "expected_scope_target": "handle",
+  "band_aid_would_pass": true,
+  "notes": "The assertion depends on the task completing, not on one write landing. An asyncio.Event signalled by record_item is the WRONG repair: the reader wakes after the first item and still fails. Awaiting the existing handle before the assertion is right. Included to test whether the repair pattern is chosen from the evidence or from the shape of the rest of the corpus."
+}

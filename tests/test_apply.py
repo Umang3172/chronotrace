@@ -167,3 +167,49 @@ def test_transformations_without_a_patch_are_refused_explicitly():
         intent = _intent(transformation=transformation)
         with pytest.raises(PatchError, match="no patch"):
             apply_intent(MODULE, intent, path="tests/test_m.py", is_test_module=True)
+
+
+def test_await_is_inserted_before_the_read_not_just_before_the_assertion():
+    """The assertion checks a value read into a local earlier. Awaiting the task
+    immediately above the assertion is too late — the read already happened."""
+    source = (
+        "import asyncio\n\n\n"
+        "async def test_x():\n"
+        "    handle = asyncio.create_task(worker())\n"
+        "    await settle()\n"
+        "    observed = await read_state()\n"
+        "    with assertion('s'):\n"
+        "        assert observed == 1\n"
+        "    await handle\n"
+    )
+    intent = RepairIntent(
+        transformation="AWAIT_UNFINISHED_TASK",
+        shared_scope="NONE",
+        scope_target="handle",
+        primitive="task_await",
+        rationale="test",
+    )
+    patch = apply_intent(source, intent, path="tests/test_m.py", is_test_module=True)
+    lines = [line.strip() for line in patch.patched.splitlines() if line.strip()]
+    assert lines.index("await handle") < lines.index("observed = await read_state()")
+    assert lines.count("await handle") == 1
+
+
+def test_await_falls_back_to_the_assertion_when_there_is_no_earlier_read():
+    source = (
+        "import asyncio\n\n\n"
+        "async def test_x():\n"
+        "    handle = asyncio.create_task(worker())\n"
+        "    assert value() == 1\n"
+        "    await handle\n"
+    )
+    intent = RepairIntent(
+        transformation="AWAIT_UNFINISHED_TASK",
+        shared_scope="NONE",
+        scope_target="handle",
+        primitive="task_await",
+        rationale="test",
+    )
+    patch = apply_intent(source, intent, path="tests/test_m.py", is_test_module=True)
+    lines = [line.strip() for line in patch.patched.splitlines() if line.strip()]
+    assert lines.index("await handle") < lines.index("assert value() == 1")

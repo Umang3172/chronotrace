@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 # --------------------------------------------------------------------------- #
 # capture
@@ -210,6 +210,39 @@ class RepairIntent(BaseModel):
     wait_site: OperationRef | None = None
     primitive: Literal["asyncio.Event", "asyncio.Barrier", "task_await", "none"]
     rationale: str
+
+    @model_validator(mode="after")
+    def _require_sites_for_the_transformations_that_use_them(self) -> RepairIntent:
+        """Reject an intent that names a transformation it has not specified.
+
+        ``signal_site`` and ``wait_site`` are optional on the model because most
+        transformations do not use them. For ``INJECT_ASYNC_EVENT`` they are the
+        whole content of the decision: without both, there is nothing to inject
+        and nowhere to inject it. Failing here gives the model a usable error on
+        the spot, instead of the patcher refusing later with the decision
+        already recorded as made.
+        """
+        if self.transformation == "INJECT_ASYNC_EVENT":
+            missing = [
+                name
+                for name, value in (
+                    ("signal_site", self.signal_site),
+                    ("wait_site", self.wait_site),
+                )
+                if value is None
+            ]
+            if missing:
+                raise ValueError(
+                    f"INJECT_ASYNC_EVENT requires {' and '.join(missing)}: name the writing "
+                    "operation as signal_site and the reading operation as wait_site, "
+                    "copying them from proven_inversion"
+                )
+        if self.transformation == "AWAIT_UNFINISHED_TASK" and not self.scope_target:
+            raise ValueError(
+                "AWAIT_UNFINISHED_TASK requires scope_target: the name of the task "
+                "variable the test already holds"
+            )
+        return self
 
 
 # --------------------------------------------------------------------------- #

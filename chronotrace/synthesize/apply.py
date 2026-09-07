@@ -294,20 +294,40 @@ class _TaskAwaiter(cst.CSTTransformer):
         statements = list(updated_node.body.body)
         if not any(_creates_task(item, self.variable) for item in statements):
             return updated_node
-        assertion_at = next(
-            (index for index, item in enumerate(statements) if _is_assertion(item)), None
-        )
-        if assertion_at is None:
+        insert_at = _insertion_point(statements)
+        if insert_at is None:
             return updated_node
         statements = [
             item
             for index, item in enumerate(statements)
-            if not (index > assertion_at and _is_bare_await(item, self.variable))
+            if not (index > insert_at and _is_bare_await(item, self.variable))
         ]
-        statements.insert(assertion_at, cst.parse_statement(f"await {self.variable}\n"))
+        statements.insert(insert_at, cst.parse_statement(f"await {self.variable}\n"))
         self.applied = True
         self.function = updated_node.name.value
         return updated_node.with_changes(body=updated_node.body.with_changes(body=statements))
+
+
+def _insertion_point(statements: list[cst.BaseStatement]) -> int | None:
+    """Return where ``await <task>`` must go: before the first dependent read.
+
+    Awaiting the task immediately above the assertion is not enough. The value
+    the assertion checks is usually read into a local first, and by the time
+    control reaches the assertion that read has already happened. The await has
+    to precede whichever comes first: the read, or the assertion itself.
+    """
+    reads = [index for index, item in enumerate(statements) if _assigns_from_await(item)]
+    asserts = [index for index, item in enumerate(statements) if _is_assertion(item)]
+    if not asserts:
+        return None
+    first_assert = asserts[0]
+    earlier_reads = [index for index in reads if index < first_assert]
+    return min(earlier_reads) if earlier_reads else first_assert
+
+
+def _assigns_from_await(statement: cst.BaseStatement) -> bool:
+    """Return True for ``name = await something()`` — a read into a local."""
+    return m.matches(statement, m.SimpleStatementLine(body=[m.Assign(value=m.Await())]))
 
 
 def _creates_task(statement: cst.BaseStatement, variable: str) -> bool:
