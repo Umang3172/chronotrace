@@ -157,117 +157,119 @@ weakened assertion, a decollected test — compare before against after.
 
 ## Results
 
-Produced by `uv run chronotrace eval --arm C --cases all`. Every number below
-comes from that command; none is hand-entered.
+Produced by `uv run chronotrace three-arm`. Every number comes from that
+command; none is hand-entered. Local model throughout: **qwen2.5-coder:14b**
+(14.8B, Q4_K_M) via Ollama, temperature 0.0, seed 1729. A Bedrock run is
+planned; these are not those numbers. Full write-up in
+[eval/results/FINDINGS.md](eval/results/FINDINGS.md).
 
-| Metric | Arm C |
-|---|---|
-| Cases run | 14 |
-| Repair rate on supported races | **100%** (6/6) |
-| **False-repair rate on negative controls** | **0%** (0/5) |
-| Abstention accuracy | **100%** (8/8) |
-| Causal precision | 80% (8/10) |
-| **Band-aid injection rate** | **0%** (0/6) |
-| Ground-truth transformation match | 7/7 |
-| Median measured overhead | 0.19 ms |
-| Verification tiers reached | FORCED ×6, not reached ×8 |
-| Wall clock, whole benchmark | 240 s |
+Three arms, same model, same temperature, seed, token cap, attempt budget and
+timeout. Capture and diagnosis run once per case and are shared by all three, so
+no arm is compared against a luckier set of runs.
 
-Read the second and third rows first. For a system that modifies code, the
-false-repair rate matters more than the repair rate: a patch that makes a
-non-race green is worse than no patch, because it buries the real cause under a
-green build.
+* **Arm A** — the model gets the test and the failure. No traces, no gate.
+* **Arm B** — the same, plus the trace diff and ranked candidate inversions.
+* **Arm C** — full ChronoTrace.
 
-**Causal precision** is the fraction of proposed candidate orderings that
-reproduced the failure on every attempt when forced — 8 of the 10 candidates
-that were forced. The remaining 20% is worth reading in full, because it is the
-mechanism working rather than failing.
+**These tables are not averaged together.** R01–R06 share one race shape;
+R14 is a different shape. Combining them would hide the finding.
 
-### Where the missing 20% went
+### R01–R06 — read-after-write on a shared resource
 
-Every candidate that was forced, across the whole benchmark:
+| Metric | Arm A | Arm B | Arm C |
+|---|---|---|---|
+| Repaired, verified by forced replay | 4 / 6 | 4 / 6 | **6 / 6** |
+| **Timing band-aids injected** | **3 / 6** | **3 / 6** | **0 / 6** |
 
-| Case | Candidate ordering | Suspiciousness | Fails when forced | Verdict |
-|---|---|---|---|---|
-| R01 | `read_value` → `commit_value` | 1.00 | 100% | causally sufficient |
-| R02 | `db_select` → `db_commit` | 1.00 | 100% | causally sufficient |
-| R03 | `read_status` → `finalize_report` | 1.00 | 100% | causally sufficient |
-| R04 | `use_token` → `refresh_token` | 1.00 | 100% | causally sufficient |
-| R05 | `subscribe` → `publish_ready` | 1.00 | 100% | causally sufficient |
-| R06 | `drain_queue` → `enqueue_job` | 1.00 | 100% | causally sufficient |
-| R08 | `finish_beta` → `finish_alpha` | 1.00 | 100% | causally sufficient |
-| R13 | `cache_get` → `cache_fill` | 1.00 | 100% | causally sufficient |
-| **R12** | **`read_secondary` → `set_secondary`** | **1.00** | **60%** | **necessary, not sufficient** |
-| **R12** | **`read_primary` → `set_primary`** | **0.87** | **40%** | **necessary, not sufficient** |
+### R14 — a task-lifecycle race, the one case of a different shape
 
-Both shortfalls are the same case, `R12_depth2_two_constraints`, and neither was
-noise. No candidate in the corpus scored 0% when forced.
+| Metric | Arm A | Arm B | Arm C |
+|---|---|---|---|
+| Repaired, verified | **yes** | **yes** | **no** |
+| Verification tier | `FORCED_UNREACHABLE` | `FORCED_UNREACHABLE` | `FAILED` |
 
-**Why they were proposed.** R12 brings up two replicas concurrently and asserts
-`primary or secondary`. In the failing runs the test reads both flags before
-either replica has published, so `read_secondary` before `set_secondary` appears
-in *every* failing trace and in *no* passing trace. That is an Ochiai
-suspiciousness of exactly 1.00 — a perfect statistical score. On ranking alone
-it is indistinguishable from R01, which really is a single sufficient cause.
+**Both unconstrained baselines repaired R14 and ChronoTrace did not.** They each
+wrote `await handle`, commented "ensure the batch worker completes before the
+assertion". Arm C chose to inject an event, and forced replay rejected it.
 
-**Why forcing was right to withhold it.** The assertion fails only when *both*
-reads are stale. Forcing one of the two orderings leaves the other a coin flip,
-so the test fails some of the time and passes the rest — 60% and 40% across five
-forced runs each. A rate strictly between 0 and 1 means the ordering is
-*necessary but not sufficient*: it is part of the cause, not the whole of it.
-ChronoTrace reports depth ≥ 2 and generates no patch.
+Those same two baselines injected band-aids on 3 of 6 of the other cases and
+falsely repaired 4 of 5 negative controls. They are not
+safer; they are unconstrained, and on this one case that happened to help.
 
-**What that prevented.** Patching on the suspiciousness score would have
-synchronised one replica and left the bug live. The test would then have failed
-roughly half as often — which reads as improvement on any rerun-based metric,
-and is exactly the "patched a symptom" outcome. Tier 1 catches it because a
-symptom fix cannot make a forced ordering pass; a rerun gate cannot, because
-half as flaky still looks better.
+### Negative controls
 
-So 80% is not "20% of our candidates were wrong". It is "20% of our candidates
-were partial causes, and the system said so instead of guessing". A tool that
-always patched its top-ranked candidate would score 100% on repair rate here and
-be wrong about R12.
+| Metric | Arm A | Arm B | Arm C |
+|---|---|---|---|
+| **False repairs on non-races** | **4 / 5** | **4 / 5** | **0 / 5** |
+| Abstention accuracy | — | — | 5 / 5, correct reason |
 
-**Overhead** is a measured median delta in test-call duration, natural runs
-before the patch versus after. ChronoTrace does not claim zero added cost: a
-synchronization primitive changes scheduling and contention even when it
-introduces no fixed delay. The claim is *no fixed sleep-based delay introduced*,
-plus that measured number. It is a sub-millisecond quantity and it moves between
-runs — 0.19 ms and 0.38 ms on two runs of the same benchmark — so read it as
-"too small to separate from measurement noise at this sample size", not as a
-precise constant. Compare it against the 18+ seconds per run that a
-`sleep(2)`-per-case baseline would add permanently.
+**Read that abstention number with its caveat.** Four of the five controls are
+refused during *diagnosis*, before the model is consulted at all — `NOT_A_RACE`
+and `NO_TRACE_PAIR` are reached by deterministic code, and N07 by paradigm
+detection. So 5/5 demonstrates that the deterministic refusal paths work. It
+demonstrates nothing about whether a model would decline when asked, because no
+control in the corpus reaches the model.
 
-**Tokens and cost are reported as n/a** for this run, and that is deliberate.
-The default offline provider is a deterministic reference policy, not a model;
-it has no tokens, and inventing a number for it would be a fabricated metric.
-Set `CHRONOTRACE_PROVIDER=bedrock` to produce real token and cost figures.
+### What the verification layer caught
 
-### The benchmark
+Two cases, and they are the reason the forced-replay tier exists.
 
-Fourteen seeded cases. **Labelled as seeded, not mined from the wild** — no
-public Python concurrency flaky-test dataset exists; iDoFT is Java and
-order-dependent-biased, and ReproFlake is Java too.
+**R12 — a perfect suspiciousness score, correctly refused.** Two replicas race;
+the assertion is `primary or secondary`. The top candidate scored **Ochiai
+1.00** — present in every failing run and no passing run, statistically
+indistinguishable from a genuine single cause. Forcing it failed **60%** of the
+time, not 100%: necessary but not sufficient. ChronoTrace reported
+`DEPTH_GE_2_UNRESOLVED` and generated no patch. Patching on the score would have
+synchronised one replica, left the bug live, and roughly halved the failure
+rate — which every rerun-based metric reads as success.
 
-| | Cases | Expected |
-|---|---|---|
-| Repairable races | R01–R06 | FIXED |
-| Over-constrained assertion | R08 | NEEDS INVESTIGATION — do **not** synchronise |
-| Depth-2 race | R12 | NEEDS INVESTIGATION — two constraints needed |
-| Production-scope race | R13 | ABSTAINED — the defect is in app code |
-| Negative controls | N01, N02, N03, N06, N07 | ABSTAINED |
+**R14 — a policy-clean patch that does not work.** The injected event breaks no
+rule: no sleep, no retry, no timeout change, no weakened assertion. The gate
+passed it 15/15. Forced replay failed it. Run it yourself:
 
-Five of fourteen are tests ChronoTrace **must refuse**: unseeded `random`, an
-upstream timeout, hash-ordered iteration, a simply-incorrect assertion, and a
-genuine race in *threads* rather than asyncio. Without them, a reader could
-reasonably ask whether the benchmark was designed around the algorithm.
+```bash
+uv run chronotrace repair --demo-r14
+```
 
-R08 is worth singling out. Two independent fetches may complete in either order,
-and the test insists on one. Synchronising there would destroy real concurrency
-to satisfy a wrong assertion, so ChronoTrace recommends relaxing the assertion
-and hands it to a human instead of editing it. An assertion change is never
-applied automatically.
+### The comparison that matters
+
+On one measured run of R14, the patch ChronoTrace proposed and then rejected
+took the flake rate from **80% to 45%** — 16 of 20 runs failing before, 9 of 20
+after.
+
+**A rerun-based verification gate would have accepted that patch.** The test
+used to fail most of the time and now fails less than half; every rerun-based
+signal points at "improved". Datadog's attempt-to-fix flow retries 20 times and
+BuildPulse confirms through PR checks — neither can separate *fixed the race*
+from *made it rarer*, because both look identical in a pass count.
+
+It is worse than that for the rerun approach. The residual is noisy: across runs
+the same wrong patch has measured anywhere from 45% to 75% against a pre-patch
+rate of 70–80%. Sometimes it looks like a fix and sometimes it looks like a
+regression. Forced replay returns the same verdict every time, because it is an
+experiment with a control rather than a sample.
+
+### The generalization limit
+
+Stated as it would have to be answered:
+
+> Six of our seven repairable cases are read-after-write races on a shared
+> resource. The intent prompt names that condition explicitly. On those six, the
+> model chooses correctly six times out of six. On the one case we added of a
+> different shape, it chose wrong — and the unconstrained baselines, which were
+> given no rule to follow, chose right. We have evidence that the system works
+> on the shape it was told about. We do not have evidence that it generalizes,
+> and the one experiment we ran on that question came back negative.
+
+**No repair rate is quoted as a headline here, deliberately.** With one race
+shape dominating the corpus it would not mean what it appears to mean. What the
+evidence supports is narrower and holds across every run and both models tested:
+
+* **Constraint prevents harm.** 0 band-aids against 3/6, and 0/5 false repairs
+  against 4/5. The most reproducible result in the project.
+* **Verification catches wrong repairs, including our own.** R12 and R14.
+* **Constraint does not confer judgement.** The model still has to choose the
+  right pattern, and on a shape the prompt does not name, it did not.
 
 ## Prior work
 
@@ -300,8 +302,10 @@ plainly:
 4. **We emit a deterministic regression test as the artifact.** A race that
    appeared once in a few runs gets a test that reproduces it every run.
 
-FlakeSync's 83.75% and our 100% are **not comparable**: different corpora,
-different languages, and ours is 6 seeded cases. Theirs is the serious number.
+FlakeSync's 83.75% is not comparable with anything reported here: different
+corpora, different languages, and we deliberately quote no headline repair rate
+(see [the generalization limit](#the-generalization-limit)). Theirs is the
+serious number.
 
 FlakyGuard names the "context problem" — too little context misses critical
 code, too much overwhelms the model. The trace diff *is* a context-selection
@@ -368,34 +372,38 @@ non-repairing transformation on every case.
 These are load-bearing. Removing them to make the project look stronger would
 make it weaker.
 
-1. **The benchmark is seeded, not mined from the wild.** Fourteen cases written
+1. **The benchmark is seeded, not mined from the wild.** Fifteen cases written
    for this project, with recorded ground truth. It shows a directional effect,
    not a population estimate. N is small and we do not claim otherwise.
-2. **asyncio only.** Threading and multiprocessing are detected in order to
+2. **One race shape dominates it.** Six of the seven repairable cases are
+   read-after-write on a shared resource, which is the condition the intent
+   prompt names. R14 is a single counter-example of a different shape, and the
+   model got it wrong. Nothing here supports a generalization claim.
+3. **asyncio only.** Threading and multiprocessing are detected in order to
    abstain. In CPython, OS threads cannot be scheduled deterministically from
    user space, so a "forced ordering" there would be theatre. See
    [ADR 0001](docs/adr/0001-asyncio-only-scope.md).
-3. **It is observed-order inversion, not happens-before.** The ordering is
+4. **It is observed-order inversion, not happens-before.** The ordering is
    derived from observed start times plus structural edges, not from a partial
    order over synchronization events. Claiming Lamport while shipping a
    timestamp sort would be a claim the implementation has not earned.
-4. **Tier 1 requires instrumented operations.** Races between operations that
+5. **Tier 1 requires instrumented operations.** Races between operations that
    emit no spans degrade to Tier 3, reported as such. Span granularity that is
    too coarse to see the race is detected and abstained on, rather than
    localised to the wrong place.
-5. **The probe effect is real.** Instrumentation changes timing. Capture measures
+6. **The probe effect is real.** Instrumentation changes timing. Capture measures
    the flake rate with and without instrumentation and reports the delta rather
    than hiding it.
-6. **Depth ≥ 2 races are reported, not repaired.** When no single ordering is
+7. **Depth ≥ 2 races are reported, not repaired.** When no single ordering is
    sufficient, ChronoTrace says so and stops.
-7. **One transformation family is fully implemented.** `INJECT_ASYNC_EVENT` and
+8. **One transformation family is fully implemented.** `INJECT_ASYNC_EVENT` and
    `AWAIT_UNFINISHED_TASK`. `ISOLATE_FIXTURE_SCOPE` and cross-module shared
    scope are refused with an explicit error rather than half-applied.
-8. **Baseline arms A and B did not run here.** They require a real model
+9. **Baseline arms A and B did not run here.** They require a real model
    provider; running them against the offline reference policy would produce a
    baseline that describes this repository rather than a model. The harness
    refuses rather than reporting a caveated number.
-9. **Docker isolation is implemented but unexercised** on the development
+10. **Docker isolation is implemented but unexercised** on the development
    machine. Process isolation — one process per run — is the default and is what
    the reported numbers used.
 
@@ -415,6 +423,8 @@ uv sync --extra bedrock # plus boto3 and the Strands SDK
 chronotrace capture <test_id> --runs 50      # gather pass/fail trace pairs
 chronotrace diagnose <test_id>               # diagnosis only, no patch
 chronotrace repair <test_id>                 # full pipeline; --apply to write
+chronotrace repair --demo                    # a race repaired and verified
+chronotrace repair --demo-r14                # a policy-clean patch replay rejects
 chronotrace verify <incident_id>             # what verification established
 chronotrace report <incident_id>             # the report as JSON
 chronotrace gauntlet                         # adversarial governor demo
@@ -424,7 +434,7 @@ pytest --chronotrace                         # plugin-mode capture
 
 Global options: `--allow-production-repair` (off by default), `--apply` (off by
 default — ChronoTrace proposes a diff, it does not write to your repository),
-`--json`.
+`--json`, and `--slow` to pace demo output for narration.
 
 ## Running against your own tests
 

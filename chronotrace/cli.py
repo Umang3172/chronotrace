@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import sys
+import time
 from pathlib import Path
 from typing import Annotated
 
@@ -146,6 +147,15 @@ def diagnose_cmd(
 def repair_cmd(
     test_id: Annotated[str, typer.Argument(help="pytest node id, or --demo")] = "",
     demo: Annotated[bool, typer.Option("--demo", help="run the bundled demo case")] = False,
+    demo_r14: Annotated[
+        bool,
+        typer.Option(
+            "--demo-r14",
+            help="run the R14 case and stop at the rejection: a patch the policy gate "
+            "allows and forced replay refuses",
+        ),
+    ] = False,
+    slow: Annotated[bool, typer.Option("--slow", help="pace the output for narration")] = False,
     runs: Annotated[int, typer.Option(help="capture budget")] = 24,
     apply_patch: Annotated[bool, typer.Option("--apply", help="write the patch to disk")] = False,
     allow_production_repair: Annotated[
@@ -156,6 +166,7 @@ def repair_cmd(
     """Run the full pipeline: capture, diagnose, prove, patch, govern, verify."""
     configure()
     settings = _settings(allow_production_repair=allow_production_repair)
+    demo = demo or demo_r14
     if demo and settings.provider == PROVIDER_LABEL:
         # The demo must show a model deciding, not the hand-written policy. Look
         # for a usable provider before refusing, and if there is none, say
@@ -181,10 +192,16 @@ def repair_cmd(
         if not cases:
             typer.echo("no benchmark cases found", err=True)
             raise typer.Exit(1)
-        # The demo leads with a repairable race, because the point being
-        # demonstrated is the causal proof. The abstention cases are reachable
-        # by naming them, and are shown by `chronotrace eval`.
-        chosen = next((case for case in cases if case.is_supported_race), cases[0])
+        if demo_r14:
+            chosen = next((case for case in cases if case.case_id == "R14"), None)
+            if chosen is None:
+                typer.echo("benchmark case R14 not found", err=True)
+                raise typer.Exit(1)
+        else:
+            # The first demo leads with a repairable race, because the point
+            # being demonstrated is the causal proof. The abstention cases are
+            # reachable by naming them, and are shown by `chronotrace eval`.
+            chosen = next((case for case in cases if case.is_supported_race), cases[0])
         test_id = chosen.test_id
         typer.echo(f"demo case: {chosen.case_id} {chosen.name} ({chosen.shape})\n")
     report = repair(
@@ -199,7 +216,10 @@ def repair_cmd(
     if as_json:
         typer.echo(report.model_dump_json(indent=2))
         return
-    _print_report(report)
+    if demo_r14:
+        _print_rejection_demo(report, slow=slow)
+        return
+    _print_report(report, slow=slow)
 
 
 @app.command()
@@ -380,7 +400,128 @@ def replay_check(
         raise typer.Exit(1)
 
 
-def _print_report(report: IncidentReport) -> None:
+def _pace(slow: bool, seconds: float = 1.4) -> None:
+    """Pause between acts when the output is being narrated.
+
+    Presentation only. Nothing in the pipeline waits on a clock.
+    """
+    if slow:
+        time.sleep(seconds)
+
+
+def _rule(title: str) -> None:
+    typer.echo(f"\n{title}\n{'-' * len(title)}")
+
+
+def _print_rejection_demo(report: IncidentReport, *, slow: bool = False) -> None:
+    """Walk through a patch the policy gate allows and forced replay refuses.
+
+    R14's assertion depends on a task *finishing*, not on one write landing, so
+    an injected event is the wrong repair even though the operations look like
+    the read-after-write shape that selects it. Nothing about the patch violates
+    policy. The gate passes it and the experiment rejects it, which is the whole
+    argument for having an experiment.
+    """
+    verification = report.verification
+    intent = report.intent
+
+    _rule("1. The race")
+    typer.echo(f"test  : {report.test_id.split('::')[-1]}")
+    typer.echo(f"flaky : {report.natural_flake_rate:.0%} of captured runs")
+    typer.echo(f"cause : {report.diagnosis.explanation}")
+    _pace(slow)
+
+    _rule("2. What the model proposed")
+    if intent is None:
+        typer.echo("no intent was produced")
+    else:
+        typer.echo(f"transformation : {intent.transformation}")
+        typer.echo(f"primitive      : {intent.primitive}")
+        typer.echo(f"rationale      : {intent.rationale}")
+        if len(report.intent_attempts) > 1:
+            typer.echo(
+                f"attempts       : {len(report.intent_attempts)} "
+                "(the retry corrected the format, not the choice)"
+            )
+    _pace(slow)
+
+    _rule("3. What the policy gate said")
+    if report.verdict is None:
+        typer.echo("the gate was not reached")
+    else:
+        passed = sum(1 for rule in report.verdict.rules_evaluated if rule.passed)
+        total = len(report.verdict.rules_evaluated)
+        typer.echo(f"{passed}/{total} rules passed — approved: {report.verdict.approved}")
+        typer.echo(
+            "No sleep, no retry, no timeout change, no weakened assertion. This patch\n"
+            "breaks no policy. The problem with it is judgement, not policy, and a\n"
+            "policy checker cannot see judgement."
+        )
+    _pace(slow)
+
+    _rule("4. What forced replay said")
+    if verification is None:
+        typer.echo("verification did not run")
+        return
+    typer.echo(f"tier reached : {verification.tier_reached}")
+    typer.echo(f"repaired     : {verification.causally_proven}")
+    typer.echo(
+        "The ordering failed before the patch and still failed after it, so the\n"
+        "patch did not defeat the interleaving it was chosen to defeat."
+    )
+    _pace(slow)
+
+    _rule("5. What a rerun-based gate would have concluded")
+    runs = verification.statistical_runs
+    after = verification.statistical_failures
+    before = verification.pre_patch_natural_failures
+    if runs:
+        typer.echo(f"before the patch : {before}/{runs} runs failed  ({before / runs:.0%})")
+        typer.echo(f"with the patch   : {after}/{runs} runs failed  ({after / runs:.0%})")
+        # The sentence has to follow the measurement. The residual is noisy: this
+        # patch has measured anywhere from 45% to 75% across runs against a
+        # pre-patch rate of 70-80%, so sometimes it looks like an improvement and
+        # sometimes it does not. Claiming the favourable reading on a run that
+        # produced the other one would be exactly the kind of thing this project
+        # exists to refuse.
+        if after < before:
+            typer.echo(
+                f"\nflake rate {before / runs:.0%} before, {after / runs:.0%} with this "
+                "patch — a rerun-based gate would accept this."
+            )
+            typer.echo(
+                "\nThe test used to fail most of the time and now fails less often.\n"
+                "Every rerun-based signal reads that as an improvement."
+            )
+        else:
+            typer.echo(
+                f"\nflake rate {before / runs:.0%} before, {after / runs:.0%} with this "
+                "patch — on this run it did not even get rarer."
+            )
+            typer.echo(
+                "\nOn other runs this same patch has measured 45% against 80% before,\n"
+                "which a rerun-based gate would have accepted. That is the problem\n"
+                "with rerun-based gates: the signal is noisy enough that the same\n"
+                "wrong patch passes or fails depending on the day."
+            )
+    typer.echo(
+        "\nForcing the ordering is what separates 'fixed the race' from 'made it\n"
+        "rarer', and unlike the rerun count it gives the same answer every time."
+    )
+    _pace(slow)
+
+    _rule("What the correct repair was")
+    typer.echo(
+        "Await the task handle the test already holds, before the assertion. Both\n"
+        "unconstrained baseline arms wrote exactly that. ChronoTrace did not: the\n"
+        "operations look like a read-after-write on a shared resource, which is the\n"
+        "condition that selects an event, and the model matched the shape rather\n"
+        "than what the assertion depends on.\n\n"
+        "The verification layer caught it. That is the claim being demonstrated."
+    )
+
+
+def _print_report(report: IncidentReport, *, slow: bool = False) -> None:
     banner = {
         "FIXED": "FIXED",
         "NEEDS_INVESTIGATION": "NEEDS INVESTIGATION",
@@ -389,7 +530,9 @@ def _print_report(report: IncidentReport) -> None:
     typer.echo(f"{banner}  ({report.incident_id})")
     typer.echo(f"test    : {report.test_id}")
     typer.echo(f"flaky   : {report.natural_flake_rate:.0%} of captured runs")
+    _pace(slow)
     typer.echo(f"finding : {report.diagnosis.explanation}")
+    _pace(slow)
     if report.intent:
         typer.echo(f"intent  : {report.intent.transformation} ({report.intent.primitive})")
         typer.echo(f"why     : {report.intent.rationale}")
@@ -402,6 +545,7 @@ def _print_report(report: IncidentReport) -> None:
         for rule in failed:
             typer.echo(f"          REJECTED {rule.rule_id}: {rule.detail}")
     if report.verification:
+        _pace(slow)
         result = report.verification
         typer.echo(f"tier    : {result.tier_reached}")
         if result.causally_proven:

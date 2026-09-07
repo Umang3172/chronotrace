@@ -157,3 +157,70 @@ def test_help_lists_the_documented_commands():
     assert result.exit_code == 0
     for command in ("capture", "diagnose", "repair", "verify", "report", "gauntlet", "eval"):
         assert command in result.stdout
+
+
+def _rejection_report(*, before: int, after: int):
+    """An R14-shaped report: policy-clean patch, rejected by forced replay."""
+    from chronotrace.contracts import IntentAttempt, RepairIntent
+
+    report = _verified_report("r14demo")
+    report.ui_state = "NEEDS_INVESTIGATION"
+    report.natural_flake_rate = 0.8
+    report.intent = RepairIntent(
+        transformation="INJECT_ASYNC_EVENT",
+        shared_scope="FIXTURE",
+        primitive="asyncio.Event",
+        signal_site=_ref(),
+        wait_site=_ref(),
+        rationale="looks like a read-after-write",
+    )
+    report.intent_attempts = [IntentAttempt(attempt=1, accepted=True)]
+    report.verification.tier_reached = "FAILED"
+    report.verification.post_patch_forced_passed = False
+    report.verification.statistical_runs = 20
+    report.verification.statistical_failures = after
+    report.verification.pre_patch_natural_failures = before
+    return report
+
+
+def _ref():
+    from chronotrace.contracts import OperationRef
+
+    return OperationRef(
+        span_name="op",
+        occurrence=0,
+        source_file="a.py",
+        source_line=1,
+        qualname="op",
+        is_test_scope=True,
+    )
+
+
+def test_rejection_demo_claims_a_rerun_gate_would_accept_only_when_it_would(capsys):
+    """The sentence has to follow the measurement, not the script."""
+    from chronotrace.cli import _print_rejection_demo
+
+    _print_rejection_demo(_rejection_report(before=16, after=9))
+    improved = capsys.readouterr().out
+    assert "a rerun-based gate would accept this" in improved
+    assert "80% before, 45% with this patch" in improved
+
+
+def test_rejection_demo_does_not_claim_improvement_that_did_not_happen(capsys):
+    from chronotrace.cli import _print_rejection_demo
+
+    _print_rejection_demo(_rejection_report(before=14, after=15))
+    worse = capsys.readouterr().out
+    assert "a rerun-based gate would accept this" not in worse
+    assert "did not even get rarer" in worse
+
+
+def test_rejection_demo_shows_the_gate_passing_and_replay_refusing(capsys):
+    from chronotrace.cli import _print_rejection_demo
+
+    _print_rejection_demo(_rejection_report(before=16, after=9))
+    out = capsys.readouterr().out
+    assert "INJECT_ASYNC_EVENT" in out
+    assert "approved: True" in out
+    assert "tier reached : FAILED" in out
+    assert "judgement, not policy" in out
