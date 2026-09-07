@@ -349,7 +349,7 @@ def test_fixture_keys_separate_arms_cases_and_attempts(tmp_path):
 # --------------------------------------------------------------------------- #
 
 
-def _results(tmp_path, name, *, tokens=10, tier="FORCED"):
+def _results(tmp_path, name, *, tokens=10, tier="FORCED_HARMLESS"):
     path = tmp_path / name
     path.write_text(
         json.dumps(
@@ -397,7 +397,7 @@ def test_a_changed_token_count_fails_the_replay_check(tmp_path):
 
 def test_execution_derived_drift_is_reported_but_does_not_fail(tmp_path):
     """Flake rates and timings differ between runs by design."""
-    live = _results(tmp_path, "live.json", tier="FORCED")
+    live = _results(tmp_path, "live.json", tier="FORCED_HARMLESS")
     replay = _results(tmp_path, "replay.json", tier="STATISTICAL")
     result = compare(live, replay)
     assert result.model_derived_identical

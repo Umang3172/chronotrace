@@ -1,11 +1,23 @@
 """The verification ladder, and the honesty rule attached to it (spec 21.4).
 
 ```
-TIER 1  FORCED      the ordering was reproduced           -> causality PROVEN
-TIER 1b INFEASIBLE  the ordering could not be reached     -> candidate discarded
-TIER 2  PCT         seeded randomized scheduling, N runs  -> probabilistic bound
-TIER 3  STATISTICAL plain reruns, N/N stable              -> residual check only
+TIER 1  FORCED_HARMLESS     ordering still occurs, no longer fails -> PROVEN
+TIER 1  FORCED_UNREACHABLE  ordering can no longer occur           -> PROVEN, stronger
+TIER 1b INFEASIBLE          ordering was never reachable           -> candidate discarded
+TIER 2  PCT                 seeded randomized scheduling, N runs   -> probabilistic bound
+TIER 3  STATISTICAL         plain reruns, N/N stable               -> residual check only
 ```
+
+**Both tier-1 outcomes are repairs.** A patch can defeat a bad interleaving two
+ways: leave it reachable but harmless, or make it impossible. The second is
+stronger. Scoring only the first would reward the transformation ChronoTrace
+happens to emit — an injected event leaves the ordering reachable — over repairs
+that eliminate the ordering entirely, such as awaiting the task before reading.
+That is a bias in our own favour and it is why the distinction is made here
+rather than collapsed.
+
+The pre-patch INFEASIBLE case is different in kind: an ordering that was never
+reachable proves nothing about the failure, so it discards the candidate.
 
 **A Tier 2 or Tier 3 result is never reported as causal proof.** Silently
 degrading and still claiming proof is the one thing that would make this project
@@ -115,12 +127,9 @@ def verify(
             result.deadlock_detected = True
             result.tier_reached = "FAILED"
             return result
-        if post_state == "INFEASIBLE":
-            # The repair made the ordering unreachable rather than harmless.
-            # That is a real outcome, but it is not the proof we claim.
-            result.tier_reached = "INFEASIBLE"
-            return result
-        result.post_patch_forced_passed = post_failures == 0
+        result.post_patch_forced_infeasible = post_state == "INFEASIBLE"
+        if post_state != "INFEASIBLE":
+            result.post_patch_forced_passed = post_failures == 0
 
         natural_failures, natural_durations = _natural_phase(
             test_id, cwd, statistical_runs, timeout_s, isolation
@@ -135,8 +144,10 @@ def verify(
 
     result.measured_overhead_ms = _overhead_ms(pre_natural_durations, natural_durations)
 
-    if result.pre_patch_forced_failed and result.post_patch_forced_passed:
-        result.tier_reached = "FORCED"
+    if result.pre_patch_forced_failed and result.post_patch_forced_infeasible:
+        result.tier_reached = "FORCED_UNREACHABLE"
+    elif result.pre_patch_forced_failed and result.post_patch_forced_passed:
+        result.tier_reached = "FORCED_HARMLESS"
     elif result.pct_runs and result.pct_failures == 0:
         result.tier_reached = "PCT"
     elif result.statistical_failures == 0:
@@ -145,7 +156,8 @@ def verify(
         result.tier_reached = "FAILED"
 
     result.symptom_patch_suspected = (
-        result.tier_reached == "FORCED" and result.statistical_failures > 0
+        result.tier_reached in {"FORCED_HARMLESS", "FORCED_UNREACHABLE"}
+        and result.statistical_failures > 0
     )
     if result.symptom_patch_suspected:
         log.warning(

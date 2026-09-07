@@ -3,14 +3,19 @@ import type { Tier } from "@/lib/types";
 // The tier reached travels with every result. A lower tier is never presented
 // as proof of causality, so the wording differs per tier by design.
 const TIERS: Record<Tier, { label: string; claim: string; className: string }> = {
-  FORCED: {
+  FORCED_HARMLESS: {
     label: "Reproduced on demand",
-    claim: "cause established",
+    claim: "cause established — the ordering is now harmless",
+    className: "text-pass border-pass/40 bg-pass/10",
+  },
+  FORCED_UNREACHABLE: {
+    label: "Ordering eliminated",
+    claim: "cause established — the ordering can no longer occur",
     className: "text-pass border-pass/40 bg-pass/10",
   },
   INFEASIBLE: {
-    label: "Ordering unreachable",
-    claim: "candidate discarded",
+    label: "Never reachable",
+    claim: "candidate discarded — this ordering never occurred",
     className: "text-muted border-border bg-surface",
   },
   PCT: {

@@ -41,7 +41,7 @@ def _verified_report(incident_id="abc12345"):
             rules_evaluated=[RuleOutcome(rule_id="N1", description="no sleeps", passed=True)],
         ),
         verification=VerificationResult(
-            tier_reached="FORCED",
+            tier_reached="FORCED_HARMLESS",
             pre_patch_forced_failed=True,
             post_patch_forced_passed=True,
             statistical_runs=20,

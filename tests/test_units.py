@@ -266,7 +266,7 @@ def test_arm_scoring_counts_a_verified_repair():
     report = _report()
     report.unified_diff = "--- a/x\n+++ b/x\n@@\n+    await gate.wait()\n"
     report.verification = VerificationResult(
-        tier_reached="FORCED",
+        tier_reached="FORCED_HARMLESS",
         pre_patch_forced_failed=True,
         post_patch_forced_passed=True,
         measured_overhead_ms=0.4,

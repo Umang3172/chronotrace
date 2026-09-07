@@ -3,7 +3,13 @@
 
 export type UiState = "FIXED" | "NEEDS_INVESTIGATION" | "ABSTAINED";
 
-export type Tier = "FORCED" | "INFEASIBLE" | "PCT" | "STATISTICAL" | "FAILED";
+export type Tier =
+  | "FORCED_HARMLESS"
+  | "FORCED_UNREACHABLE"
+  | "INFEASIBLE"
+  | "PCT"
+  | "STATISTICAL"
+  | "FAILED";
 
 export interface OperationRef {
   span_name: string;
@@ -64,6 +70,7 @@ export interface VerificationResult {
   tier_reached: Tier;
   pre_patch_forced_failed: boolean | null;
   post_patch_forced_passed: boolean | null;
+  post_patch_forced_infeasible: boolean | null;
   pct_runs: number;
   pct_failures: number;
   statistical_runs: number;

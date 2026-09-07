@@ -203,6 +203,8 @@ def verify(
         )
     typer.echo(f"pre-patch forced failed  : {result.pre_patch_forced_failed}")
     typer.echo(f"post-patch forced passed : {result.post_patch_forced_passed}")
+    typer.echo(f"post-patch unreachable   : {result.post_patch_forced_infeasible}")
+    typer.echo(f"repair strength          : {result.repair_strength}")
     typer.echo(
         f"residual flake check     : "
         f"{result.statistical_runs - result.statistical_failures}/{result.statistical_runs}"

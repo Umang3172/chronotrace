@@ -15,6 +15,9 @@ from chronotrace.eval.three_arm import ARMS, SweepResult
 
 __all__ = ["ArmSummary", "render_table", "summarise_arm", "write_results"]
 
+TIER_1 = frozenset({"FORCED_HARMLESS", "FORCED_UNREACHABLE"})
+"""Both tier-1 outcomes are repairs (see verify.tiers)."""
+
 RUNS_PER_DAY = 50
 DAYS_PER_YEAR = 365
 
@@ -40,6 +43,8 @@ class ArmSummary:
     model_calls: int = 0
     wall_clock_s: float = 0.0
     forced_tier_cases: int = 0
+    unreachable_repairs: int = 0
+    """Repairs that made the failing interleaving impossible rather than harmless."""
     unusable_outputs: int = 0
 
     @property
@@ -82,8 +87,10 @@ def summarise_arm(sweep: SweepResult, arm: str) -> ArmSummary:
         summary.repairable_cases += 1
         if result.verified_repair:
             summary.verified_repairs += 1
-        if result.tier_reached == "FORCED" and result.verified_repair:
+        if result.verified_repair and result.tier_reached in TIER_1:
             summary.forced_tier_cases += 1
+        if result.tier_reached == "FORCED_UNREACHABLE" and result.verified_repair:
+            summary.unreachable_repairs += 1
         if result.band_aid.is_band_aid:
             summary.band_aids += 1
             summary.band_aid_cases.append((result.case_id, result.band_aid.summary))
@@ -96,7 +103,12 @@ def _causality(summary: ArmSummary, arm: str) -> str:
         return "no"
     if summary.forced_tier_cases == 0:
         return "no"
-    return f"yes — {summary.forced_tier_cases}/{summary.repairable_cases} at forced tier"
+    suffix = (
+        f" ({summary.unreachable_repairs} by making the ordering unreachable)"
+        if summary.unreachable_repairs
+        else ""
+    )
+    return f"yes — {summary.forced_tier_cases}/{summary.repairable_cases} at forced tier{suffix}"
 
 
 def render_table(summaries: dict[str, ArmSummary]) -> str:
@@ -245,6 +257,7 @@ def write_results(
                 "model_calls": s.model_calls,
                 "wall_clock_s": s.wall_clock_s,
                 "forced_tier_cases": s.forced_tier_cases,
+                "unreachable_repairs": s.unreachable_repairs,
                 "unusable_outputs": s.unusable_outputs,
             }
             for arm, s in summaries.items()

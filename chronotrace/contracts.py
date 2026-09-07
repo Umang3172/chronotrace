@@ -247,9 +247,27 @@ class RuleOutcome(BaseModel):
 class VerificationResult(BaseModel):
     """Evidence produced by the tiered verifier. ``tier_reached`` is never inflated."""
 
-    tier_reached: Literal["FORCED", "INFEASIBLE", "PCT", "STATISTICAL", "FAILED"]
+    tier_reached: Literal[
+        "FORCED_HARMLESS",
+        "FORCED_UNREACHABLE",
+        "INFEASIBLE",
+        "PCT",
+        "STATISTICAL",
+        "FAILED",
+    ]
+    """Tier 1 splits by *how* the patch defeated the ordering.
+
+    ``FORCED_HARMLESS`` — the failing interleaving still occurs and no longer
+    breaks the test. ``FORCED_UNREACHABLE`` — the patch made that interleaving
+    impossible to produce at all, which is the stronger outcome. Both are
+    repairs. Scoring only the first would quietly reward ChronoTrace's own
+    transformation, which leaves the ordering reachable, over repairs that
+    eliminate it.
+    """
     pre_patch_forced_failed: bool | None = None
     post_patch_forced_passed: bool | None = None
+    post_patch_forced_infeasible: bool | None = None
+    """The forced ordering could no longer be produced after the patch."""
     pct_runs: int = 0
     pct_failures: int = 0
     statistical_runs: int = 0
@@ -266,12 +284,28 @@ class VerificationResult(BaseModel):
 
     @property
     def causally_proven(self) -> bool:
-        """True only when forced replay failed pre-patch and passed post-patch."""
-        return (
-            self.tier_reached == "FORCED"
-            and self.pre_patch_forced_failed is True
-            and self.post_patch_forced_passed is True
-        )
+        """True when forced replay failed pre-patch and the patch defeated it.
+
+        Defeating it means either the ordering became harmless or it became
+        unreachable. Both are proofs about the same experiment: the harness did
+        not change between the two runs, so the patch is the only variable.
+        """
+        if self.pre_patch_forced_failed is not True:
+            return False
+        if self.tier_reached == "FORCED_HARMLESS":
+            return self.post_patch_forced_passed is True
+        if self.tier_reached == "FORCED_UNREACHABLE":
+            return self.post_patch_forced_infeasible is True
+        return False
+
+    @property
+    def repair_strength(self) -> str:
+        """Plain-language strength of the repair, for reports and the UI."""
+        if self.tier_reached == "FORCED_UNREACHABLE":
+            return "the failing interleaving can no longer occur"
+        if self.tier_reached == "FORCED_HARMLESS":
+            return "the failing interleaving still occurs and is now harmless"
+        return "not established"
 
 
 # --------------------------------------------------------------------------- #

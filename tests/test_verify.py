@@ -33,12 +33,16 @@ def test_absent_report_means_the_test_never_ran(tmp_path):
 
 def test_causal_proof_requires_both_halves():
     proven = VerificationResult(
-        tier_reached="FORCED", pre_patch_forced_failed=True, post_patch_forced_passed=True
+        tier_reached="FORCED_HARMLESS",
+        pre_patch_forced_failed=True,
+        post_patch_forced_passed=True,
     )
     assert proven.causally_proven
     for partial in (
         VerificationResult(
-            tier_reached="FORCED", pre_patch_forced_failed=False, post_patch_forced_passed=True
+            tier_reached="FORCED_HARMLESS",
+            pre_patch_forced_failed=False,
+            post_patch_forced_passed=True,
         ),
         VerificationResult(
             tier_reached="STATISTICAL",
@@ -47,6 +51,52 @@ def test_causal_proof_requires_both_halves():
         ),
     ):
         assert not partial.causally_proven
+
+
+def test_making_the_ordering_unreachable_is_a_repair():
+    """A patch that eliminates the interleaving is stronger than one that
+    leaves it reachable and harmless. Scoring it zero would reward our own
+    transformation over better ones."""
+    unreachable = VerificationResult(
+        tier_reached="FORCED_UNREACHABLE",
+        pre_patch_forced_failed=True,
+        post_patch_forced_infeasible=True,
+    )
+    assert unreachable.causally_proven
+    assert unreachable.repair_strength == "the failing interleaving can no longer occur"
+
+
+def test_the_two_tier_one_outcomes_are_distinguished():
+    harmless = VerificationResult(
+        tier_reached="FORCED_HARMLESS",
+        pre_patch_forced_failed=True,
+        post_patch_forced_passed=True,
+    )
+    unreachable = VerificationResult(
+        tier_reached="FORCED_UNREACHABLE",
+        pre_patch_forced_failed=True,
+        post_patch_forced_infeasible=True,
+    )
+    assert harmless.causally_proven and unreachable.causally_proven
+    assert harmless.repair_strength != unreachable.repair_strength
+    assert "harmless" in harmless.repair_strength
+    assert "no longer occur" in unreachable.repair_strength
+
+
+def test_unreachable_without_a_failing_pre_patch_run_proves_nothing():
+    """An ordering that was never reachable says nothing about the failure."""
+    never_reachable = VerificationResult(
+        tier_reached="FORCED_UNREACHABLE",
+        pre_patch_forced_failed=False,
+        post_patch_forced_infeasible=True,
+    )
+    assert not never_reachable.causally_proven
+
+
+def test_pre_patch_infeasible_still_discards_the_candidate():
+    result = VerificationResult(tier_reached="INFEASIBLE", pre_patch_forced_failed=None)
+    assert not result.causally_proven
+    assert result.repair_strength == "not established"
 
 
 def test_regression_guard_forces_the_order_and_keeps_fixtures_in_scope():

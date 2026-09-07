@@ -56,12 +56,15 @@ export function Verification({
           detail={
             result.pre_patch_forced_failed === null
               ? "not attempted"
-              : `before the fix it failed every time under the forced ordering; after the fix it passed every time under the identical ordering (${
-                  result.post_patch_forced_passed ? "confirmed" : "not confirmed"
-                })`
+              : result.post_patch_forced_infeasible
+                ? "before the fix it failed every time under the forced ordering; after the fix that ordering can no longer be produced at all"
+                : `before the fix it failed every time under the forced ordering; after the fix it passed every time under the identical ordering (${
+                    result.post_patch_forced_passed ? "confirmed" : "not confirmed"
+                  })`
           }
           state={
-            result.pre_patch_forced_failed && result.post_patch_forced_passed
+            result.pre_patch_forced_failed &&
+            (result.post_patch_forced_passed || result.post_patch_forced_infeasible)
               ? "pass"
               : result.pre_patch_forced_failed === null
                 ? "skipped"
