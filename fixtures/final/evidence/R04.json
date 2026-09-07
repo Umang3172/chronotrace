@@ -1,0 +1,691 @@
+{
+  "bundle": {
+    "failing": [
+      {
+        "complete": true,
+        "failing_resource": "session.token",
+        "failure_message": "session = <test_R04_fixture_dirty_read.Session object at 0x108a2d880>\n\n    @pytest.mark.asyncio\n    async def test_request_uses_refreshed_token(session: Session) -> None:\n        task = asyncio.create_task(refresher(session))\n        await io_latency()\n        token = await use_token(session)\n        with assertion(\"session.token\"):\n>           assert token == \"tok-2\"\nE           AssertionError: assert None == 'tok-2'\n\nbenchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py:49: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py::test_request_uses_refreshed_token"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "cdb206dfa94c",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "use_token",
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132650851652958,
+            "name": "use_token",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+            "source_line": 25,
+            "span_id": "f4014b25644f456d",
+            "start_ns": 132650851646041,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132650852066958,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "70365f39ef0340b0",
+            "start_ns": 132650851741375,
+            "task_name": "Task-2"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "session.token",
+        "failure_message": "session = <test_R04_fixture_dirty_read.Session object at 0x1087cb7d0>\n\n    @pytest.mark.asyncio\n    async def test_request_uses_refreshed_token(session: Session) -> None:\n        task = asyncio.create_task(refresher(session))\n        await io_latency()\n        token = await use_token(session)\n        with assertion(\"session.token\"):\n>           assert token == \"tok-2\"\nE           AssertionError: assert None == 'tok-2'\n\nbenchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py:49: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py::test_request_uses_refreshed_token"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "0cff28f942f8",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "use_token",
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132651780243250,
+            "name": "use_token",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+            "source_line": 25,
+            "span_id": "52f224c1a0cd4759",
+            "start_ns": 132651780236750,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132651780596625,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "9a1ac239a1014470",
+            "start_ns": 132651780329791,
+            "task_name": "Task-2"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "session.token",
+        "failure_message": "session = <test_R04_fixture_dirty_read.Session object at 0x10c61b7d0>\n\n    @pytest.mark.asyncio\n    async def test_request_uses_refreshed_token(session: Session) -> None:\n        task = asyncio.create_task(refresher(session))\n        await io_latency()\n        token = await use_token(session)\n        with assertion(\"session.token\"):\n>           assert token == \"tok-2\"\nE           AssertionError: assert None == 'tok-2'\n\nbenchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py:49: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py::test_request_uses_refreshed_token"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "75d4d8612d46",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "use_token",
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132652721093125,
+            "name": "use_token",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+            "source_line": 25,
+            "span_id": "f124ff65a31c4d78",
+            "start_ns": 132652721086083,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132652721444083,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "df3f183907654d2d",
+            "start_ns": 132652721182916,
+            "task_name": "Task-2"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "session.token",
+        "failure_message": "session = <test_R04_fixture_dirty_read.Session object at 0x10886f7d0>\n\n    @pytest.mark.asyncio\n    async def test_request_uses_refreshed_token(session: Session) -> None:\n        task = asyncio.create_task(refresher(session))\n        await io_latency()\n        token = await use_token(session)\n        with assertion(\"session.token\"):\n>           assert token == \"tok-2\"\nE           AssertionError: assert None == 'tok-2'\n\nbenchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py:49: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py::test_request_uses_refreshed_token"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "59d218e3e375",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "use_token",
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132656311548541,
+            "name": "use_token",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+            "source_line": 25,
+            "span_id": "897ec55fbe164587",
+            "start_ns": 132656311541041,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132656311936500,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "0375a88c8c694408",
+            "start_ns": 132656311633041,
+            "task_name": "Task-2"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "session.token",
+        "failure_message": "session = <test_R04_fixture_dirty_read.Session object at 0x10ab67aa0>\n\n    @pytest.mark.asyncio\n    async def test_request_uses_refreshed_token(session: Session) -> None:\n        task = asyncio.create_task(refresher(session))\n        await io_latency()\n        token = await use_token(session)\n        with assertion(\"session.token\"):\n>           assert token == \"tok-2\"\nE           AssertionError: assert None == 'tok-2'\n\nbenchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py:49: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py::test_request_uses_refreshed_token"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "a1738d61cef1",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "use_token",
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132659019043666,
+            "name": "use_token",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+            "source_line": 25,
+            "span_id": "d64ccde7b2454732",
+            "start_ns": 132659019035916,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132659019458416,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "fab6aa7a9ac342ec",
+            "start_ns": 132659019146000,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "refresh_token",
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132659019513625,
+            "name": "refresh_token",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+            "source_line": 19,
+            "span_id": "fe481db4d57340e9",
+            "start_ns": 132659019511750,
+            "task_name": "Task-3"
+          }
+        ]
+      }
+    ],
+    "fingerprint_conflicts": 0,
+    "natural_flake_rate": 0.5,
+    "passing": [
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py::test_request_uses_refreshed_token"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "7a60e4b4ba4d",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "refresh_token",
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132653671532791,
+            "name": "refresh_token",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+            "source_line": 19,
+            "span_id": "bbdd7bb7784f46b7",
+            "start_ns": 132653671525708,
+            "task_name": "Task-3"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "use_token",
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132653671655958,
+            "name": "use_token",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+            "source_line": 25,
+            "span_id": "573a7845309743f3",
+            "start_ns": 132653671654250,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132653671670833,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "5c2f28fd01a54436",
+            "start_ns": 132653671669916,
+            "task_name": "Task-2"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py::test_request_uses_refreshed_token"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "4bd66a885b0d",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "refresh_token",
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132654562247958,
+            "name": "refresh_token",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+            "source_line": 19,
+            "span_id": "3ccbdde05b1a4ad8",
+            "start_ns": 132654562230333,
+            "task_name": "Task-3"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "use_token",
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132654562451708,
+            "name": "use_token",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+            "source_line": 25,
+            "span_id": "8c70ed8f0ccc4de1",
+            "start_ns": 132654562449958,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132654562466625,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "13941441624b4ae7",
+            "start_ns": 132654562465541,
+            "task_name": "Task-2"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py::test_request_uses_refreshed_token"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "15fe48e5af78",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "refresh_token",
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132655458000708,
+            "name": "refresh_token",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+            "source_line": 19,
+            "span_id": "63f38c559c57482e",
+            "start_ns": 132655457992791,
+            "task_name": "Task-3"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "use_token",
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132655458259500,
+            "name": "use_token",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+            "source_line": 25,
+            "span_id": "bd065066e0754985",
+            "start_ns": 132655458257708,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132655458276833,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "6e14c83b81d741e8",
+            "start_ns": 132655458275833,
+            "task_name": "Task-2"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py::test_request_uses_refreshed_token"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "3b9c2d4b99e7",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "refresh_token",
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132657214614666,
+            "name": "refresh_token",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+            "source_line": 19,
+            "span_id": "6791315edea848fd",
+            "start_ns": 132657214607041,
+            "task_name": "Task-3"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "use_token",
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132657215028833,
+            "name": "use_token",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+            "source_line": 25,
+            "span_id": "2277054e1122483c",
+            "start_ns": 132657215026250,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132657215046958,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "66cc22c246a44a9f",
+            "start_ns": 132657215045833,
+            "task_name": "Task-2"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py::test_request_uses_refreshed_token"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "b898304fd9af",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "refresh_token",
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132658101327958,
+            "name": "refresh_token",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+            "source_line": 19,
+            "span_id": "ab652204ba114af5",
+            "start_ns": 132658101321583,
+            "task_name": "Task-3"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "use_token",
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132658101554416,
+            "name": "use_token",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+            "source_line": 25,
+            "span_id": "2ba63392184f4422",
+            "start_ns": 132658101552666,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "session.token"
+            },
+            "end_ns": 132658101570791,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "9eda593471e743a1",
+            "start_ns": 132658101569833,
+            "task_name": "Task-2"
+          }
+        ]
+      }
+    ],
+    "runs_executed": 10,
+    "runs_timed_out": 0,
+    "test_id": "benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py::test_request_uses_refreshed_token",
+    "uninstrumented_flake_rate": null
+  },
+  "diagnosis": {
+    "abstain_reason": null,
+    "bug_depth": 1,
+    "candidates": [
+      {
+        "causal_position": 0,
+        "classification": "CAUSALLY_SUFFICIENT",
+        "failing_order": [
+          "use_token#0",
+          "refresh_token#0"
+        ],
+        "forced_failure_rate": 1.0,
+        "in_backward_slice": true,
+        "ochiai_score": 1.0,
+        "op_a": {
+          "access": "read",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "use_token",
+          "resource": "session.token",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+          "source_line": 25,
+          "span_name": "use_token"
+        },
+        "op_b": {
+          "access": "write",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "refresh_token",
+          "resource": "session.token",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+          "source_line": 19,
+          "span_name": "refresh_token"
+        }
+      }
+    ],
+    "candidates_evaluated": 1,
+    "explanation": "Forcing use_token to start before refresh_token reproduced the failure on every attempt, so that ordering is a sufficient condition for the failure.",
+    "proven_inversion": {
+      "causal_position": 0,
+      "classification": "CAUSALLY_SUFFICIENT",
+      "failing_order": [
+        "use_token#0",
+        "refresh_token#0"
+      ],
+      "forced_failure_rate": 1.0,
+      "in_backward_slice": true,
+      "ochiai_score": 1.0,
+      "op_a": {
+        "access": "read",
+        "is_test_scope": true,
+        "occurrence": 0,
+        "qualname": "use_token",
+        "resource": "session.token",
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+        "source_line": 25,
+        "span_name": "use_token"
+      },
+      "op_b": {
+        "access": "write",
+        "is_test_scope": true,
+        "occurrence": 0,
+        "qualname": "refresh_token",
+        "resource": "session.token",
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+        "source_line": 19,
+        "span_name": "refresh_token"
+      }
+    },
+    "status": "RACE_PROVEN"
+  }
+}

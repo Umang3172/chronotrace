@@ -1,0 +1,675 @@
+{
+  "bundle": {
+    "failing": [
+      {
+        "complete": true,
+        "failing_resource": "broker.ready",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_subscriber_waits_for_ready() -> None:\n        BROKER.clear()\n        startup = asyncio.create_task(broker_startup())\n        await io_latency()\n        accepted = await subscribe()\n        with assertion(\"broker.ready\"):\n>           assert accepted is True\nE           assert False is True\n\nbenchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py:38: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py::test_subscriber_waits_for_ready"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "1bc05ed7d6e0",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "subscribe",
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132910846779000,
+            "name": "subscribe",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+            "source_line": 19,
+            "span_id": "0e24d4aa2b7a4b1b",
+            "start_ns": 132910846771666,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132910846969500,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "ed96ec0af9c84b7b",
+            "start_ns": 132910846876708,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "broker.ready",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_subscriber_waits_for_ready() -> None:\n        BROKER.clear()\n        startup = asyncio.create_task(broker_startup())\n        await io_latency()\n        accepted = await subscribe()\n        with assertion(\"broker.ready\"):\n>           assert accepted is True\nE           assert False is True\n\nbenchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py:38: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py::test_subscriber_waits_for_ready"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "299f4c7d8396",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "subscribe",
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132911831040125,
+            "name": "subscribe",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+            "source_line": 19,
+            "span_id": "45e9addefe8945e2",
+            "start_ns": 132911831034000,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132911831225041,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "612d8712640a429c",
+            "start_ns": 132911831137375,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "broker.ready",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_subscriber_waits_for_ready() -> None:\n        BROKER.clear()\n        startup = asyncio.create_task(broker_startup())\n        await io_latency()\n        accepted = await subscribe()\n        with assertion(\"broker.ready\"):\n>           assert accepted is True\nE           assert False is True\n\nbenchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py:38: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py::test_subscriber_waits_for_ready"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "71a5abc906fc",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "subscribe",
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132912770536541,
+            "name": "subscribe",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+            "source_line": 19,
+            "span_id": "13e84b2ea72b432b",
+            "start_ns": 132912770526916,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132912770896291,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "7c0d522548464a75",
+            "start_ns": 132912770740666,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "broker.ready",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_subscriber_waits_for_ready() -> None:\n        BROKER.clear()\n        startup = asyncio.create_task(broker_startup())\n        await io_latency()\n        accepted = await subscribe()\n        with assertion(\"broker.ready\"):\n>           assert accepted is True\nE           assert False is True\n\nbenchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py:38: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py::test_subscriber_waits_for_ready"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "b32ab5eb949b",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "subscribe",
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132913706093166,
+            "name": "subscribe",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+            "source_line": 19,
+            "span_id": "598b865e9f894f2b",
+            "start_ns": 132913706085916,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132913706269000,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "c18c943580a64b34",
+            "start_ns": 132913706182083,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "broker.ready",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_subscriber_waits_for_ready() -> None:\n        BROKER.clear()\n        startup = asyncio.create_task(broker_startup())\n        await io_latency()\n        accepted = await subscribe()\n        with assertion(\"broker.ready\"):\n>           assert accepted is True\nE           assert False is True\n\nbenchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py:38: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py::test_subscriber_waits_for_ready"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "50d2834fc7d5",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "subscribe",
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132916442247458,
+            "name": "subscribe",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+            "source_line": 19,
+            "span_id": "3905869e850240d2",
+            "start_ns": 132916442240208,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132916442459500,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "468d3c231f874f40",
+            "start_ns": 132916442328750,
+            "task_name": "Task-1"
+          }
+        ]
+      }
+    ],
+    "fingerprint_conflicts": 0,
+    "natural_flake_rate": 0.5,
+    "passing": [
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py::test_subscriber_waits_for_ready"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "991a84058f36",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "publish_ready",
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132909935778125,
+            "name": "publish_ready",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+            "source_line": 13,
+            "span_id": "caaec99b3b234fb6",
+            "start_ns": 132909935541333,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "subscribe",
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132909936332541,
+            "name": "subscribe",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+            "source_line": 19,
+            "span_id": "787b7639bd8b453e",
+            "start_ns": 132909936329375,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132909936356250,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "2163232385cd4029",
+            "start_ns": 132909936355000,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py::test_subscriber_waits_for_ready"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "f15b192fa77a",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "publish_ready",
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132914605276875,
+            "name": "publish_ready",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+            "source_line": 13,
+            "span_id": "1570bb822d8c467d",
+            "start_ns": 132914605269875,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "subscribe",
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132914606198958,
+            "name": "subscribe",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+            "source_line": 19,
+            "span_id": "14d1aad4301143f2",
+            "start_ns": 132914606196791,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132914606217166,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "c06621ebbee94d25",
+            "start_ns": 132914606216208,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py::test_subscriber_waits_for_ready"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "66065585de6c",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "publish_ready",
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132915552966583,
+            "name": "publish_ready",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+            "source_line": 13,
+            "span_id": "93895eeff3344d55",
+            "start_ns": 132915552953083,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "subscribe",
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132915553691416,
+            "name": "subscribe",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+            "source_line": 19,
+            "span_id": "740a937dfb294ac6",
+            "start_ns": 132915553688791,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132915553719791,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "7556bfee5c894948",
+            "start_ns": 132915553718708,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py::test_subscriber_waits_for_ready"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "1b6fe9594890",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "publish_ready",
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132917379973916,
+            "name": "publish_ready",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+            "source_line": 13,
+            "span_id": "6553b9cfb6df4595",
+            "start_ns": 132917379966875,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "subscribe",
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132917380929791,
+            "name": "subscribe",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+            "source_line": 19,
+            "span_id": "a9c95d12d7194835",
+            "start_ns": 132917380927416,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132917380947708,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "2670f6ac7b034f08",
+            "start_ns": 132917380946458,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py::test_subscriber_waits_for_ready"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "c42ab7cdcb3f",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "publish_ready",
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132918232015291,
+            "name": "publish_ready",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+            "source_line": 13,
+            "span_id": "e45ced01e1944dc6",
+            "start_ns": 132918232008541,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "subscribe",
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132918232874750,
+            "name": "subscribe",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+            "source_line": 19,
+            "span_id": "f5e27f9e00aa4e6e",
+            "start_ns": 132918232872583,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "broker.ready"
+            },
+            "end_ns": 132918232891791,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "806078ca5d324481",
+            "start_ns": 132918232890666,
+            "task_name": "Task-1"
+          }
+        ]
+      }
+    ],
+    "runs_executed": 10,
+    "runs_timed_out": 0,
+    "test_id": "benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py::test_subscriber_waits_for_ready",
+    "uninstrumented_flake_rate": null
+  },
+  "diagnosis": {
+    "abstain_reason": null,
+    "bug_depth": 1,
+    "candidates": [
+      {
+        "causal_position": 0,
+        "classification": "CAUSALLY_SUFFICIENT",
+        "failing_order": [
+          "subscribe#0",
+          "publish_ready#0"
+        ],
+        "forced_failure_rate": 1.0,
+        "in_backward_slice": true,
+        "ochiai_score": 1.0,
+        "op_a": {
+          "access": "read",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "subscribe",
+          "resource": "broker.ready",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+          "source_line": 19,
+          "span_name": "subscribe"
+        },
+        "op_b": {
+          "access": "write",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "publish_ready",
+          "resource": "broker.ready",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+          "source_line": 13,
+          "span_name": "publish_ready"
+        }
+      }
+    ],
+    "candidates_evaluated": 1,
+    "explanation": "Forcing subscribe to start before publish_ready reproduced the failure on every attempt, so that ordering is a sufficient condition for the failure.",
+    "proven_inversion": {
+      "causal_position": 0,
+      "classification": "CAUSALLY_SUFFICIENT",
+      "failing_order": [
+        "subscribe#0",
+        "publish_ready#0"
+      ],
+      "forced_failure_rate": 1.0,
+      "in_backward_slice": true,
+      "ochiai_score": 1.0,
+      "op_a": {
+        "access": "read",
+        "is_test_scope": true,
+        "occurrence": 0,
+        "qualname": "subscribe",
+        "resource": "broker.ready",
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+        "source_line": 19,
+        "span_name": "subscribe"
+      },
+      "op_b": {
+        "access": "write",
+        "is_test_scope": true,
+        "occurrence": 0,
+        "qualname": "publish_ready",
+        "resource": "broker.ready",
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+        "source_line": 13,
+        "span_name": "publish_ready"
+      }
+    },
+    "status": "RACE_PROVEN"
+  }
+}

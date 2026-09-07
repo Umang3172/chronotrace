@@ -1,0 +1,693 @@
+{
+  "bundle": {
+    "failing": [
+      {
+        "complete": true,
+        "failing_resource": "rng.sample",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_sample_is_above_threshold() -> None:\n        SAMPLES.clear()\n        await draw_sample()\n        value = await read_sample()\n        with assertion(\"rng.sample\"):\n>           assert value > 0.15\nE           assert 0.10447065823921975 > 0.15\n\nbenchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py:38: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py::test_sample_is_above_threshold"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "608332c637d8",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "draw_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131607577263625,
+            "name": "draw_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 18,
+            "span_id": "b2affeefeda2494b",
+            "start_ns": 131607577252458,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131607577348791,
+            "name": "read_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 26,
+            "span_id": "db15b2e15a2a46fc",
+            "start_ns": 131607577346875,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131607577438041,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "0e45a8149e754a1d",
+            "start_ns": 131607577363041,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "rng.sample",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_sample_is_above_threshold() -> None:\n        SAMPLES.clear()\n        await draw_sample()\n        value = await read_sample()\n        with assertion(\"rng.sample\"):\n>           assert value > 0.15\nE           assert 0.06807552939118122 > 0.15\n\nbenchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py:38: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py::test_sample_is_above_threshold"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "2ca2a884cdc6",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "draw_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131609359631791,
+            "name": "draw_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 18,
+            "span_id": "075fce8c8c31474d",
+            "start_ns": 131609359621500,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131609359710291,
+            "name": "read_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 26,
+            "span_id": "8a43921a65be4b4c",
+            "start_ns": 131609359708416,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131609359805958,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "0c61556613894959",
+            "start_ns": 131609359727041,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "rng.sample",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_sample_is_above_threshold() -> None:\n        SAMPLES.clear()\n        await draw_sample()\n        value = await read_sample()\n        with assertion(\"rng.sample\"):\n>           assert value > 0.15\nE           assert 0.05691726888257298 > 0.15\n\nbenchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py:38: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py::test_sample_is_above_threshold"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "8d589330be61",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "draw_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131610289671625,
+            "name": "draw_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 18,
+            "span_id": "f57ec485a5eb492f",
+            "start_ns": 131610289658041,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131610289768541,
+            "name": "read_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 26,
+            "span_id": "5572085e312a4fc6",
+            "start_ns": 131610289766708,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131610289866166,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "4b164ed1b48c4d75",
+            "start_ns": 131610289783375,
+            "task_name": "Task-1"
+          }
+        ]
+      }
+    ],
+    "fingerprint_conflicts": 0,
+    "natural_flake_rate": 0.3,
+    "passing": [
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py::test_sample_is_above_threshold"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "2f2a612a8a47",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "draw_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131604791603875,
+            "name": "draw_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 18,
+            "span_id": "d1b78fef0d2542c0",
+            "start_ns": 131604791591416,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131604791692041,
+            "name": "read_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 26,
+            "span_id": "b296b413e4384f95",
+            "start_ns": 131604791690250,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131604791707708,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "0f21abf84bb243bd",
+            "start_ns": 131604791706625,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py::test_sample_is_above_threshold"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "7eb67cba7b16",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "draw_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131605719117208,
+            "name": "draw_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 18,
+            "span_id": "f0755365c69e4ea4",
+            "start_ns": 131605719103500,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131605719217500,
+            "name": "read_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 26,
+            "span_id": "adb3832f643840f0",
+            "start_ns": 131605719215666,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131605719232750,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "055419ea4bbf482c",
+            "start_ns": 131605719231750,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py::test_sample_is_above_threshold"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "ac2cc14bfac4",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "draw_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131606657639375,
+            "name": "draw_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 18,
+            "span_id": "75aff6a0f2fb4a0a",
+            "start_ns": 131606657629333,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131606657707916,
+            "name": "read_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 26,
+            "span_id": "e3bb7472abcc477e",
+            "start_ns": 131606657706208,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131606657721416,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "e0e84a0126824dd8",
+            "start_ns": 131606657720500,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py::test_sample_is_above_threshold"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "b70a20e4cfb7",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "draw_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131608488302583,
+            "name": "draw_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 18,
+            "span_id": "20e3f3476e664aca",
+            "start_ns": 131608488290875,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131608488403708,
+            "name": "read_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 26,
+            "span_id": "042825bec8794362",
+            "start_ns": 131608488401750,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131608488419250,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "d1149edbe2bc477c",
+            "start_ns": 131608488418166,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py::test_sample_is_above_threshold"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "e5d694de4454",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "draw_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131611234685166,
+            "name": "draw_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 18,
+            "span_id": "3790488656f2443b",
+            "start_ns": 131611234670625,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131611234785583,
+            "name": "read_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 26,
+            "span_id": "f5be001b71434e60",
+            "start_ns": 131611234783833,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131611234800083,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "897ccfc0e1cd4e97",
+            "start_ns": 131611234799125,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py::test_sample_is_above_threshold"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "d9eadde8d07c",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "draw_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131612161031875,
+            "name": "draw_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 18,
+            "span_id": "25527d938b1549bf",
+            "start_ns": 131612161019333,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131612161139958,
+            "name": "read_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 26,
+            "span_id": "835d8875919d419a",
+            "start_ns": 131612161138166,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131612161154833,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "ed74ca5450b54e9e",
+            "start_ns": 131612161153833,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py::test_sample_is_above_threshold"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "6dcf260e77c4",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "draw_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131613021401250,
+            "name": "draw_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 18,
+            "span_id": "e2b24ba3e1164ae3",
+            "start_ns": 131613021390666,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_sample",
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131613021491708,
+            "name": "read_sample",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py",
+            "source_line": 26,
+            "span_id": "ed217560f0454d32",
+            "start_ns": 131613021489791,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "rng.sample"
+            },
+            "end_ns": 131613021506666,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "9021a5f768184a0b",
+            "start_ns": 131613021505708,
+            "task_name": "Task-1"
+          }
+        ]
+      }
+    ],
+    "runs_executed": 10,
+    "runs_timed_out": 0,
+    "test_id": "benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py::test_sample_is_above_threshold",
+    "uninstrumented_flake_rate": null
+  },
+  "diagnosis": {
+    "abstain_reason": "NOT_A_RACE",
+    "bug_depth": null,
+    "candidates": [],
+    "candidates_evaluated": 0,
+    "explanation": "Passing and failing runs executed operations in the same order, and this test draws on unseeded random number generation. The nondeterminism is in the data, not the schedule.",
+    "proven_inversion": null,
+    "status": "ABSTAINED"
+  }
+}

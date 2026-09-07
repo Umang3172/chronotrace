@@ -1,0 +1,1362 @@
+{
+  "bundle": {
+    "failing": [
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "6d9189424d0d",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131826966400000,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "d4456b6e96cb4255",
+            "start_ns": 131826966393583,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131826966495500,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "a8ecb16cea0d4e63",
+            "start_ns": 131826966493708,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131826966788708,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "6e4a7bb2cb854187",
+            "start_ns": 131826966508958,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "25228c3304f1",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131827923935916,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "d1311501196145a7",
+            "start_ns": 131827923930041,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131827924014625,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "b0c06e5d6e504d3a",
+            "start_ns": 131827924012875,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131827924269791,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "fff73c57b44b460c",
+            "start_ns": 131827924027750,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "b916634eea6a",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131828896269041,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "a6fd4f443d7c4a76",
+            "start_ns": 131828896258916,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131828896380416,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "12629d389132427d",
+            "start_ns": 131828896378375,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131828896768583,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "d738e383fb554a5f",
+            "start_ns": 131828896395041,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "3d26881683f1",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131829821310458,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "be087bc67cf7407f",
+            "start_ns": 131829821303875,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131829821415708,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "c62840bffa3f40cf",
+            "start_ns": 131829821413875,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131829821741208,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "f62fc04cd7ce4721",
+            "start_ns": 131829821429208,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "c16a1c2da27d",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131830741934541,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "be740dd82ab14628",
+            "start_ns": 131830741926083,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131830742050541,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "53cd234713c54cec",
+            "start_ns": 131830742048458,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131830742452458,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "85b1f00093244760",
+            "start_ns": 131830742065583,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "8aced9bed702",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131831682140208,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "24a8747448f44a58",
+            "start_ns": 131831682134250,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131831682216791,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "3ddab565b2ea43a9",
+            "start_ns": 131831682214833,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131831682478125,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "83a2796acdee44c8",
+            "start_ns": 131831682229750,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "5f07695d5bed",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131832619705708,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "29849fa86005431b",
+            "start_ns": 131832619696625,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131832619784333,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "12cb1503617d47f2",
+            "start_ns": 131832619782416,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131832620033833,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "d5a88d2f113f4439",
+            "start_ns": 131832619798083,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "d44e78b2d2d6",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131833490473291,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "efaaa44431bc4305",
+            "start_ns": 131833490467791,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131833490559125,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "fb3812c7fc864c46",
+            "start_ns": 131833490557500,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131833490811291,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "5012f39da3df4a95",
+            "start_ns": 131833490571916,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "dea6d2aed2b3",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131834377869583,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "8b1ae7d4f2ab4217",
+            "start_ns": 131834377862625,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131834377965708,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "21ce74bb545645af",
+            "start_ns": 131834377963958,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131834378257541,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "3b546520a8264053",
+            "start_ns": 131834377980166,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "67fd37eda774",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131835324002708,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "2c76f3ab028242ef",
+            "start_ns": 131835323996041,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131835324094708,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "357af6f1fbb14638",
+            "start_ns": 131835324092916,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131835324374125,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "a09038c86ba44f50",
+            "start_ns": 131835324108000,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "fd5762a040c0",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131836233013916,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "e4d59bf188f94d20",
+            "start_ns": 131836233007416,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131836233103708,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "119a7c50b8e449d6",
+            "start_ns": 131836233101916,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131836233657583,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "912b4e538982457c",
+            "start_ns": 131836233116916,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "abe604a36e6b",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131837177088666,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "1fbcbd3d28df45a8",
+            "start_ns": 131837177082000,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131837177165708,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "bf2eeead32f64c0b",
+            "start_ns": 131837177163833,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131837177459166,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "6f6098e83f134147",
+            "start_ns": 131837177179750,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "76c2ea70c5de",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131838139482750,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "75dbb93ffa804b79",
+            "start_ns": 131838139471041,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131838139668958,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "34666778f47e480b",
+            "start_ns": 131838139667291,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131838139938166,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "1f27441c3bb444f0",
+            "start_ns": 131838139683166,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "dd81ab15f5d4",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131839051224166,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "342342ce0e1045bd",
+            "start_ns": 131839051216833,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131839051317125,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "62d431c99cdd4059",
+            "start_ns": 131839051315333,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131839051859500,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "84e9e40b7c084f65",
+            "start_ns": 131839051331375,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "cfc9fc9470ca",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131839992233708,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "5119a445c18c453a",
+            "start_ns": 131839992226458,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131839992365833,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "57fbddb43d1d4aa6",
+            "start_ns": 131839992362708,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131839992753333,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "22e6bd9cb8324641",
+            "start_ns": 131839992383791,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "bebb4d040690",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131840942695250,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "fd218f765c034445",
+            "start_ns": 131840942686916,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131840942808083,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "b80be1351f17487e",
+            "start_ns": 131840942806208,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131840943468708,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "03d635ca59094965",
+            "start_ns": 131840942823666,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "e758e0ee8e23",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131841880888791,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "25279b58b06a4d38",
+            "start_ns": 131841880882083,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131841880989208,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "258d53cfc2f1478c",
+            "start_ns": 131841880987458,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131841881265791,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "4ca082fe0b244fb6",
+            "start_ns": 131841881002583,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "99b7261021b3",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131842816350625,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "72d8cd8ff5874eb5",
+            "start_ns": 131842816343083,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131842816447958,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "303d860231414256",
+            "start_ns": 131842816446125,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131842816737708,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "7cdf6b3898d24a14",
+            "start_ns": 131842816461458,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "947114474e09",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131843771586291,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "9951338a2d5f4233",
+            "start_ns": 131843771579875,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131843771684250,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "256b150f5d754737",
+            "start_ns": 131843771682333,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131843771988791,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "55be7066bd274c7a",
+            "start_ns": 131843771697750,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "cart.total",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_cart_total() -> None:\n        await compute_total()\n        total = await read_total()\n        with assertion(\"cart.total\"):\n>           assert total == 8\nE           assert 7 == 8\n\nbenchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py:31: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "12595af3d9a4",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "compute_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131844691460250,
+            "name": "compute_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 14,
+            "span_id": "16499ffb3508435a",
+            "start_ns": 131844691452875,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_total",
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131844691565041,
+            "name": "read_total",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py",
+            "source_line": 20,
+            "span_id": "c7cc29c0b9e64d90",
+            "start_ns": 131844691563166,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "cart.total"
+            },
+            "end_ns": 131844691927083,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "733d8f68aa8f463a",
+            "start_ns": 131844691579000,
+            "task_name": "Task-1"
+          }
+        ]
+      }
+    ],
+    "fingerprint_conflicts": 0,
+    "natural_flake_rate": 1.0,
+    "passing": [],
+    "runs_executed": 20,
+    "runs_timed_out": 0,
+    "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total",
+    "uninstrumented_flake_rate": null
+  },
+  "diagnosis": {
+    "abstain_reason": "NO_TRACE_PAIR",
+    "bug_depth": null,
+    "candidates": [],
+    "candidates_evaluated": 0,
+    "explanation": "The capture budget produced only failing runs (20 runs). Diagnosis compares a passing execution against a failing one; there is nothing to compare.",
+    "proven_inversion": null,
+    "status": "ABSTAINED"
+  }
+}

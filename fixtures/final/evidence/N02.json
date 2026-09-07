@@ -1,0 +1,627 @@
+{
+  "bundle": {
+    "failing": [
+      {
+        "complete": false,
+        "failing_resource": null,
+        "failure_message": "@pytest.mark.asyncio\n    async def test_upstream_returns_ok() -> None:\n        RESPONSES.clear()\n>       await http_get()\n\nbenchmark/cases/N02_network_timeout/test_N02_network_timeout.py:35: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nchronotrace/capture/instrument.py:150: in wrapper\n    return await fn(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n    @operation(\"http_get\", resource=\"upstream.response\", access=\"write\")\n    async def http_get() -> None:\n        \"\"\"Call an upstream service that intermittently times out.\"\"\"\n        await asyncio.sleep(0)\n        if random.random() < 0.4:  # noqa: S311\n>           raise TimeoutError(\"upstream did not respond in time\")\nE           TimeoutError: upstream did not respond in time\n\nbenchmark/cases/N02_network_timeout/test_N02_network_timeout.py:22: TimeoutError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N02_network_timeout/test_N02_network_timeout.py::test_upstream_returns_ok"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "0949d28dc2b1",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "http_get",
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131683033670083,
+            "name": "http_get",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N02_network_timeout/test_N02_network_timeout.py",
+            "source_line": 17,
+            "span_id": "1e97489a28494ae3",
+            "start_ns": 131683033626875,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": false,
+        "failing_resource": null,
+        "failure_message": "@pytest.mark.asyncio\n    async def test_upstream_returns_ok() -> None:\n        RESPONSES.clear()\n>       await http_get()\n\nbenchmark/cases/N02_network_timeout/test_N02_network_timeout.py:35: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nchronotrace/capture/instrument.py:150: in wrapper\n    return await fn(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n    @operation(\"http_get\", resource=\"upstream.response\", access=\"write\")\n    async def http_get() -> None:\n        \"\"\"Call an upstream service that intermittently times out.\"\"\"\n        await asyncio.sleep(0)\n        if random.random() < 0.4:  # noqa: S311\n>           raise TimeoutError(\"upstream did not respond in time\")\nE           TimeoutError: upstream did not respond in time\n\nbenchmark/cases/N02_network_timeout/test_N02_network_timeout.py:22: TimeoutError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N02_network_timeout/test_N02_network_timeout.py::test_upstream_returns_ok"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "a36c1223feed",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "http_get",
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131687573552291,
+            "name": "http_get",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N02_network_timeout/test_N02_network_timeout.py",
+            "source_line": 17,
+            "span_id": "2c5b810ba74a447c",
+            "start_ns": 131687573511500,
+            "task_name": "Task-1"
+          }
+        ]
+      }
+    ],
+    "fingerprint_conflicts": 0,
+    "natural_flake_rate": 0.2,
+    "passing": [
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N02_network_timeout/test_N02_network_timeout.py::test_upstream_returns_ok"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "358b3f9689cc",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "http_get",
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131679366154833,
+            "name": "http_get",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N02_network_timeout/test_N02_network_timeout.py",
+            "source_line": 17,
+            "span_id": "f5396a7e12a54322",
+            "start_ns": 131679365933125,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_response",
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131679366376125,
+            "name": "read_response",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N02_network_timeout/test_N02_network_timeout.py",
+            "source_line": 26,
+            "span_id": "1657b9a7ccd64b06",
+            "start_ns": 131679366374083,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131679366391041,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "210d40d7c82147b2",
+            "start_ns": 131679366390083,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N02_network_timeout/test_N02_network_timeout.py::test_upstream_returns_ok"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "fd5f255b0da0",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "http_get",
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131680332589500,
+            "name": "http_get",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N02_network_timeout/test_N02_network_timeout.py",
+            "source_line": 17,
+            "span_id": "7883a908f18f442f",
+            "start_ns": 131680332546708,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_response",
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131680332683333,
+            "name": "read_response",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N02_network_timeout/test_N02_network_timeout.py",
+            "source_line": 26,
+            "span_id": "9eab1f9528bc49c1",
+            "start_ns": 131680332681541,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131680332697541,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "6815308b09984aaa",
+            "start_ns": 131680332696583,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N02_network_timeout/test_N02_network_timeout.py::test_upstream_returns_ok"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "8081d833428c",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "http_get",
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131681235827416,
+            "name": "http_get",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N02_network_timeout/test_N02_network_timeout.py",
+            "source_line": 17,
+            "span_id": "d2d9c8bf7aa94285",
+            "start_ns": 131681235770458,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_response",
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131681235980250,
+            "name": "read_response",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N02_network_timeout/test_N02_network_timeout.py",
+            "source_line": 26,
+            "span_id": "0ac849ad6b824998",
+            "start_ns": 131681235977583,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131681235999208,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "3279a117f76849f2",
+            "start_ns": 131681235998125,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N02_network_timeout/test_N02_network_timeout.py::test_upstream_returns_ok"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "58e9db699d2f",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "http_get",
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131682143818625,
+            "name": "http_get",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N02_network_timeout/test_N02_network_timeout.py",
+            "source_line": 17,
+            "span_id": "e205e082f1464c44",
+            "start_ns": 131682143776500,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_response",
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131682143907708,
+            "name": "read_response",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N02_network_timeout/test_N02_network_timeout.py",
+            "source_line": 26,
+            "span_id": "23b5974d94584e08",
+            "start_ns": 131682143905958,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131682143923916,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "734fd56c7ceb4f2c",
+            "start_ns": 131682143922875,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N02_network_timeout/test_N02_network_timeout.py::test_upstream_returns_ok"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "6b9b6beaee21",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "http_get",
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131683960522583,
+            "name": "http_get",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N02_network_timeout/test_N02_network_timeout.py",
+            "source_line": 17,
+            "span_id": "86093c8b23ab444e",
+            "start_ns": 131683960485333,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_response",
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131683960613083,
+            "name": "read_response",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N02_network_timeout/test_N02_network_timeout.py",
+            "source_line": 26,
+            "span_id": "2362f7f640594879",
+            "start_ns": 131683960611500,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131683960630916,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "a1827d0ec29e4105",
+            "start_ns": 131683960630041,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N02_network_timeout/test_N02_network_timeout.py::test_upstream_returns_ok"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "0203fde95115",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "http_get",
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131684835431250,
+            "name": "http_get",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N02_network_timeout/test_N02_network_timeout.py",
+            "source_line": 17,
+            "span_id": "5cd3de7389b6492c",
+            "start_ns": 131684835393333,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_response",
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131684835524833,
+            "name": "read_response",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N02_network_timeout/test_N02_network_timeout.py",
+            "source_line": 26,
+            "span_id": "7b4ed59d7b4d4f8c",
+            "start_ns": 131684835523125,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131684835539916,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "2ecd96c822f2464c",
+            "start_ns": 131684835538958,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N02_network_timeout/test_N02_network_timeout.py::test_upstream_returns_ok"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "f2796a22ba40",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "http_get",
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131685751241416,
+            "name": "http_get",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N02_network_timeout/test_N02_network_timeout.py",
+            "source_line": 17,
+            "span_id": "362c5e08323f43d7",
+            "start_ns": 131685751201583,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_response",
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131685751335166,
+            "name": "read_response",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N02_network_timeout/test_N02_network_timeout.py",
+            "source_line": 26,
+            "span_id": "4e5275db2cdf4aa7",
+            "start_ns": 131685751333458,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131685751349500,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "91c439d559214e3d",
+            "start_ns": 131685751348583,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N02_network_timeout/test_N02_network_timeout.py::test_upstream_returns_ok"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "4bbd0b9a766c",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "http_get",
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131686664238625,
+            "name": "http_get",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N02_network_timeout/test_N02_network_timeout.py",
+            "source_line": 17,
+            "span_id": "eb8bbcaa61e445a2",
+            "start_ns": 131686664200791,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_response",
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131686664342166,
+            "name": "read_response",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/N02_network_timeout/test_N02_network_timeout.py",
+            "source_line": 26,
+            "span_id": "1d76c0cff3744de8",
+            "start_ns": 131686664340416,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "upstream.response"
+            },
+            "end_ns": 131686664356541,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "74eddd362c2a4af5",
+            "start_ns": 131686664355583,
+            "task_name": "Task-1"
+          }
+        ]
+      }
+    ],
+    "runs_executed": 10,
+    "runs_timed_out": 0,
+    "test_id": "benchmark/cases/N02_network_timeout/test_N02_network_timeout.py::test_upstream_returns_ok",
+    "uninstrumented_flake_rate": null
+  },
+  "diagnosis": {
+    "abstain_reason": "NOT_A_RACE",
+    "bug_depth": null,
+    "candidates": [],
+    "candidates_evaluated": 0,
+    "explanation": "The failing run did not reach its assertion \u2014 it raised before getting there. That is not evidence about a schedule.",
+    "proven_inversion": null,
+    "status": "ABSTAINED"
+  }
+}

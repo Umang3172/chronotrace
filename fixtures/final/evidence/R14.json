@@ -1,0 +1,833 @@
+{
+  "bundle": {
+    "failing": [
+      {
+        "complete": true,
+        "failing_resource": "batch.items",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_batch_is_complete() -> None:\n        BATCH.clear()\n        handle = asyncio.create_task(batch_worker())\n        await io_latency(2.2)\n        observed = await read_batch()\n        with assertion(\"batch.items\"):\n>           assert observed == EXPECTED\nE           AssertionError: assert [] == ['alpha', 'beta', 'gamma']\nE             \nE             Right contains 3 more items, first extra item: 'alpha'\nE             Use -v to get more diff\n\nbenchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py:51: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py::test_batch_is_complete"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "d8947c8cf147",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_batch",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133385494260916,
+            "name": "read_batch",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 31,
+            "span_id": "8b40cdfd6a1c4462",
+            "start_ns": 133385494025250,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133385494500333,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "621a3807728c477d",
+            "start_ns": 133385494355833,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "record_item",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133385494888375,
+            "name": "record_item",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 25,
+            "span_id": "9317788742914525",
+            "start_ns": 133385494886208,
+            "task_name": "Task-2"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "batch.items",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_batch_is_complete() -> None:\n        BATCH.clear()\n        handle = asyncio.create_task(batch_worker())\n        await io_latency(2.2)\n        observed = await read_batch()\n        with assertion(\"batch.items\"):\n>           assert observed == EXPECTED\nE           AssertionError: assert [] == ['alpha', 'beta', 'gamma']\nE             \nE             Right contains 3 more items, first extra item: 'alpha'\nE             Use -v to get more diff\n\nbenchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py:51: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py::test_batch_is_complete"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "08920a36009f",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_batch",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133386437191958,
+            "name": "read_batch",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 31,
+            "span_id": "5f46b4d1bbf54a7e",
+            "start_ns": 133386437184041,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133386437465041,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "7f50acaefdc84737",
+            "start_ns": 133386437290041,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "batch.items",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_batch_is_complete() -> None:\n        BATCH.clear()\n        handle = asyncio.create_task(batch_worker())\n        await io_latency(2.2)\n        observed = await read_batch()\n        with assertion(\"batch.items\"):\n>           assert observed == EXPECTED\nE           AssertionError: assert [] == ['alpha', 'beta', 'gamma']\nE             \nE             Right contains 3 more items, first extra item: 'alpha'\nE             Use -v to get more diff\n\nbenchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py:51: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py::test_batch_is_complete"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "28d7d6872b84",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_batch",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133387377801458,
+            "name": "read_batch",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 31,
+            "span_id": "775a23ccb6f94f0f",
+            "start_ns": 133387377794291,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133387378040000,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "0141ac6392d542f6",
+            "start_ns": 133387377882458,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "batch.items",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_batch_is_complete() -> None:\n        BATCH.clear()\n        handle = asyncio.create_task(batch_worker())\n        await io_latency(2.2)\n        observed = await read_batch()\n        with assertion(\"batch.items\"):\n>           assert observed == EXPECTED\nE           AssertionError: assert ['alpha'] == ['alpha', 'beta', 'gamma']\nE             \nE             Right contains 2 more items, first extra item: 'beta'\nE             Use -v to get more diff\n\nbenchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py:51: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py::test_batch_is_complete"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "d5b8412c0247",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "record_item",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133390058376208,
+            "name": "record_item",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 25,
+            "span_id": "a7d2337cf47c43e1",
+            "start_ns": 133390058369208,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_batch",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133390059202416,
+            "name": "read_batch",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 31,
+            "span_id": "a90d5b118a2f47bc",
+            "start_ns": 133390059200333,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133390059366333,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "3bca536e6e7241e8",
+            "start_ns": 133390059217250,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "batch.items",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_batch_is_complete() -> None:\n        BATCH.clear()\n        handle = asyncio.create_task(batch_worker())\n        await io_latency(2.2)\n        observed = await read_batch()\n        with assertion(\"batch.items\"):\n>           assert observed == EXPECTED\nE           AssertionError: assert ['alpha'] == ['alpha', 'beta', 'gamma']\nE             \nE             Right contains 2 more items, first extra item: 'beta'\nE             Use -v to get more diff\n\nbenchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py:51: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py::test_batch_is_complete"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "2e886d4bcd7c",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "record_item",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133390950485000,
+            "name": "record_item",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 25,
+            "span_id": "08a9e360672c464b",
+            "start_ns": 133390950477291,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_batch",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133390950775375,
+            "name": "read_batch",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 31,
+            "span_id": "6dcd235edd814d6c",
+            "start_ns": 133390950773166,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133390950940500,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "f9f19264d6f249a2",
+            "start_ns": 133390950789750,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "batch.items",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_batch_is_complete() -> None:\n        BATCH.clear()\n        handle = asyncio.create_task(batch_worker())\n        await io_latency(2.2)\n        observed = await read_batch()\n        with assertion(\"batch.items\"):\n>           assert observed == EXPECTED\nE           AssertionError: assert ['alpha'] == ['alpha', 'beta', 'gamma']\nE             \nE             Right contains 2 more items, first extra item: 'beta'\nE             Use -v to get more diff\n\nbenchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py:51: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py::test_batch_is_complete"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "9423346a9abb",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "record_item",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133391854028500,
+            "name": "record_item",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 25,
+            "span_id": "fc95b5ccf52c4ec5",
+            "start_ns": 133391854022458,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_batch",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133391854125333,
+            "name": "read_batch",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 31,
+            "span_id": "eb1ff60e8eeb4110",
+            "start_ns": 133391854123333,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133391854280250,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "e1531496775d47fa",
+            "start_ns": 133391854139250,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "batch.items",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_batch_is_complete() -> None:\n        BATCH.clear()\n        handle = asyncio.create_task(batch_worker())\n        await io_latency(2.2)\n        observed = await read_batch()\n        with assertion(\"batch.items\"):\n>           assert observed == EXPECTED\nE           AssertionError: assert [] == ['alpha', 'beta', 'gamma']\nE             \nE             Right contains 3 more items, first extra item: 'alpha'\nE             Use -v to get more diff\n\nbenchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py:51: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py::test_batch_is_complete"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "9f6bf139e463",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_batch",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133392786978625,
+            "name": "read_batch",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 31,
+            "span_id": "2a9299d3a89240ad",
+            "start_ns": 133392786971208,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133392787245625,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "19176cd32d8045ad",
+            "start_ns": 133392787088583,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": "batch.items",
+        "failure_message": "@pytest.mark.asyncio\n    async def test_batch_is_complete() -> None:\n        BATCH.clear()\n        handle = asyncio.create_task(batch_worker())\n        await io_latency(2.2)\n        observed = await read_batch()\n        with assertion(\"batch.items\"):\n>           assert observed == EXPECTED\nE           AssertionError: assert ['alpha'] == ['alpha', 'beta', 'gamma']\nE             \nE             Right contains 2 more items, first extra item: 'beta'\nE             Use -v to get more diff\n\nbenchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py:51: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py::test_batch_is_complete"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "3132c33f4ae9",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "record_item",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133393721225208,
+            "name": "record_item",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 25,
+            "span_id": "2a864d2b9e5c4c55",
+            "start_ns": 133393721218000,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_batch",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133393721473791,
+            "name": "read_batch",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 31,
+            "span_id": "7b8925d3839b4c1e",
+            "start_ns": 133393721471500,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": true,
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133393721649666,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "0fb8993c3b5a45f0",
+            "start_ns": 133393721489833,
+            "task_name": "Task-1"
+          }
+        ]
+      }
+    ],
+    "fingerprint_conflicts": 0,
+    "natural_flake_rate": 0.8,
+    "passing": [
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py::test_batch_is_complete"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "4b7050b78030",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "record_item",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133388284206875,
+            "name": "record_item",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 25,
+            "span_id": "0bf192c3227c49a2",
+            "start_ns": 133388284199875,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "record_item",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133388284342000,
+            "name": "record_item",
+            "occurrence": 1,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 25,
+            "span_id": "e1fa9dec1ea34bae",
+            "start_ns": 133388284340291,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "record_item",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133388285398916,
+            "name": "record_item",
+            "occurrence": 2,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 25,
+            "span_id": "2ebf41c4d0684b61",
+            "start_ns": 133388285396916,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_batch",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133388286253375,
+            "name": "read_batch",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 31,
+            "span_id": "7702da6a95e44c90",
+            "start_ns": 133388286251958,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133388286268500,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "cc046c953e7f4566",
+            "start_ns": 133388286267375,
+            "task_name": "Task-1"
+          }
+        ]
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": null,
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py::test_batch_is_complete"
+        },
+        "instrumented": true,
+        "outcome": "PASS",
+        "run_id": "7090bec28cbc",
+        "spans": [
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "record_item",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133389188268791,
+            "name": "record_item",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 25,
+            "span_id": "7a85fd426c9242a6",
+            "start_ns": 133389188262375,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "record_item",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133389189476791,
+            "name": "record_item",
+            "occurrence": 1,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 25,
+            "span_id": "8faff9f972454bdb",
+            "start_ns": 133389189474666,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "write",
+              "ct.qualname": "record_item",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133389189535416,
+            "name": "record_item",
+            "occurrence": 2,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 25,
+            "span_id": "122398b024be4587",
+            "start_ns": 133389189534375,
+            "task_name": "Task-2"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.qualname": "read_batch",
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133389190803708,
+            "name": "read_batch",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 31,
+            "span_id": "b4ad90e8d43d40a1",
+            "start_ns": 133389190801250,
+            "task_name": "Task-1"
+          },
+          {
+            "attributes": {
+              "ct.access": "read",
+              "ct.assertion": true,
+              "ct.failed": false,
+              "ct.resource": "batch.items"
+            },
+            "end_ns": 133389190817750,
+            "name": "assert",
+            "occurrence": 0,
+            "parent_span_id": null,
+            "source_file": null,
+            "source_line": null,
+            "span_id": "5a524fc267b749eb",
+            "start_ns": 133389190816791,
+            "task_name": "Task-1"
+          }
+        ]
+      }
+    ],
+    "runs_executed": 10,
+    "runs_timed_out": 0,
+    "test_id": "benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py::test_batch_is_complete",
+    "uninstrumented_flake_rate": null
+  },
+  "diagnosis": {
+    "abstain_reason": null,
+    "bug_depth": 1,
+    "candidates": [
+      {
+        "causal_position": 0,
+        "classification": "CAUSALLY_SUFFICIENT",
+        "failing_order": [
+          "read_batch#0",
+          "record_item#1"
+        ],
+        "forced_failure_rate": 1.0,
+        "in_backward_slice": true,
+        "ochiai_score": 1.0,
+        "op_a": {
+          "access": "read",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "read_batch",
+          "resource": "batch.items",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+          "source_line": 31,
+          "span_name": "read_batch"
+        },
+        "op_b": {
+          "access": "write",
+          "is_test_scope": true,
+          "occurrence": 1,
+          "qualname": "record_item",
+          "resource": "batch.items",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+          "source_line": 25,
+          "span_name": "record_item"
+        }
+      },
+      {
+        "causal_position": 0,
+        "classification": "UNTESTED",
+        "failing_order": [
+          "read_batch#0",
+          "record_item#2"
+        ],
+        "forced_failure_rate": null,
+        "in_backward_slice": true,
+        "ochiai_score": 1.0,
+        "op_a": {
+          "access": "read",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "read_batch",
+          "resource": "batch.items",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+          "source_line": 31,
+          "span_name": "read_batch"
+        },
+        "op_b": {
+          "access": "write",
+          "is_test_scope": true,
+          "occurrence": 2,
+          "qualname": "record_item",
+          "resource": "batch.items",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+          "source_line": 25,
+          "span_name": "record_item"
+        }
+      },
+      {
+        "causal_position": 0,
+        "classification": "UNTESTED",
+        "failing_order": [
+          "read_batch#0",
+          "record_item#0"
+        ],
+        "forced_failure_rate": null,
+        "in_backward_slice": true,
+        "ochiai_score": 0.7071,
+        "op_a": {
+          "access": "read",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "read_batch",
+          "resource": "batch.items",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+          "source_line": 31,
+          "span_name": "read_batch"
+        },
+        "op_b": {
+          "access": "write",
+          "is_test_scope": true,
+          "occurrence": 0,
+          "qualname": "record_item",
+          "resource": "batch.items",
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+          "source_line": 25,
+          "span_name": "record_item"
+        }
+      }
+    ],
+    "candidates_evaluated": 3,
+    "explanation": "Forcing read_batch to start before record_item reproduced the failure on every attempt, so that ordering is a sufficient condition for the failure.",
+    "proven_inversion": {
+      "causal_position": 0,
+      "classification": "CAUSALLY_SUFFICIENT",
+      "failing_order": [
+        "read_batch#0",
+        "record_item#1"
+      ],
+      "forced_failure_rate": 1.0,
+      "in_backward_slice": true,
+      "ochiai_score": 1.0,
+      "op_a": {
+        "access": "read",
+        "is_test_scope": true,
+        "occurrence": 0,
+        "qualname": "read_batch",
+        "resource": "batch.items",
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+        "source_line": 31,
+        "span_name": "read_batch"
+      },
+      "op_b": {
+        "access": "write",
+        "is_test_scope": true,
+        "occurrence": 1,
+        "qualname": "record_item",
+        "resource": "batch.items",
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+        "source_line": 25,
+        "span_name": "record_item"
+      }
+    },
+    "status": "RACE_PROVEN"
+  }
+}

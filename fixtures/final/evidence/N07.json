@@ -1,0 +1,362 @@
+{
+  "bundle": {
+    "failing": [
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 520 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "fb9fe25bdb49",
+        "spans": []
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 500 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "99fc0c6c3d04",
+        "spans": []
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 545 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "1281b3d254ac",
+        "spans": []
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 500 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "5d4f6eeee959",
+        "spans": []
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 510 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "502f0f438b52",
+        "spans": []
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 518 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "62788f373c11",
+        "spans": []
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 501 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "d1d6f2a2a1f9",
+        "spans": []
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 500 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "3a01269eab96",
+        "spans": []
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 503 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "bce5df258a64",
+        "spans": []
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 541 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "330382c8f4d7",
+        "spans": []
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 506 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "d706051558f1",
+        "spans": []
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 601 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "c49d8682166a",
+        "spans": []
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 517 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "ac175c66e792",
+        "spans": []
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 500 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "b8fb9c319c58",
+        "spans": []
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 530 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "8e5fc1c11ef9",
+        "spans": []
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 543 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "35d0b1709e80",
+        "spans": []
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 546 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "657ed24229fb",
+        "spans": []
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 500 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "d102e5e0c574",
+        "spans": []
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 523 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "3c219d6d732a",
+        "spans": []
+      },
+      {
+        "complete": true,
+        "failing_resource": null,
+        "failure_message": "workers = 4\n\n    @pytest.mark.parametrize(\"workers\", [4])\n    def test_counter_reaches_total(workers: int) -> None:\n        COUNTER[\"value\"] = 0\n        threads = [threading.Thread(target=increment, args=(500,)) for _ in range(workers)]\n        for thread in threads:\n            thread.start()\n        for thread in threads:\n            thread.join()\n>       assert COUNTER[\"value\"] == workers * 500\nE       assert 500 == (4 * 500)\n\nbenchmark/cases/N07_threading_race/test_N07_threading_race.py:32: AssertionError",
+        "fingerprint": {
+          "commit_sha": "f27354d460d836ce974c72fc0500d217ee261ce9",
+          "container_image": "process",
+          "dependency_lock_hash": "7dee6f4ee4cfe5ab",
+          "env_hash": "fab22362c51702ff",
+          "python_version": "3.12.13",
+          "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total[4]"
+        },
+        "instrumented": true,
+        "outcome": "FAIL",
+        "run_id": "ae38a1ef5dc3",
+        "spans": []
+      }
+    ],
+    "fingerprint_conflicts": 0,
+    "natural_flake_rate": 1.0,
+    "passing": [],
+    "runs_executed": 20,
+    "runs_timed_out": 0,
+    "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total",
+    "uninstrumented_flake_rate": null
+  },
+  "diagnosis": {
+    "abstain_reason": "NON_ASYNCIO_PARADIGM",
+    "bug_depth": null,
+    "candidates": [],
+    "candidates_evaluated": 0,
+    "explanation": "This test uses threading. ChronoTrace can only control the asyncio event loop, so it cannot prove an ordering here and will not guess.",
+    "proven_inversion": null,
+    "status": "ABSTAINED"
+  }
+}
