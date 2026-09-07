@@ -295,6 +295,14 @@ def three_arm(
     fixtures: Annotated[Path, typer.Option(help="call recording directory")] = Path(
         "fixtures/three_arm"
     ),
+    arms: Annotated[str, typer.Option(help="which arms to run, e.g. C or A,B,C")] = "A,B,C",
+    reuse_evidence: Annotated[
+        bool,
+        typer.Option(
+            help="load the recorded traces and diagnoses instead of capturing afresh, "
+            "so two models are compared on identical evidence"
+        ),
+    ] = False,
 ) -> None:
     """Run the three-arm baseline: code only, code plus traces, full ChronoTrace."""
     configure()
@@ -325,7 +333,8 @@ def three_arm(
         capture_runs=runs,
         model_label=model,
         evidence_dir=fixtures / "evidence",
-        replay=provider == "fixture",
+        replay=provider == "fixture" or reuse_evidence,
+        arms=tuple(a.strip().upper() for a in arms.split(",") if a.strip()),
     )
     drift = getattr(engine, "prompt_drift", [])
     if drift:

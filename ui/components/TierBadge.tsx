@@ -35,8 +35,16 @@ const TIERS: Record<Tier, { label: string; claim: string; className: string }> =
   },
 };
 
+const UNKNOWN = {
+  label: "Unrecognised verification tier",
+  claim: "recorded by an older version",
+  className: "text-muted border-border bg-surface",
+};
+
 export function TierBadge({ tier }: { tier: Tier }) {
-  const meta = TIERS[tier];
+  // Reports persisted by an earlier version can carry a tier this build no
+  // longer knows. Render it plainly rather than crashing the page.
+  const meta = TIERS[tier] ?? UNKNOWN;
   return (
     <span
       className={`inline-flex items-baseline gap-2 rounded border px-2 py-1 text-xs ${meta.className}`}

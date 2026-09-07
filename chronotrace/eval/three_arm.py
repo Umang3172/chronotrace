@@ -137,6 +137,7 @@ def run_sweep(
     model_label: str = "",
     evidence_dir: Path | None = None,
     replay: bool = False,
+    arms: tuple[str, ...] = ARMS,
 ) -> SweepResult:
     """Run all three arms over every case.
 
@@ -150,7 +151,11 @@ def run_sweep(
         model_label: Model name and version, recorded in the results.
         evidence_dir: Where captured traces and diagnoses are recorded, so a
             replay reasons about the same evidence.
-        replay: Load the recorded evidence instead of capturing afresh.
+        replay: Load the recorded evidence instead of capturing afresh. Reusing
+            recorded evidence is also how two models are compared on identical
+            traces, diagnoses and prompts, so that the model is the only
+            variable.
+        arms: Which arms to run. Defaults to all three.
 
     Returns:
         The sweep result.
@@ -179,7 +184,7 @@ def run_sweep(
             f"/{diagnosis.abstain_reason}" if diagnosis.abstain_reason else ""
         )
 
-        for arm in ARMS:
+        for arm in arms:
             if arm in {"A", "B"}:
                 sweep.results.append(
                     _run_baseline_arm(arm, case, bundle, diagnosis, provider, cwd, settings)
