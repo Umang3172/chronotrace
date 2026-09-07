@@ -420,3 +420,49 @@ def test_fixture_keys_ignore_prompt_content(tmp_path):
     assert fixture_key(**base) != fixture_key(**{**base, "attempt": 2})
     assert fixture_key(**base) != fixture_key(**{**base, "arm": "B"})
     assert fixture_key(**base) != fixture_key(**{**base, "case_id": "R02"})
+
+
+# --------------------------------------------------------------------------- #
+# provider detection
+# --------------------------------------------------------------------------- #
+
+
+def test_detection_prefers_an_explicitly_configured_provider():
+    from chronotrace.config import Settings
+    from chronotrace.providers.detect import detect
+
+    assert detect(Settings(provider="bedrock")).provider == "bedrock"
+    assert detect(Settings(provider="ollama")).provider == "ollama"
+    assert detect(Settings(provider="fixture")).provider == "fixture"
+
+
+def test_detection_finds_the_configured_local_model(monkeypatch):
+    from chronotrace.config import Settings
+    from chronotrace.providers import detect as detect_mod
+
+    monkeypatch.setattr(detect_mod, "ollama_models", lambda host: ["qwen2.5-coder:14b"])
+    choice = detect_mod.detect(Settings(ollama_model="qwen2.5-coder:14b"))
+    assert choice.usable and choice.provider == "ollama"
+
+
+def test_detection_never_silently_substitutes_a_different_model(monkeypatch):
+    """Running a demo on a model the operator did not choose would misreport it."""
+    from chronotrace.config import Settings
+    from chronotrace.providers import detect as detect_mod
+
+    monkeypatch.setattr(detect_mod, "ollama_models", lambda host: ["some-other-model:7b"])
+    choice = detect_mod.detect(Settings(ollama_model="qwen2.5-coder:14b"))
+    assert not choice.usable
+    assert "some-other-model:7b" in choice.reason
+    assert "ollama pull qwen2.5-coder:14b" in choice.remedy
+
+
+def test_detection_reports_a_remedy_when_no_server_is_running(monkeypatch):
+    from chronotrace.config import Settings
+    from chronotrace.providers import detect as detect_mod
+
+    monkeypatch.setattr(detect_mod, "ollama_models", lambda host: None)
+    choice = detect_mod.detect(Settings())
+    assert not choice.usable
+    assert "no Ollama server is answering" in choice.reason
+    assert "ollama pull" in choice.remedy

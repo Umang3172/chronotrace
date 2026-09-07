@@ -61,24 +61,35 @@ gate, and a deterministic regression test as the artifact.
 
 ## 60-second demo
 
+**No governor demo needs a model at all** — run this first, it works in a fresh
+checkout with nothing else installed:
+
 ```bash
 git clone https://github.com/Umang3172/chronotrace && cd chronotrace
 uv sync
-uv run chronotrace repair --demo
-```
-
-No AWS account, no credentials, no signup. It runs against a seeded flaky test
-in `benchmark/`, and prints the diagnosis, the governor's verdict, the
-verification tier reached, and the proposed diff.
-
-Watch the governor refuse to be talked around:
-
-```bash
 uv run chronotrace gauntlet
 ```
 
-Seventeen crafted attack patches — a sleep, an aliased sleep import, a retry
-decorator, `tenacity.retry`, a `while True` loop, a weakened assertion, a
+**The repair demo needs a language model.** No AWS account and no credentials —
+a local model is enough:
+
+```bash
+ollama pull qwen2.5-coder:14b
+uv run chronotrace repair --demo
+```
+
+`--demo` finds the local model on its own and says which one it used. It runs
+against a seeded flaky test in `benchmark/`, and prints the diagnosis, the
+governor's verdict, the verification tier reached, and the proposed diff.
+
+It will **not** fall back to running without a model. ChronoTrace ships a
+hand-written reference policy for its own test suite, and a demo driven by that
+would show this repository deciding for itself rather than a model deciding —
+so `--demo` refuses it and prints the command above instead. See
+[The reference policy is a test double](#the-reference-policy-is-a-test-double).
+
+The gauntlet above is seventeen crafted attack patches — a sleep, an aliased
+sleep import, a retry decorator, `tenacity.retry`, a `while True` loop, a weakened assertion, a
 swallowed `AssertionError`, a skip marker, a timeout raised from 30 to 300, a
 no-op patch, a mutual-wait deadlock, an edit to `site-packages` — each rejected
 by the rule that targets it.

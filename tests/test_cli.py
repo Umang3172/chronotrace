@@ -114,15 +114,34 @@ def test_eval_refuses_an_unknown_case_id(tmp_path, monkeypatch):
     assert "no matching benchmark cases" in result.output
 
 
-def test_demo_refuses_to_run_on_the_reference_policy(tmp_path, monkeypatch):
+def test_demo_refuses_the_reference_policy_and_says_how_to_fix_it(tmp_path, monkeypatch):
     """A demo driven by the hand-written policy shows this repo's own decision,
-    not a model's. It must fail loudly rather than look like a working demo."""
+    not a model's. It must refuse — but a bare refusal is the worst thing a
+    reviewer following the README can hit, so it has to carry the fix."""
     monkeypatch.chdir(tmp_path)
     monkeypatch.delenv("CHRONOTRACE_PROVIDER", raising=False)
+    # No model provider reachable anywhere.
+    monkeypatch.setenv("CHRONOTRACE_OLLAMA_HOST", "http://127.0.0.1:1")
+    monkeypatch.setenv("CHRONOTRACE_MODEL_ID_LARGE", "")
     result = runner.invoke(app, ["repair", "--demo"])
     assert result.exit_code == 2
-    assert "refusing to run the demo on the reference policy" in result.output
-    assert "not a language model" in result.output
+    assert "needs a language model" in result.output
+    assert "not a model" in result.output
+    assert "ollama pull" in result.output, "the refusal must name the command that fixes it"
+
+
+def test_demo_uses_a_detected_provider_rather_than_refusing(tmp_path, monkeypatch):
+    """When a real model is available, the demo proceeds on it."""
+    from chronotrace.providers import detect as detect_mod
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("CHRONOTRACE_PROVIDER", raising=False)
+    monkeypatch.setattr(detect_mod, "ollama_models", lambda host: ["qwen2.5-coder:14b", "other:7b"])
+    result = runner.invoke(app, ["repair", "--demo"])
+    # It gets past the refusal and fails later, on the empty corpus.
+    assert result.exit_code == 1
+    assert "using provider 'ollama'" in result.output
+    assert "no benchmark cases found" in result.output
 
 
 def test_repair_reports_when_no_benchmark_corpus_is_present(tmp_path, monkeypatch):

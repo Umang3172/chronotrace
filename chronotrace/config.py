@@ -30,7 +30,9 @@ class Settings(BaseSettings):
     model_id_large: str = ""
 
     ollama_host: str = "http://localhost:11434"
-    ollama_model: str = "qwen3:8b"
+    ollama_model: str = "qwen2.5-coder:14b"
+    """Default local model. The one the demo is documented against and the only
+    local model observed driving the full pipeline end to end."""
 
     model_temperature: float = 0.0
     model_seed: int = 1729

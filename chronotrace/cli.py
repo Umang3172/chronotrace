@@ -24,6 +24,7 @@ from chronotrace.govern.gauntlet import ATTACKS
 from chronotrace.logging import configure
 from chronotrace.pipeline import repair
 from chronotrace.providers.base import ModelProvider
+from chronotrace.providers.detect import detect
 from chronotrace.providers.reference_policy import PROVIDER_LABEL, ReferencePolicyProvider
 from chronotrace.registry.store import IncidentStore
 
@@ -156,16 +157,25 @@ def repair_cmd(
     configure()
     settings = _settings(allow_production_repair=allow_production_repair)
     if demo and settings.provider == PROVIDER_LABEL:
-        typer.echo(
-            "refusing to run the demo on the reference policy.\n\n"
-            "CHRONOTRACE_PROVIDER is 'reference-policy', which is a hand-written\n"
-            "decision procedure, not a language model. A demo it produces would show\n"
-            "this repository's own policy making the right choice, not a model making\n"
-            "it, and that is exactly the thing the demo is meant to demonstrate.\n\n"
-            "Set CHRONOTRACE_PROVIDER=ollama or =bedrock and run it against a model.",
-            err=True,
+        # The demo must show a model deciding, not the hand-written policy. Look
+        # for a usable provider before refusing, and if there is none, say
+        # exactly which command would produce one.
+        choice = detect(settings)
+        if not choice.usable:
+            typer.echo(
+                "The demo needs a language model, and none is available.\n\n"
+                f"{choice.reason}.\n\n"
+                "ChronoTrace will not run the demo on its reference policy: that is a\n"
+                "hand-written decision procedure, not a model, so a demo it produced\n"
+                "would show this repository deciding for itself.\n\n"
+                f"{choice.remedy}",
+                err=True,
+            )
+            raise typer.Exit(2)
+        settings = _settings(
+            provider=choice.provider, allow_production_repair=allow_production_repair
         )
-        raise typer.Exit(2)
+        typer.echo(f"using provider '{choice.provider}' — {choice.reason}\n")
     if demo or not test_id:
         cases = load_cases(DEFAULT_CASES)
         if not cases:
