@@ -11,6 +11,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Literal
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -22,7 +23,9 @@ class Settings(BaseSettings):
     provider: Literal["reference-policy", "bedrock", "ollama", "fixture"] = "reference-policy"
     """``reference-policy`` is a hand-written test double, not a model."""
     telemetry: Literal["jsonl", "cloudwatch"] = "jsonl"
+    """Only ``jsonl`` is implemented. See :meth:`reject_unimplemented_backends`."""
     registry: Literal["sqlite", "dynamodb"] = "sqlite"
+    """Only ``sqlite`` is implemented. See :meth:`reject_unimplemented_backends`."""
     isolation: Literal["process", "docker"] = "process"
 
     aws_region: str = "us-east-1"
@@ -60,6 +63,37 @@ class Settings(BaseSettings):
     """Tier 2 sample size. Zero disables PCT, which is then reported as not attempted."""
     allow_production_repair: bool = False
     """INV-7 / S2. Off by default; production-scope races abstain."""
+
+    @model_validator(mode="after")
+    def reject_unimplemented_backends(self) -> Settings:
+        """Refuse a backend that is named but not built.
+
+        Both knobs were readable long before either backend existed, and neither
+        value was ever consulted, so selecting ``cloudwatch`` or ``dynamodb``
+        silently kept the local behaviour. A telemetry setting that quietly does
+        nothing is worse than no setting: it reads, in a config file and in a
+        review, as evidence that traces are being retained somewhere.
+
+        Raises:
+            ValueError: An unimplemented backend was selected.
+
+        """
+        unbuilt = [
+            (name, value, built)
+            for name, value, built in (
+                ("telemetry", self.telemetry, "jsonl"),
+                ("registry", self.registry, "sqlite"),
+            )
+            if value != built
+        ]
+        for name, value, built in unbuilt:
+            message = (
+                f"CHRONOTRACE_{name.upper()}={value} is not implemented; "
+                f"only {built!r} is. Set it to {built!r} rather than running "
+                f"with a backend that would silently do nothing."
+            )
+            raise ValueError(message)
+        return self
 
     def ensure_dirs(self) -> None:
         """Create the working directories this run will write to."""

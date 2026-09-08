@@ -89,9 +89,20 @@ Run ChronoTrace with Amazon Nova on Bedrock using the Strands Agents SDK:
 
 ```bash
 uv sync --extra bedrock
-export AWS_REGION="us-east-1"
-# Defaults to amazon.nova-pro-v1:0; or test with amazon.nova-lite-v1:0
-uv run chronotrace repair --demo
+# Settings read the CHRONOTRACE_ prefix; a bare AWS_REGION is not consulted.
+export CHRONOTRACE_PROVIDER="bedrock"
+export CHRONOTRACE_AWS_REGION="us-east-1"
+# Defaults to amazon.nova-pro-v1:0; or set CHRONOTRACE_MODEL_ID_LARGE to
+# amazon.nova-lite-v1:0
+uv run chronotrace repair --demo   # one typed intent, then the deterministic stages
+uv run chronotrace agent --demo    # the Strands loop: it chooses its own steps
+```
+
+`agent --dry-run` prints the tool surface the SDK actually registered without
+contacting a model, so the wiring is checkable with no AWS account:
+
+```bash
+uv run chronotrace agent --demo --dry-run
 ```
 
 ### Option C: Local Model (Ollama)
@@ -180,7 +191,11 @@ Produced by `uv run chronotrace three-arm`. Every number comes from that
 command; none is hand-entered. Local model throughout: **qwen2.5-coder:14b**
 (14.8B, Q4_K_M) via Ollama, temperature 0.0, seed 1729. A Bedrock run is
 planned; these are not those numbers. Full write-up in
-[eval/results/FINDINGS.md](eval/results/FINDINGS.md).
+[eval/results/FINDINGS.md](eval/results/FINDINGS.md), which is the canonical
+source for every figure below. Two other results directories exist and
+neither is one of these numbers: `eval-results/` is the last run's working
+output that the dashboard reads, and [docs/results/](docs/results/) is
+reference-policy output with no model in the loop at all.
 
 Three arms, same model, same temperature, seed, token cap, attempt budget and
 timeout. Capture and diagnosis run once per case and are shared by all three, so
@@ -425,6 +440,11 @@ make it weaker.
 10. **Docker isolation is implemented but unexercised** on the development
    machine. Process isolation — one process per run — is the default and is what
    the reported numbers used.
+11. **The AWS surface is Bedrock and nothing else.** The Strands loop runs on
+   Bedrock and the AgentCore entrypoint exists, but no AgentCore deployment is
+   running, traces go to local JSONL rather than CloudWatch, and incidents go to
+   local SQLite rather than DynamoDB. See
+   [what is not wired to AWS](#4-what-is-not-wired-to-aws).
 
 ## Installation
 
@@ -445,6 +465,8 @@ chronotrace diagnose <test_id>               # diagnosis only, no patch
 chronotrace repair <test_id>                 # full pipeline; --apply to write
 chronotrace repair --demo                    # a race repaired and verified
 chronotrace repair --demo-r14                # a policy-clean patch replay rejects
+chronotrace agent <test_id>                  # the Strands agent loop on Bedrock
+chronotrace agent --demo --dry-run           # its tool surface, no model contacted
 chronotrace verify <incident_id>             # what verification established
 chronotrace report <incident_id>             # the report as JSON
 chronotrace gauntlet                         # adversarial governor demo
@@ -510,7 +532,7 @@ The video demonstrates the complete ChronoTrace pipeline from flakiness detectio
 - **Industrial Context**: Why industry quarantine solutions (Trunk, Develocity) and unconstrained agents (which insert `sleep(2)`) fail to fix the underlying concurrency defects.
 - **6-Stage Architecture**: Full walkthrough of the pipeline from execution fingerprints to causal backward slicing.
 - **Causal Differential Trace**: Proving causality — forcing the candidate ordering produces 20/20 failures; forcing the opposite produces 20/20 passes.
-- **17-Rule Governor Gauntlet**: Live execution of `chronotrace gauntlet`, deterministically rejecting 17 adversarial patches before any code runs.
+- **Governor Gauntlet**: Live execution of `chronotrace gauntlet` — 15 rules rejecting 17 adversarial patches, each by the rule that targets it, before any code runs.
 - **Live Repair with Amazon Bedrock**: Amazon Nova Lite synthesizes an `INJECT_ASYNC_EVENT` repair in 2.8 seconds, verified to Tier 1 via forced replay.
 - **The R14 Case Study**: Demonstrating why rerun-based gates fail — an unconstrained patch makes a race rarer (80% -> 45%) and passes rerun gates, but forced replay catches and rejects it.
 - **Benchmark Gauntlet & Results**: Systematic 15-case evaluation proving 0 band-aids and 0 false repairs.
@@ -539,26 +561,75 @@ ChronoTrace integrates natively with the **AWS Strands Agents SDK** and **Amazon
 ```
 
 ### 1. Strands Agent Loop (`chronotrace.agent.graph`)
-In `chronotrace/agent/graph.py`, the Strands `Agent` runs an autonomous investigation loop equipped with 8 incident-scoped tools:
-- `capture_traces`: Instruments and records comparable pass/fail trace pairs.
-- `trace_slice`: Performs backward static slicing from the failed assertion to isolate relevant operations.
-- `compare_orderings`: Computes Ochiai suspiciousness ranking over observed-order inversions.
-- `force_replay`: Tests causality by holding instrumented gates to force candidate interleavings.
-- `source_context`: Inspects the exact source lines around concurrency operations.
-- `diagnose_now`: Generates structured differential diagnostics.
-- `check_patch`: Validates candidate repair intents against the 15-rule AST governor before application.
-- `run_once`: Executes a single trial to assess stability.
+
+`chronotrace agent` builds a Strands `Agent` on a `BedrockModel` and runs it
+against one flaky test. The loop chooses its own steps — which evidence to
+gather, which ordering to force, whether the evidence supports a repair at all —
+from eight incident-scoped tools:
+
+| Tool | What the agent gets |
+|---|---|
+| `capture_traces` | Comparable pass/fail trace pairs, and the measured flake rate |
+| `trace_slice` | The backward slice from the failed assertion |
+| `compare_orderings` | Observed-order inversions, Ochiai-ranked |
+| `force_replay` | The forced failure rate for one ordering — the tool that turns a ranking into a decision |
+| `source_context` | The source around an operation, before proposing anything |
+| `diagnose_now` | The full diagnosis and its decided status |
+| `check_patch` | The governor's verdict on a candidate patch |
+| `run_once` | One natural run |
+
+Authority stays deterministic on both sides of that list. The agent may *request*
+a forced replay; it cannot decide that a rejected patch is acceptable, and it
+never writes source. `check_patch` returns the governor's answer — it does not
+ask for one.
+
+Verify the registration yourself, with no AWS account:
+
+```bash
+uv run chronotrace agent --demo --dry-run   # 8 tools registered; no model contacted
+```
+
+That command exists because this is a failure mode with no symptom. Strands logs
+`unrecognized tool specification` for a tool it cannot read and carries on, so an
+agent wired wrongly still constructs, still answers, and reports no error —
+[it did exactly that here](https://github.com/Umang3172/chronotrace/commit/9e717b6),
+for three commits. `tests/test_agent_tools.py` now asserts all eight register.
 
 ### 2. Amazon Bedrock Foundation Models
-- **Amazon Nova Pro (`amazon.nova-pro-v1:0`)**: Default model for high-complexity causal reasoning across coroutine scopes.
-- **Amazon Nova Lite (`amazon.nova-lite-v1:0`)**: Ultra-fast, cost-effective inference (<2.8s turnaround, 3,000 input tokens) with zero loss in structural accuracy.
-- Native structured output enforcement (`RepairIntent` JSON schema).
+- **Amazon Nova Pro (`amazon.nova-pro-v1:0`)**: default for the agent loop and
+  for intent synthesis.
+- **Amazon Nova Lite (`amazon.nova-lite-v1:0`)**: measured at 2.8 s for one
+  `RepairIntent`, 3,066 input and 286 output tokens.
+- Structured output is enforced through Bedrock's `converse` tool-use schema, so
+  the model returns a validated `RepairIntent` and has no channel for source
+  code.
 
-### 3. Serverless AgentCore Runtime Entrypoint
-ChronoTrace implements a standard AgentCore entrypoint (`chronotrace.agent.graph.handler`), allowing the repair pipeline to be deployed serverlessly and invoked directly from post-submit CI/CD webhooks (GitHub Actions, AWS CodePipeline).
+### 3. AgentCore Runtime entrypoint
+`chronotrace.agent.graph:handler` is the entrypoint, configured in
+[`chronotrace/agent/deploy/agentcore.yaml`](chronotrace/agent/deploy/agentcore.yaml).
+It takes a `mode`: `agent` runs the Strands loop, `pipeline` runs the fixed
+sequence and returns the full incident report. Everything crossing that boundary
+is primitive JSON.
 
-### 4. Complete Trace Retention via CloudWatch
-Differential trace analysis requires **100% complete traces** for both the passing and failing runs — probabilistic sampling would silently destroy the diff. ChronoTrace integrates with OpenTelemetry and Amazon CloudWatch Transaction Search to guarantee lossless trace retention and auditability.
+**Not yet deployed.** The entrypoint, the config and the IAM actions are in the
+repository and the handler is exercised by tests; a running AgentCore deployment
+is not part of this submission, and nothing here should be read as one.
+
+### 4. What is *not* wired to AWS
+
+Stated explicitly, because an earlier draft of this section claimed both:
+
+- **No CloudWatch export.** Traces are written as JSONL under `telemetry/`.
+  Differential analysis does need 100% complete traces — probabilistic sampling
+  would destroy the diff — and CloudWatch Transaction Search is the right answer
+  to that; it is not implemented. `CHRONOTRACE_TELEMETRY=cloudwatch` now raises
+  rather than silently keeping the local behaviour.
+- **No DynamoDB registry.** Incidents are stored in SQLite under
+  `.chronotrace/`. `CHRONOTRACE_REGISTRY=dynamodb` raises for the same reason.
+
+Trace diffing, patching, policy enforcement and verification are all local and
+AWS-independent by design. Bedrock is where the one judgement call happens, and
+that is the whole of ChronoTrace's dependence on it.
 
 ## References
 

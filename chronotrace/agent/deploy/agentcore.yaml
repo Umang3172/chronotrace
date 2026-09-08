@@ -10,19 +10,24 @@ runtime: python3.11
 
 environment:
   CHRONOTRACE_PROVIDER: bedrock
-  CHRONOTRACE_TELEMETRY: cloudwatch
-  CHRONOTRACE_REGISTRY: dynamodb
+  # Both of these named a backend that was never built, and neither value was
+  # ever read, so the deploy would have retained no traces and written no
+  # incidents while the config said otherwise. They are set to what exists;
+  # `Settings` now refuses the other values outright rather than ignoring them.
+  CHRONOTRACE_TELEMETRY: jsonl
+  CHRONOTRACE_REGISTRY: sqlite
   # Model ids are deliberately unset here. They differ by region and change
   # between releases, so they are supplied at deploy time after being verified
   # against the target region rather than baked into a file that goes stale.
   CHRONOTRACE_MODEL_ID_LARGE: ""
-  CHRONOTRACE_AWS_REGION: ap-south-1
+  CHRONOTRACE_AWS_REGION: us-east-1
 
 permissions:
+  # Bedrock for the agent loop; logs for the runtime's own stdout. The DynamoDB
+  # grants that used to be here bought nothing: no code path calls it. Least
+  # privilege means the policy tracks what the code does, not what it might.
   - bedrock:InvokeModel
+  - bedrock:InvokeModelWithResponseStream
   - logs:CreateLogGroup
   - logs:CreateLogStream
   - logs:PutLogEvents
-  - dynamodb:GetItem
-  - dynamodb:PutItem
-  - dynamodb:Query

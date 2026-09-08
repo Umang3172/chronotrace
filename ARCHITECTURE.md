@@ -118,6 +118,11 @@ appeared once in a few runs now reproduces every run, in milliseconds.
 ## What runs where
 
 Trace diffing, patching, policy enforcement and verification are all local and
-AWS-independent. The agent runs on Bedrock when configured to; CloudWatch is the
-audit and post-mortem export layer, never in the interactive path — a remote log
-query mid-demo is a stalled demo.
+AWS-independent. The agent runs on Bedrock when configured to, and that one
+judgement call is the whole of the dependence.
+
+Traces are written as JSONL under `telemetry/` and incidents to SQLite under
+`.chronotrace/`. CloudWatch export and a DynamoDB registry would be the right
+backends for both — differential analysis needs complete traces, and
+probabilistic sampling would destroy the diff — and **neither is implemented**.
+Selecting either now raises, rather than silently keeping the local behaviour.
