@@ -15,7 +15,7 @@ jobs:
         with:
           enable-cache: true
       - name: Sync dependencies
-        run: uv sync --extra dev
+        run: uv sync --extra dev --extra bedrock
       - name: Lint
         run: uv run ruff check .
       - name: Format check
@@ -36,7 +36,7 @@ jobs:
       - uses: astral-sh/setup-uv@v3
         with:
           enable-cache: true
-      - run: uv sync --extra dev
+      - run: uv sync --extra dev --extra bedrock
       - name: End-to-end benchmark cases, with coverage
         # coverage run, not pytest --cov: the pytest11 entry point imports the
         # package during plugin loading, before pytest-cov would start.

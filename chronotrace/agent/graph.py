@@ -13,7 +13,7 @@ eval harness remain runnable with no cloud dependency at all.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from chronotrace.agent.tools import AgentTools
 from chronotrace.config import Settings, get_settings
@@ -23,6 +23,9 @@ from chronotrace.logging import get_logger
 from chronotrace.pipeline import repair
 from chronotrace.providers.base import ModelProvider
 from chronotrace.providers.reference_policy import PROVIDER_LABEL, ReferencePolicyProvider
+
+if TYPE_CHECKING:  # the SDK is an optional extra and must stay out of the runtime graph
+    from strands import Agent
 
 log = get_logger(__name__)
 
@@ -54,7 +57,7 @@ transformation to apply and where. Sleeps, retries, timeout increases, weakened
 assertions and skips are rejected automatically; proposing one wastes a round."""
 
 
-def build_agent(test_id: str, cwd: Path, settings: Settings | None = None) -> object:
+def build_agent(test_id: str, cwd: Path, settings: Settings | None = None) -> Agent:
     """Build a Strands agent bound to one incident's tools.
 
     Args:
@@ -63,8 +66,9 @@ def build_agent(test_id: str, cwd: Path, settings: Settings | None = None) -> ob
         settings: Runtime settings; defaults to the process settings.
 
     Returns:
-        A configured Strands ``Agent``. Typed as ``object`` because the SDK
-        is an optional dependency and must not appear in the import graph.
+        A configured Strands ``Agent``. The name is only imported under
+        ``TYPE_CHECKING``: the SDK is an optional extra, so importing it for
+        real here would make the whole package need it just to import.
 
     Raises:
         ConfigurationError: Strands is not installed, or no model id is set.
@@ -101,17 +105,28 @@ def build_agent(test_id: str, cwd: Path, settings: Settings | None = None) -> ob
 def handler(payload: dict[str, Any]) -> dict[str, Any]:
     """AgentCore Runtime entrypoint.
 
+    Two modes, because they answer different questions. ``agent`` runs the
+    Strands loop, which decides for itself what evidence to gather and whether
+    the evidence supports a repair at all; it is the default, since deciding is
+    what an agent runtime is for. ``pipeline`` runs the fixed sequence and
+    returns the full incident report, which is the reproducible artifact.
+
     Args:
-        payload: ``{"test_id": ..., "cwd": ..., "apply": false}``.
+        payload: ``{"test_id": ..., "cwd": ..., "mode": "agent"|"pipeline",
+            "runs": 20, "apply": false}``.
 
     Returns:
-        The incident report as primitive JSON (E4). Nothing that is not
-        JSON-serializable crosses this boundary.
+        Primitive JSON (E4). Nothing that is not JSON-serializable crosses this
+        boundary: a raw span or CST node here is how a runtime ends up
+        serializing an object into a fallback string and exceeding its payload
+        limit.
 
     """
     test_id = payload["test_id"]
     cwd = Path(payload.get("cwd", "."))
     settings = get_settings()
+    if payload.get("mode", "agent") == "agent":
+        return _run_agent(test_id, cwd, settings)
     provider = (
         ReferencePolicyProvider(fixtures_dir=settings.fixtures_dir)
         if settings.provider == PROVIDER_LABEL
@@ -125,7 +140,32 @@ def handler(payload: dict[str, Any]) -> dict[str, Any]:
         capture_runs=int(payload.get("runs", 20)),
         apply=bool(payload.get("apply", False)),
     )
-    return report.model_dump(mode="json")
+    return {"mode": "pipeline", "report": report.model_dump(mode="json")}
+
+
+def _run_agent(test_id: str, cwd: Path, settings: Settings) -> dict[str, Any]:
+    """Run the Strands loop and flatten its result to primitive JSON."""
+    agent = build_agent(test_id, cwd, settings)
+    result = agent(f"Investigate {test_id} and decide what to do about it.")
+    return {
+        "mode": "agent",
+        "test_id": test_id,
+        "stop_reason": str(result.stop_reason),
+        "cycles": int(result.metrics.cycle_count),
+        "tool_calls": {
+            name: int(metric.call_count)
+            for name, metric in sorted(result.metrics.tool_metrics.items())
+            if metric.call_count
+        },
+        "usage": {
+            key: value
+            for key, value in result.metrics.accumulated_usage.items()
+            if isinstance(value, int)
+        },
+        "conclusion": "".join(
+            block.get("text", "") for block in result.message.get("content", []) if "text" in block
+        ),
+    }
 
 
 def _bedrock(settings: Settings) -> ModelProvider:

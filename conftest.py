@@ -17,4 +17,3 @@ def pytest_configure(config: pytest.Config) -> None:
         if config.option.tbstyle in ("auto", "long"):
             config.option.tbstyle = "no"
         config.option.reportchars = "N"
-

@@ -292,4 +292,3 @@ def test_flake_check_verbose():
     assert "run  1/2:" in result.stdout
     assert "run  2/2:" in result.stdout
     assert "flake rate " in result.stdout
-

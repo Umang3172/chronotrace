@@ -96,7 +96,19 @@ markers = ["benchmark: end-to-end runs over the seeded benchmark corpus"]
 # while loading plugins — before pytest-cov starts measuring — and every module
 # body would be recorded as unexecuted.
 source = ["chronotrace"]
-omit = ["chronotrace/agent/*", "chronotrace/providers/bedrock.py"]
+# Omitted: every module here needs a live model provider to execute a single
+# line, so in CI they are not undertested, they are unreachable. The eval
+# harness refuses to run against the offline reference policy by design (see
+# the ninth limitation in the README), which is the same reason stated twice.
+# `chronotrace/agent/*` is the exception and is deliberately measured: the tool
+# surface registers with the SDK without contacting a model, and that
+# registration is exactly what regressed once already.
+omit = [
+    "chronotrace/providers/bedrock.py",
+    "chronotrace/providers/ollama.py",
+    "chronotrace/eval/three_arm.py",
+    "chronotrace/eval/three_arm_report.py",
+]
 
 [tool.coverage.report]
 fail_under = 80

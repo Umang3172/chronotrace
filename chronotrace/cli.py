@@ -28,6 +28,7 @@ from chronotrace.govern.gauntlet import ATTACKS
 from chronotrace.logging import configure
 from chronotrace.pipeline import repair
 from chronotrace.providers.base import ModelProvider
+from chronotrace.providers.bedrock import DEFAULT_BEDROCK_MODEL
 from chronotrace.providers.detect import detect
 from chronotrace.providers.reference_policy import PROVIDER_LABEL, ReferencePolicyProvider
 from chronotrace.registry.store import IncidentStore
@@ -70,6 +71,21 @@ def _ollama(settings: Settings, recorder: object = None) -> ModelProvider:
         timeout_s=settings.model_timeout_s,
         recorder=recorder,  # type: ignore[arg-type]
     )
+
+
+def _resolve_case(test_id: str, *, demo: bool) -> str:
+    """Resolve a case id, a node id, or ``--demo`` to a pytest node id.
+
+    Returns an empty string when nothing was named, so the caller can decide
+    what a missing target means for it.
+    """
+    wanted = "R01" if demo else test_id
+    if not wanted:
+        return ""
+    for case in load_cases(DEFAULT_CASES):
+        if case.case_id.lower() == wanted.lower() or case.test_id == wanted:
+            return case.test_id
+    return "" if demo else wanted
 
 
 def _store(settings: Settings) -> IncidentStore:
@@ -302,6 +318,92 @@ def gauntlet() -> None:
         raise typer.Exit(1)
 
 
+@app.command(name="agent")
+def agent_cmd(
+    test_id: Annotated[str, typer.Argument(help="pytest node id to investigate")] = "",
+    demo: Annotated[bool, typer.Option("--demo", help="investigate the bundled R01 race")] = False,
+    dry_run: Annotated[
+        bool,
+        typer.Option("--dry-run", help="show the registered tool surface, contact no model"),
+    ] = False,
+    as_json: Annotated[bool, typer.Option("--json", help="emit JSON")] = False,
+) -> None:
+    """Run the Strands agent loop on Amazon Bedrock against one flaky test.
+
+    Unlike ``repair``, which asks a model for a single typed intent, this drives
+    the multi-step loop: the agent chooses which evidence to gather, which
+    ordering to force, and whether to repair or abstain. Authority stays
+    deterministic either way -- it can request a forced replay, it cannot
+    overrule the governor, and it never writes source.
+    """
+    from chronotrace.agent.graph import build_agent
+
+    configure(quiet=True)
+    settings = _settings()
+    target = _resolve_case(test_id, demo=demo)
+    if not target:
+        typer.echo("give a test id, or --demo")
+        raise typer.Exit(2)
+
+    agent = build_agent(target, Path.cwd(), settings)
+    tool_names = list(agent.tool_names)
+
+    if dry_run:
+        if as_json:
+            typer.echo(json.dumps({"test_id": target, "tools": tool_names}, indent=2))
+            return
+        _rule("Strands agent — tool surface")
+        typer.echo(f"model  : {settings.model_id_large or DEFAULT_BEDROCK_MODEL}")
+        typer.echo(f"region : {settings.aws_region}")
+        typer.echo(f"test   : {target}")
+        for name in tool_names:
+            typer.echo(f"  tool  {name}")
+        typer.echo(f"\n{len(tool_names)} tools registered; no model contacted (--dry-run)")
+        return
+
+    _rule("Strands agent — investigating")
+    typer.echo(f"model  : {settings.model_id_large or DEFAULT_BEDROCK_MODEL}")
+    typer.echo(f"tools  : {', '.join(tool_names)}")
+    typer.echo(f"test   : {target}\n")
+
+    result = agent(f"Investigate {target} and decide what to do about it.")
+
+    calls = [
+        {"tool": name, "calls": metric.call_count}
+        for name, metric in sorted(result.metrics.tool_metrics.items())
+        if metric.call_count
+    ]
+    usage = dict(result.metrics.accumulated_usage)
+    text = "".join(
+        block.get("text", "") for block in result.message.get("content", []) if "text" in block
+    )
+    if as_json:
+        typer.echo(
+            json.dumps(
+                {
+                    "test_id": target,
+                    "stop_reason": result.stop_reason,
+                    "cycles": result.metrics.cycle_count,
+                    "tool_calls": calls,
+                    "usage": usage,
+                    "conclusion": text,
+                },
+                indent=2,
+                default=str,
+            )
+        )
+        return
+
+    _rule("what the agent actually did")
+    for call in calls:
+        typer.echo(f"  {call['calls']:>2}x  {call['tool']}")
+    typer.echo(f"\n  {result.metrics.cycle_count} loop cycles, stop reason {result.stop_reason}")
+    if usage:
+        typer.echo(f"  tokens in {usage.get('inputTokens', 0)}, out {usage.get('outputTokens', 0)}")
+    _rule("conclusion")
+    typer.echo(text.strip())
+
+
 @app.command(name="eval")
 def eval_cmd(
     arm: Annotated[str, typer.Option(help="A, B, C, or all")] = "C",
@@ -434,7 +536,6 @@ def _git_short_sha(root: Path) -> str:
     except (OSError, subprocess.SubprocessError):
         pass
     return "unknown"
-
 
 
 @app.command(name="flake-check")

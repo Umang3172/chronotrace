@@ -15,8 +15,9 @@ fallback string representation and blowing past its payload limit (E4).
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import Any, TypeVar
 
 from chronotrace.capture.collect import collect
 from chronotrace.contracts import CaptureBundle, Diagnosis
@@ -30,6 +31,21 @@ from chronotrace.verify.runner import run_test
 
 __all__ = ["AgentTools"]
 
+_F = TypeVar("_F", bound=Callable[..., Any])
+
+try:
+    from strands import tool
+except ImportError:  # pragma: no cover - optional dependency
+
+    def tool(func: _F) -> _F:  # type: ignore[no-redef]
+        """Identity stand-in so this module imports without the optional SDK.
+
+        The tool surface is plain Python and stays callable either way; only the
+        Strands registration is lost, and the only caller that needs it already
+        raises a clear error when the SDK is missing.
+        """
+        return func
+
 
 class AgentTools:
     """Stateful tool surface bound to one incident."""
@@ -42,6 +58,7 @@ class AgentTools:
         self._bundle: CaptureBundle | None = None
         self._diagnosis: Diagnosis | None = None
 
+    @tool
     def capture_traces(self, runs: int = 20) -> dict[str, Any]:
         """Run the test repeatedly and gather a comparable pass/fail trace pair.
 
@@ -61,6 +78,7 @@ class AgentTools:
             "has_comparable_pair": self._bundle.has_pair,
         }
 
+    @tool
     def trace_slice(self) -> dict[str, Any]:
         """Return the operations the failed assertion could have depended on.
 
@@ -92,6 +110,7 @@ class AgentTools:
             "operations": operations,
         }
 
+    @tool
     def compare_orderings(self) -> dict[str, Any]:
         """Rank the orderings that differ between passing and failing runs.
 
@@ -116,6 +135,7 @@ class AgentTools:
             ]
         }
 
+    @tool
     def force_replay(self, order: list[str], runs: int = 5) -> dict[str, Any]:
         """Force one ordering and report what happened.
 
@@ -155,6 +175,7 @@ class AgentTools:
             "deadlock_detected": deadlock,
         }
 
+    @tool
     def source_context(self, path: str, line: int, window: int = 12) -> dict[str, Any]:
         """Return source around a line, so the loop can see what it is deciding about.
 
@@ -182,6 +203,7 @@ class AgentTools:
             ),
         }
 
+    @tool
     def diagnose_now(self) -> dict[str, Any]:
         """Run the full diagnosis and return its decided status.
 
@@ -198,6 +220,7 @@ class AgentTools:
             "bug_depth": self._diagnosis.bug_depth,
         }
 
+    @tool
     def check_patch(self, before: str, after: str, path: str) -> dict[str, Any]:
         """Ask the governor whether a patch would be allowed to run.
 
@@ -222,6 +245,7 @@ class AgentTools:
             ],
         }
 
+    @tool
     def run_once(self) -> dict[str, Any]:
         """Run the test once under natural conditions.
 
@@ -238,7 +262,7 @@ class AgentTools:
 
     def _require_bundle(self) -> CaptureBundle:
         if self._bundle is None or not self._bundle.has_pair:
-            self.capture_traces()
+            self.capture_traces()  # type: ignore[call-arg]
         if self._bundle is None or not self._bundle.has_pair:
             message = "no comparable pass/fail trace pair; diagnosis must abstain (E1)"
             raise RuntimeError(message)

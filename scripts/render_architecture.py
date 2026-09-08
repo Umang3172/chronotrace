@@ -94,7 +94,7 @@ def substitute_highlight(html: str, value: str) -> str:
     hits = [(q, pat, m) for q, pat in matches if (m := list(pat.finditer(html)))]
     if not hits:
         raise SystemExit(
-            f"FAIL: no `\"default\":\"none\"` found inside the highlight prop block of {SOURCE}. "
+            f'FAIL: no `"default":"none"` found inside the highlight prop block of {SOURCE}. '
             "The export's prop declaration changed -- fix the pattern before rendering."
         )
     if len(hits) > 1:
@@ -220,9 +220,7 @@ def render(
     try:
         page.goto(tmp.as_uri(), wait_until="domcontentloaded")
         _await_ready(page)
-        regions: list[dict[str, object]] = (
-            page.evaluate(FIND_REGIONS_JS) if mark_regions else []
-        )
+        regions: list[dict[str, object]] = page.evaluate(FIND_REGIONS_JS) if mark_regions else []
         if inject_css:
             page.add_style_tag(content=inject_css)
             page.wait_for_timeout(120)
@@ -343,9 +341,7 @@ def main() -> int:
 
     with probe_ctx, sync_playwright() as pw:
         browser = pw.chromium.launch(headless=True)
-        context = browser.new_context(
-            viewport=VIEWPORT, device_scale_factor=DEVICE_SCALE_FACTOR
-        )
+        context = browser.new_context(viewport=VIEWPORT, device_scale_factor=DEVICE_SCALE_FACTOR)
         page = context.new_page()
         try:
             plan = "B" if args.force_plan_b else "A"
@@ -371,9 +367,7 @@ def main() -> int:
 
             if plan == "B":
                 print("Plan B -- injecting per-variant CSS against the rendered regions.")
-                regions = render(
-                    page, source_html, probe_dir / "probe-dom.png", mark_regions=True
-                )
+                regions = render(page, source_html, probe_dir / "probe-dom.png", mark_regions=True)
                 if len(regions) != 6:
                     raise SystemExit(
                         f"FAIL: expected 6 region containers in the rendered DOM, found "
