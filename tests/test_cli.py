@@ -224,3 +224,72 @@ def test_rejection_demo_shows_the_gate_passing_and_replay_refusing(capsys):
     assert "approved: True" in out
     assert "tier reached : FAILED" in out
     assert "judgement, not policy" in out
+
+
+def test_flake_check_default_runs_and_reports_seeded(monkeypatch):
+    """chronotrace flake-check defaults to R01, marks seeded, and reports flake rate."""
+    result = runner.invoke(app, ["flake-check", "-n", "3", "--interval", "0"])
+    assert result.exit_code == 0
+    assert "test_reader_sees_committed_value" in result.stdout
+    assert "3 runs" in result.stdout
+    assert "commit " in result.stdout
+    assert "seeded" in result.stdout
+    assert "failed ·" in result.stdout
+    assert "passed" in result.stdout
+    assert "flake rate " in result.stdout
+    assert "of test time" in result.stdout
+
+    # Rendered lines in terminal must stay contained without scrolling (< 10 lines)
+    rendered_lines = [
+        raw.split("\r")[-1].replace("\x1b[K", "").strip()
+        for raw in result.stdout.strip().split("\n")
+        if raw.split("\r")[-1].replace("\x1b[K", "").strip()
+    ]
+    assert len(rendered_lines) == 7
+    assert "test_reader_sees_committed_value" in rendered_lines[0]
+    assert "seeded" in rendered_lines[0]
+    assert "run  1/3:" in rendered_lines[2]
+    assert "run  2/3:" in rendered_lines[3]
+    assert "run  3/3:" in rendered_lines[4]
+    assert "failed ·" in rendered_lines[4]
+    assert "passed" in rendered_lines[4]
+    assert "flake rate " in rendered_lines[6]
+    assert "of test time" in rendered_lines[6]
+
+
+def test_flake_check_unseeded_test_has_no_marker(monkeypatch):
+    """User tests that are not benchmark cases do not get the 'seeded' marker."""
+    target = "tests/test_cli.py::test_rejection_demo_shows_the_gate_passing_and_replay_refusing"
+    result = runner.invoke(app, ["flake-check", target, "-n", "1", "--interval", "0"])
+    assert result.exit_code == 0
+    assert "test_rejection_demo_shows_the_gate_passing_and_replay_refusing" in result.stdout
+    assert "seeded" not in result.stdout
+    assert "flake rate " in result.stdout
+
+
+def test_flake_check_git_sha_fallback(monkeypatch):
+    """When git is unavailable, commit sha falls back to 'unknown' without crashing."""
+    import chronotrace.cli as cli_mod
+
+    monkeypatch.setattr(cli_mod, "_git_short_sha", lambda root: "unknown")
+    result = runner.invoke(app, ["flake-check", "-n", "1", "--interval", "0"])
+    assert result.exit_code == 0
+    assert "commit unknown" in result.stdout
+
+
+def test_flake_check_env_interval(monkeypatch):
+    """CHRONOTRACE_FLAKE_INTERVAL_S overrides the default interval when flag is omitted."""
+    monkeypatch.setenv("CHRONOTRACE_FLAKE_INTERVAL_S", "0.001")
+    result = runner.invoke(app, ["flake-check", "-n", "2"])
+    assert result.exit_code == 0
+    assert "flake rate " in result.stdout
+
+
+def test_flake_check_verbose():
+    """--verbose prints per-run lines rather than an in-place tally."""
+    result = runner.invoke(app, ["flake-check", "-n", "2", "--interval", "0", "--verbose"])
+    assert result.exit_code == 0
+    assert "run  1/2:" in result.stdout
+    assert "run  2/2:" in result.stdout
+    assert "flake rate " in result.stdout
+

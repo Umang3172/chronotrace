@@ -12,6 +12,7 @@ silent fallback to something that may no longer exist in the region.
 from __future__ import annotations
 
 import json
+import time
 from typing import TYPE_CHECKING, Any
 
 from chronotrace.contracts import Diagnosis, RepairIntent
@@ -30,6 +31,9 @@ __all__ = ["BedrockProvider"]
 _TOOL_NAME = "emit_repair_intent"
 
 
+DEFAULT_BEDROCK_MODEL = "amazon.nova-pro-v1:0"
+
+
 class BedrockProvider:
     """Calls a Bedrock model and validates its response into a typed intent."""
 
@@ -43,14 +47,8 @@ class BedrockProvider:
             raise ConfigurationError(
                 "the bedrock provider needs boto3: uv sync --extra bedrock"
             ) from exc
-        if not settings.model_id_large:
-            raise ConfigurationError(
-                "CHRONOTRACE_MODEL_ID_LARGE is unset. Bedrock model ids change between "
-                "regions and releases, so ChronoTrace will not guess one; look up the "
-                "current id for your region and set it explicitly."
-            )
         self.settings = settings
-        self.model_id = settings.model_id_large
+        self.model_id = settings.model_id_large or DEFAULT_BEDROCK_MODEL
         self.client = boto3.client("bedrock-runtime", region_name=settings.aws_region)
         self._usage = (0, 0)
         self._calls = 0
@@ -88,6 +86,7 @@ class BedrockProvider:
         }
         if previous_error:
             payload["validator_rejected_previous_intent"] = previous_error
+        started = time.monotonic()
         response = self.client.converse(
             modelId=self.model_id,
             system=[{"text": INTENT_SYSTEM}],
@@ -106,9 +105,21 @@ class BedrockProvider:
             },
             inferenceConfig={"temperature": 0.0, "maxTokens": 2048},
         )
+        elapsed = time.monotonic() - started
         self._calls += 1
         usage = response.get("usage", {})
-        self._usage = (int(usage.get("inputTokens", 0)), int(usage.get("outputTokens", 0)))
+        tokens_in = int(usage.get("inputTokens", 0))
+        tokens_out = int(usage.get("outputTokens", 0))
+        self._usage = (tokens_in, tokens_out)
+        log.info(
+            "bedrock.call",
+            attempt=self._calls,
+            schema="RepairIntent",
+            seconds=round(elapsed, 1),
+            tokens_in=tokens_in,
+            tokens_out=tokens_out,
+            model=self.model_id.split("/")[-1],
+        )
         return self._extract(response)
 
     def _extract(self, response: dict[str, Any]) -> RepairIntent:

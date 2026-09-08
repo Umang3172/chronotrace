@@ -2,6 +2,8 @@
 
 ## The shape of the system
 
+![ChronoTrace 6-Stage Architecture](assets/video/arch-0-neutral.png)
+
 ```mermaid
 flowchart TB
     subgraph capture["capture — evidence"]

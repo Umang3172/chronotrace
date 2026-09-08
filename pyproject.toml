@@ -28,6 +28,8 @@ dev = [
     "pytest-cov>=5.0",
     "hypothesis>=6.100",
     "types-networkx>=3.3",
+    # Renders assets/architecture.html to the demo-video stills (scripts/render_architecture.py).
+    "playwright>=1.44",
 ]
 
 [project.scripts]
@@ -74,6 +76,13 @@ exclude = ["benchmark/cases", "ui", "demo", "chronotrace/agent/deploy"]
 [[tool.mypy.overrides]]
 module = ["networkx.*", "libcst.*", "boto3.*", "botocore.*", "strands.*"]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+check_untyped_defs = false
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+disallow_untyped_calls = false
 
 [tool.pytest.ini_options]
 addopts = "--strict-markers --strict-config"

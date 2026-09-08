@@ -36,26 +36,20 @@ Work through these conditions in order and choose the first that matches.
    writing operation, `wait_site` to the reading operation, `primitive` to
    "asyncio.Event", and `shared_scope` to "FIXTURE".
 
-2. AWAIT_UNFINISHED_TASK
-   The same read-after-write shape, and the test already holds a handle to the
-   task that performs the write but only awaits it after the assertion.
-   Awaiting the existing handle earlier is sufficient and no new primitive is
-   needed. Put the task variable name in `scope_target`.
-
-3. ISOLATE_FIXTURE_SCOPE
+2. ISOLATE_FIXTURE_SCOPE
    The operations do not race over an ordering but over state shared by a
    fixture whose scope is wider than the test requires.
 
-4. RELAX_ASSERTION
+3. RELAX_ASSERTION
    Both operations have `access: "write"` and neither reads what the other
    produced. Their relative order is not established by the code under test, so
    the assertion demands an ordering nothing promises. Synchronising operations
    that are permitted to interleave would destroy real concurrency.
 
-5. NO_REPAIR
+4. NO_REPAIR
    None of the above conditions hold.
 
-Conditions 4 and 5 are answers to specific evidence, not a safe default. Neither
+Conditions 3 and 4 are answers to specific evidence, not a safe default. Neither
 is correct for a proven read-after-write inversion between a writer and a reader
 of the same resource; condition 1 is.
 

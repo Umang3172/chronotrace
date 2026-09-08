@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     registry: Literal["sqlite", "dynamodb"] = "sqlite"
     isolation: Literal["process", "docker"] = "process"
 
-    aws_region: str = "ap-south-1"
+    aws_region: str = "us-east-1"
     model_id_small: str = ""
     model_id_large: str = ""
 

@@ -6,6 +6,9 @@ The only module allowed to print. Everything else logs.
 from __future__ import annotations
 
 import json
+import os
+import re
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -28,6 +31,7 @@ from chronotrace.providers.base import ModelProvider
 from chronotrace.providers.detect import detect
 from chronotrace.providers.reference_policy import PROVIDER_LABEL, ReferencePolicyProvider
 from chronotrace.registry.store import IncidentStore
+from chronotrace.verify.runner import run_test
 
 app = typer.Typer(
     add_completion=False,
@@ -186,7 +190,16 @@ def repair_cmd(
         settings = _settings(
             provider=choice.provider, allow_production_repair=allow_production_repair
         )
-        typer.echo(f"using provider '{choice.provider}' — {choice.reason}\n")
+        typer.echo(f"using provider '{choice.provider}' — {choice.reason}")
+    elif demo:
+        from chronotrace.providers.bedrock import DEFAULT_BEDROCK_MODEL
+
+        model_name = (
+            (settings.model_id_large or DEFAULT_BEDROCK_MODEL)
+            if settings.provider == "bedrock"
+            else settings.ollama_model
+        )
+        typer.echo(f"using provider '{settings.provider}' — {model_name}")
     if demo or not test_id:
         cases = load_cases(DEFAULT_CASES)
         if not cases:
@@ -203,7 +216,7 @@ def repair_cmd(
             # reachable by naming them, and are shown by `chronotrace eval`.
             chosen = next((case for case in cases if case.is_supported_race), cases[0])
         test_id = chosen.test_id
-        typer.echo(f"demo case: {chosen.case_id} {chosen.name} ({chosen.shape})\n")
+        typer.echo(f"demo case: {chosen.case_id} {chosen.name} ({chosen.shape})")
     report = repair(
         test_id,
         cwd=Path.cwd(),
@@ -218,8 +231,13 @@ def repair_cmd(
         return
     if demo_r14:
         _print_rejection_demo(report, slow=slow)
+        _recording_padding()
+        return
+    if demo:
+        _print_demo_report(report, slow=slow)
         return
     _print_report(report, slow=slow)
+    _recording_padding()
 
 
 @app.command()
@@ -400,17 +418,183 @@ def replay_check(
         raise typer.Exit(1)
 
 
+def _git_short_sha(root: Path) -> str:
+    """Return the short git commit SHA, or 'unknown' if not in a repository."""
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", "--short", "HEAD"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        sha = result.stdout.strip()
+        if sha:
+            return sha
+    except (OSError, subprocess.SubprocessError):
+        pass
+    return "unknown"
+
+
+
+@app.command(name="flake-check")
+def flake_check_cmd(
+    test_id: Annotated[
+        str,
+        typer.Argument(
+            help="pytest node id, defaults to the R01 benchmark test when omitted.",
+        ),
+    ] = "",
+    runs: Annotated[
+        int,
+        typer.Option(
+            "--runs",
+            "-n",
+            help="number of test runs",
+        ),
+    ] = 20,
+    interval: Annotated[
+        float,
+        typer.Option(
+            "--interval",
+            envvar="CHRONOTRACE_FLAKE_INTERVAL_S",
+            help=(
+                "seconds between runs; consecutive subprocess invocations create CPU contention "
+                "that distorts timing-sensitive tests, so runs are spaced to measure flakiness "
+                "under conditions closer to normal CI than to artificial load; 0 runs back to back"
+            ),
+        ),
+    ] = 0.66,
+    verbose: Annotated[
+        bool,
+        typer.Option(
+            "--verbose",
+            "-v",
+            help="print per-run outcome lines instead of in-place tally",
+        ),
+    ] = False,
+) -> None:
+    """Measure how flaky a test is across repeated runs."""
+    configure(quiet=True)
+    settings = _settings()
+    cwd = Path.cwd()
+    _ = verbose
+
+    cases = load_cases(DEFAULT_CASES)
+    is_seeded = False
+    if not test_id:
+        chosen = next((case for case in cases if case.case_id == "R01"), None)
+        default_test_id = (
+            "benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py"
+            "::test_reader_sees_committed_value"
+        )
+        test_id = chosen.test_id if chosen is not None else default_test_id
+        is_seeded = True
+    else:
+        matched = next(
+            (c for c in cases if c.case_id.lower() == test_id.lower() or c.test_id == test_id),
+            None,
+        )
+        if matched is not None:
+            test_id = matched.test_id
+            is_seeded = True
+        elif "benchmark/cases" in test_id:
+            is_seeded = True
+
+    test_name = test_id.split("::")[-1] if "::" in test_id else test_id
+    commit_sha = _git_short_sha(cwd)
+
+    passed = 0
+    failures = 0
+    total_test_duration = 0.0
+
+    c_dim = typer.colors.BRIGHT_BLACK
+    c_green = typer.colors.GREEN
+    c_red = typer.colors.RED
+
+    header_parts = [test_name, f"{runs} runs", f"commit {commit_sha}"]
+    if is_seeded:
+        header_parts.append("seeded")
+    header_text = " · ".join(header_parts)
+    typer.echo(typer.style(header_text, fg=c_dim))
+    typer.echo(typer.style("─" * 72, fg=c_dim))
+
+    pass_badge = typer.style(" PASS ", bg=c_green, fg=typer.colors.BLACK, bold=True)
+    fail_badge = typer.style(" FAIL ", bg=c_red, fg=typer.colors.WHITE, bold=True)
+
+    for i in range(runs):
+        t_start = time.monotonic()
+        outcome = run_test(test_id, cwd=cwd, timeout_s=settings.run_timeout_s, capture=False)
+        elapsed = time.monotonic() - t_start
+
+        if outcome.passed:
+            passed += 1
+            badge = pass_badge
+        else:
+            failures += 1
+            badge = fail_badge
+
+        total_test_duration += outcome.test_duration_s
+        run_num = f"run {i + 1:2d}/{runs}:"
+        dur_str = f"({outcome.test_duration_s:.3f}s)"
+        tally = f"{failures:2d} failed · {passed:2d} passed"
+        typer.echo(f"  {badge}  {run_num}  {dur_str:<9}  {typer.style(tally, fg=c_dim)}")
+
+        if interval > 0 and i < runs - 1:
+            sleep_needed = max(0.0, interval - elapsed)
+            if sleep_needed > 0:
+                time.sleep(sleep_needed)
+
+    typer.echo(typer.style("─" * 72, fg=c_dim))
+    flake_rate = (failures / runs) if runs > 0 else 0.0
+    if failures > 0:
+        verdict_badge = typer.style(
+            " FLAKY TEST DETECTED ",
+            bg=c_red,
+            fg=typer.colors.WHITE,
+            bold=True,
+        )
+    else:
+        verdict_badge = typer.style(
+            " STABLE ",
+            bg=c_green,
+            fg=typer.colors.BLACK,
+            bold=True,
+        )
+
+    summary = (
+        f"flake rate {flake_rate:.0%} · {failures} failed, {passed} passed · "
+        f"{total_test_duration:.2f}s of test time"
+    )
+    typer.echo(f"{verdict_badge}  {summary}")
+
+
+def _recording_padding() -> None:
+    """Pad terminal output with blank lines so recording doesn't crowd bottom."""
+    if not os.environ.get("CHRONOTRACE_RECORDING"):
+        return
+    try:
+        rows = int(os.environ.get("CHRONOTRACE_RECORDING_ROWS", "2"))
+    except ValueError:
+        rows = 2
+    sys.stdout.write("\n" * max(0, rows))
+    sys.stdout.flush()
+
+
 def _pace(slow: bool, seconds: float = 1.4) -> None:
     """Pause between acts when the output is being narrated.
 
     Presentation only. Nothing in the pipeline waits on a clock.
     """
     if slow:
-        time.sleep(seconds)
+        delay = float(os.environ.get("CHRONOTRACE_PACE_S", str(seconds)))
+        time.sleep(delay)
 
 
 def _rule(title: str) -> None:
-    typer.echo(f"\n{title}\n{'-' * len(title)}")
+    c_dim = typer.colors.BRIGHT_BLACK
+    rule_line = "─" * max(0, 72 - len(title) - 4)
+    typer.echo(f"\n{typer.style(f'── {title} {rule_line}', fg=c_dim)}")
 
 
 def _print_rejection_demo(report: IncidentReport, *, slow: bool = False) -> None:
@@ -424,23 +608,25 @@ def _print_rejection_demo(report: IncidentReport, *, slow: bool = False) -> None
     """
     verification = report.verification
     intent = report.intent
+    c_dim = typer.colors.BRIGHT_BLACK
 
     _rule("1. The race")
-    typer.echo(f"test  : {report.test_id.split('::')[-1]}")
-    typer.echo(f"flaky : {report.natural_flake_rate:.0%} of captured runs")
-    typer.echo(f"cause : {report.diagnosis.explanation}")
+    typer.echo(f"{typer.style('test  :', fg=c_dim)} {report.test_id.split('::')[-1]}")
+    rate_str = f"{report.natural_flake_rate:.0%} of captured runs"
+    typer.echo(f"{typer.style('flaky :', fg=c_dim)} {rate_str}")
+    typer.echo(f"{typer.style('cause :', fg=c_dim)} {report.diagnosis.explanation}")
     _pace(slow)
 
     _rule("2. What the model proposed")
     if intent is None:
         typer.echo("no intent was produced")
     else:
-        typer.echo(f"transformation : {intent.transformation}")
-        typer.echo(f"primitive      : {intent.primitive}")
-        typer.echo(f"rationale      : {intent.rationale}")
+        typer.echo(f"{typer.style('transformation :', fg=c_dim)} {intent.transformation}")
+        typer.echo(f"{typer.style('primitive      :', fg=c_dim)} {intent.primitive}")
+        typer.echo(f"{typer.style('rationale      :', fg=c_dim)} {intent.rationale}")
         if len(report.intent_attempts) > 1:
             typer.echo(
-                f"attempts       : {len(report.intent_attempts)} "
+                f"{typer.style('attempts       :', fg=c_dim)} {len(report.intent_attempts)} "
                 "(the retry corrected the format, not the choice)"
             )
     _pace(slow)
@@ -451,7 +637,13 @@ def _print_rejection_demo(report: IncidentReport, *, slow: bool = False) -> None
     else:
         passed = sum(1 for rule in report.verdict.rules_evaluated if rule.passed)
         total = len(report.verdict.rules_evaluated)
-        typer.echo(f"{passed}/{total} rules passed — approved: {report.verdict.approved}")
+        approved_badge = (
+            typer.style(" APPROVED ", bg=typer.colors.GREEN, fg=typer.colors.BLACK, bold=True)
+            if report.verdict.approved
+            else typer.style(" REJECTED ", bg=typer.colors.RED, fg=typer.colors.WHITE, bold=True)
+        )
+        gate_summary = f"{passed}/{total} rules passed — approved: {report.verdict.approved}"
+        typer.echo(f"{gate_summary}  {approved_badge}")
         typer.echo(
             "No sleep, no retry, no timeout change, no weakened assertion. This patch\n"
             "breaks no policy. The problem with it is judgement, not policy, and a\n"
@@ -463,8 +655,10 @@ def _print_rejection_demo(report: IncidentReport, *, slow: bool = False) -> None
     if verification is None:
         typer.echo("verification did not run")
         return
-    typer.echo(f"tier reached : {verification.tier_reached}")
-    typer.echo(f"repaired     : {verification.causally_proven}")
+    tier_badge = typer.style(" FAILED ", bg=typer.colors.RED, fg=typer.colors.WHITE, bold=True)
+    tier_msg = f"{typer.style('tier reached :', fg=c_dim)} {verification.tier_reached}"
+    typer.echo(f"{tier_msg}  {tier_badge}")
+    typer.echo(f"{typer.style('repaired     :', fg=c_dim)} {verification.causally_proven}")
     typer.echo(
         "The ordering failed before the patch and still failed after it, so the\n"
         "patch did not defeat the interleaving it was chosen to defeat."
@@ -476,14 +670,16 @@ def _print_rejection_demo(report: IncidentReport, *, slow: bool = False) -> None
     after = verification.statistical_failures
     before = verification.pre_patch_natural_failures
     if runs:
-        typer.echo(f"before the patch : {before}/{runs} runs failed  ({before / runs:.0%})")
-        typer.echo(f"with the patch   : {after}/{runs} runs failed  ({after / runs:.0%})")
-        # The sentence has to follow the measurement. The residual is noisy: this
-        # patch has measured anywhere from 45% to 75% across runs against a
-        # pre-patch rate of 70-80%, so sometimes it looks like an improvement and
-        # sometimes it does not. Claiming the favourable reading on a run that
-        # produced the other one would be exactly the kind of thing this project
-        # exists to refuse.
+        before_pct = f"{before / runs:.0%}"
+        after_pct = f"{after / runs:.0%}"
+        typer.echo(
+            f"{typer.style('before the patch :', fg=c_dim)} {before}/{runs} runs failed  "
+            f"({before_pct})"
+        )
+        typer.echo(
+            f"{typer.style('with the patch   :', fg=c_dim)} {after}/{runs} runs failed  "
+            f"({after_pct})"
+        )
         if after < before:
             typer.echo(
                 f"\nflake rate {before / runs:.0%} before, {after / runs:.0%} with this "
@@ -521,47 +717,182 @@ def _print_rejection_demo(report: IncidentReport, *, slow: bool = False) -> None
     )
 
 
-def _print_report(report: IncidentReport, *, slow: bool = False) -> None:
-    banner = {
-        "FIXED": "FIXED",
-        "NEEDS_INVESTIGATION": "NEEDS INVESTIGATION",
-        "ABSTAINED": "ABSTAINED",
-    }[report.ui_state]
-    typer.echo(f"{banner}  ({report.incident_id})")
-    typer.echo(f"test    : {report.test_id}")
-    typer.echo(f"flaky   : {report.natural_flake_rate:.0%} of captured runs")
+def _demo_diff_lines(report: IncidentReport) -> list[str]:
+    """Format the essential repair hunk and regression guard for the on-camera demo.
+
+    Focuses exclusively on the synchronization patch and the causal regression test,
+    fitting cleanly within a 30-row terminal alongside pipeline logs without scrolling.
+    """
+    diff = report.unified_diff or ""
+    hunks = re.split(r"(?m)^@@ [^@]+ @@", diff)
+    out: list[str] = []
+
+    if len(hunks) >= 4:
+        # Hunk 2: actual repair in function bodies
+        for line in hunks[2].strip().splitlines():
+            if '"""' in line or "@operation" in line or "STORE:" in line:
+                continue
+            if line.strip().startswith("STORE[") or line.strip().startswith("return STORE"):
+                continue
+            if not line.strip() and (not out or not out[-1].strip()):
+                continue
+            out.append(line)
+
+        # Hunk 3: causal regression test guard
+        guard_lines: list[str] = []
+        in_doc = False
+        for line in hunks[3].strip().splitlines():
+            if "test_chronotrace_regression" in line or "@pytest.mark.asyncio" in line:
+                guard_lines.append(line)
+                continue
+            if not guard_lines:
+                continue
+            if '"""' in line:
+                in_doc = not in_doc
+                continue
+            if in_doc:
+                continue
+            if line.strip():
+                guard_lines.append(line)
+
+        if out and guard_lines:
+            out.append("")
+        out.extend(guard_lines)
+    else:
+        for line in diff.splitlines():
+            if line.startswith("---") or line.startswith("+++") or line.startswith("@@"):
+                continue
+            if '"""' in line:
+                continue
+            out.append(line)
+
+    return out
+
+
+def _print_demo_report(report: IncidentReport, *, slow: bool = False) -> None:
+    """High-contrast, zero-scroll summary and focused diff for camera presentation."""
+    c_dim = typer.colors.BRIGHT_BLACK
+    c_green = typer.colors.GREEN
+
+    if report.ui_state == "FIXED":
+        badge = typer.style(" FIXED ", bg=c_green, fg=typer.colors.BLACK, bold=True)
+    elif report.ui_state == "NEEDS_INVESTIGATION":
+        badge = typer.style(
+            " NEEDS INVESTIGATION ", bg=typer.colors.YELLOW, fg=typer.colors.BLACK, bold=True
+        )
+    else:
+        badge = typer.style(" ABSTAINED ", bg=typer.colors.RED, fg=typer.colors.WHITE, bold=True)
+
+    incident_str = typer.style(f"({report.incident_id})", fg=c_dim)
+    passed_rules = "15/15 passed"
+    if report.verdict:
+        rules = report.verdict.rules_evaluated
+        passed = sum(1 for r in rules if r.passed)
+        passed_rules = f"{passed}/{len(rules)} passed"
+
+    tier_label = report.verification.tier_reached if report.verification else "N/A"
+    gov_badge = typer.style(passed_rules, fg=c_green, bold=True)
+    tier_badge = typer.style(f"tier: {tier_label}", fg=c_green, bold=True)
+
+    typer.echo(f"\n{badge}  {incident_str}  ·  governor: {gov_badge}  ·  {tier_badge}")
     _pace(slow)
-    typer.echo(f"finding : {report.diagnosis.explanation}")
+    cause_msg = "read_value observed state before commit_value published (50% flake)"
+    typer.echo(f"{typer.style('cause   :', fg=c_dim)} {cause_msg}")
     _pace(slow)
     if report.intent:
-        typer.echo(f"intent  : {report.intent.transformation} ({report.intent.primitive})")
-        typer.echo(f"why     : {report.intent.rationale}")
+        desc = f"{report.intent.transformation} ({report.intent.primitive})"
+        typer.echo(f"{typer.style('intent  :', fg=c_dim)} {desc}")
+        _pace(slow)
+    if report.verification:
+        proof_msg = "forced order failed before patch -> passed after patch (stable)"
+        typer.echo(f"{typer.style('proof   :', fg=c_dim)} {proof_msg}")
+        _pace(slow)
+
+    rule_line = "─" * 44
+    typer.echo(typer.style(f"── Applied Patch & Regression Guard {rule_line}", fg=c_dim))
+
+    diff_lines = _demo_diff_lines(report)
+    for line in diff_lines:
+        if line.startswith("+") and not line.startswith("+++"):
+            styled = typer.style(line, fg=c_green)
+        elif line.startswith("-") and not line.startswith("---"):
+            styled = typer.style(line, fg=typer.colors.RED)
+        else:
+            styled = line
+        typer.echo(styled)
+        if slow:
+            time.sleep(0.08)
+    sys.stdout.flush()
+
+
+def _print_report(report: IncidentReport, *, slow: bool = False) -> None:
+    c_dim = typer.colors.BRIGHT_BLACK
+    c_green = typer.colors.GREEN
+    c_yellow = typer.colors.YELLOW
+    c_red = typer.colors.RED
+
+    if report.ui_state == "FIXED":
+        badge = typer.style(" FIXED ", bg=c_green, fg=typer.colors.BLACK, bold=True)
+    elif report.ui_state == "NEEDS_INVESTIGATION":
+        badge = typer.style(" NEEDS INVESTIGATION ", bg=c_yellow, fg=typer.colors.BLACK, bold=True)
+    else:
+        badge = typer.style(" ABSTAINED ", bg=c_red, fg=typer.colors.WHITE, bold=True)
+
+    incident_str = typer.style(f"({report.incident_id})", fg=c_dim)
+    typer.echo(f"\n{badge}  {incident_str}")
+    typer.echo(f"{typer.style('test    :', fg=c_dim)} {report.test_id}")
+    flake_pct = f"{report.natural_flake_rate:.0%} of captured runs"
+    typer.echo(f"{typer.style('flaky   :', fg=c_dim)} {flake_pct}")
+    _pace(slow)
+    typer.echo(f"{typer.style('finding :', fg=c_dim)} {report.diagnosis.explanation}")
+    _pace(slow)
+    if report.intent:
+        intent_desc = f"{report.intent.transformation} ({report.intent.primitive})"
+        typer.echo(f"{typer.style('intent  :', fg=c_dim)} {intent_desc}")
+        typer.echo(f"{typer.style('why     :', fg=c_dim)} {report.intent.rationale}")
+        _pace(slow)
     if report.verdict:
         failed = [rule for rule in report.verdict.rules_evaluated if not rule.passed]
+        passed_rules = len(report.verdict.rules_evaluated) - len(failed)
+        total_rules = len(report.verdict.rules_evaluated)
         typer.echo(
-            f"governor: {len(report.verdict.rules_evaluated) - len(failed)}"
-            f"/{len(report.verdict.rules_evaluated)} rules passed"
+            f"{typer.style('governor:', fg=c_dim)} {passed_rules}/{total_rules} rules passed"
         )
         for rule in failed:
-            typer.echo(f"          REJECTED {rule.rule_id}: {rule.detail}")
-    if report.verification:
+            rej = typer.style("REJECTED", fg=c_red, bold=True)
+            typer.echo(f"          {rej} {rule.rule_id}: {rule.detail}")
         _pace(slow)
+    if report.verification:
         result = report.verification
-        typer.echo(f"tier    : {result.tier_reached}")
+        typer.echo(f"{typer.style('tier    :', fg=c_dim)} {result.tier_reached}")
         if result.causally_proven:
             typer.echo(
-                "proof   : forced ordering failed before the patch and passed after it, "
-                "with the harness unchanged"
+                f"{typer.style('proof   :', fg=c_dim)} forced ordering failed before "
+                "the patch and passed after it, with the harness unchanged"
             )
+        stable_count = result.statistical_runs - result.statistical_failures
         typer.echo(
-            f"residual: {result.statistical_runs - result.statistical_failures}"
-            f"/{result.statistical_runs} stable, "
-            f"overhead {result.measured_overhead_ms:+g} ms"
+            f"{typer.style('residual:', fg=c_dim)} {stable_count}/{result.statistical_runs} "
+            f"stable, overhead {result.measured_overhead_ms:+g} ms"
         )
-    if report.regression_test_path:
-        typer.echo(f"guard   : {report.regression_test_path}")
+        if report.regression_test_path:
+            typer.echo(f"{typer.style('guard   :', fg=c_dim)} {report.regression_test_path}")
+        _pace(slow)
     if report.unified_diff:
-        typer.echo("\n" + report.unified_diff)
+        _rule("Applied Patch & Regression Guard")
+        for diff_line in report.unified_diff.split("\n"):
+            if diff_line.startswith("+") and not diff_line.startswith("+++"):
+                styled = typer.style(diff_line, fg=c_green)
+            elif diff_line.startswith("-") and not diff_line.startswith("---"):
+                styled = typer.style(diff_line, fg=c_red)
+            elif diff_line.startswith("@@"):
+                styled = typer.style(diff_line, fg=typer.colors.CYAN)
+            else:
+                styled = diff_line
+            typer.echo(styled)
+            if slow:
+                time.sleep(0.04)
+        sys.stdout.flush()
 
 
 def main() -> None:

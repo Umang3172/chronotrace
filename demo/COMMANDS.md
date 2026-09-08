@@ -78,19 +78,16 @@ npm run dev
 ```bash
 cd /Users/umangsingh/Chronotrace
 source .venv/bin/activate
-pytest benchmark/cases/R01_unawaited_writer -q --count 20
+chronotrace flake-check
 ```
 
-**~1s.** Good take: a mixed line, e.g. `7 failed, 13 passed in 0.19s`.
-Re-shoot if it comes out all-passed or all-failed.
+**~12–14s.** Runs R01 20 times to measure flakiness. Output is compact (under 4 lines) and does not scroll:
+a muted header line (`test_reader_sees_committed_value · 20 runs · commit <sha> · seeded`),
+a single line of colored marks (`.` for pass, `F` for fail) with a live running tally updating in place (`11 failed · 9 passed`),
+followed by the flake rate and un-inflated summary line:
+`flake rate 55% · 11 failed, 9 passed · 0.02s of test time`.
 
-Per-run sequence instead of a summary, if you prefer the PASS/FAIL rhythm:
-
-```bash
-for i in $(seq 1 8); do pytest benchmark/cases/R01_unawaited_writer -q 2>/dev/null | tail -1 | cut -d' ' -f1-2; done
-```
-
-**~4s.** Prints eight lines of `1 passed` / `1 failed`.
+Re-shoot if it comes out all-passed or all-failed. Consecutive runs are spaced (default 0.66s interval) to prevent CPU contention from distorting timing-sensitive tests. Accepts `--runs / -n`, `--interval` (0 runs back to back), and `--verbose` for per-run output.
 
 ---
 
@@ -221,3 +218,22 @@ ollama stop qwen2.5-coder:14b
 
 **~2s.** `curl -s -o /dev/null http://localhost:3939` should now fail, and
 `curl -s http://localhost:11434/api/ps` should show `{"models":[]}`.
+
+---
+
+## Screen-recording padding
+
+```bash
+export CHRONOTRACE_RECORDING=1
+```
+
+Set this for a recording session. `flake-check` and both `repair --demo` walkthroughs
+then print six blank lines before returning, which pushes their last line of output clear
+of the video's caption bar.
+
+The video crops 30 terminal rows into 1080px, so one row is 36px and the caption bar's top
+edge lands at y=870 — inside row 25. Six blank lines put the final line at row 23 and leave
+the shell prompt behind the bar, where it belongs.
+
+`CHRONOTRACE_RECORDING_ROWS` overrides the count. Unset, nothing changes: this is
+presentation only and off by default.

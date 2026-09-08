@@ -78,14 +78,12 @@ def build_agent(test_id: str, cwd: Path, settings: Settings | None = None) -> ob
         raise ConfigurationError(
             "the Strands agent loop needs the SDK: uv sync --extra bedrock"
         ) from exc
-    if not settings.model_id_large:
-        raise ConfigurationError(
-            "CHRONOTRACE_MODEL_ID_LARGE is unset; Bedrock model ids differ by region "
-            "and release, so ChronoTrace will not guess one"
-        )
+    from chronotrace.providers.bedrock import DEFAULT_BEDROCK_MODEL
+
+    model_id = settings.model_id_large or DEFAULT_BEDROCK_MODEL
     tools = AgentTools(test_id, cwd, timeout_s=settings.run_timeout_s)
     return Agent(
-        model=BedrockModel(model_id=settings.model_id_large, region_name=settings.aws_region),
+        model=BedrockModel(model_id=model_id, region_name=settings.aws_region),
         system_prompt=SYSTEM_PROMPT,
         tools=[
             tools.capture_traces,
