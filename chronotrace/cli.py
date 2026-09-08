@@ -448,8 +448,10 @@ def eval_cmd(
 
 @app.command(name="three-arm")
 def three_arm(
-    provider: Annotated[str, typer.Option(help="ollama | fixture")] = "ollama",
-    model: Annotated[str, typer.Option(help="model tag for ollama")] = "qwen3:8b",
+    provider: Annotated[str, typer.Option(help="ollama | bedrock | fixture")] = "ollama",
+    model: Annotated[
+        str, typer.Option(help="model tag for ollama, or a Bedrock model id")
+    ] = "qwen3:8b",
     runs: Annotated[int, typer.Option(help="capture budget per case")] = 20,
     cases: Annotated[str, typer.Option(help="case ids, or all")] = "all",
     out: Annotated[Path, typer.Option(help="results directory")] = Path("eval/results"),
@@ -480,9 +482,17 @@ def three_arm(
         typer.echo("no matching benchmark cases", err=True)
         raise typer.Exit(1)
 
-    label = f"ollama:{model}"
+    label = f"{provider}:{model}"
     if provider == "fixture":
         engine: object = FixtureProvider(fixtures, provider_label=label)
+    elif provider == "bedrock":
+        from chronotrace.providers.bedrock import DEFAULT_BEDROCK_MODEL, BedrockProvider
+
+        # `--model` names the Bedrock model id here; the Ollama tag default is
+        # meaningless against Bedrock, so an unchanged flag takes the Bedrock one.
+        settings.model_id_large = model if model != "qwen3:8b" else DEFAULT_BEDROCK_MODEL
+        engine = BedrockProvider(settings)
+        model = settings.model_id_large
     else:
         engine = _ollama(settings, FixtureRecorder(fixtures))
 

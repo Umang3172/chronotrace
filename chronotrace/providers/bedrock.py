@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING, Any
 from chronotrace.contracts import Diagnosis, RepairIntent
 from chronotrace.errors import ConfigurationError, ProviderError
 from chronotrace.logging import get_logger
-from chronotrace.providers.prompts import INTENT_SYSTEM
+from chronotrace.providers.prompts import INTENT_SYSTEM, PATCH_SYSTEM
 
 if TYPE_CHECKING:
     from chronotrace.config import Settings
@@ -51,7 +51,10 @@ class BedrockProvider:
         self.model_id = settings.model_id_large or DEFAULT_BEDROCK_MODEL
         self.client = boto3.client("bedrock-runtime", region_name=settings.aws_region)
         self._usage = (0, 0)
+        self._totals = [0, 0]
         self._calls = 0
+        self.context: dict[str, str] = {}
+        """Arm and case labels, set by the eval harness for its own logging."""
 
     @property
     def last_usage(self) -> tuple[int, int]:
@@ -59,9 +62,19 @@ class BedrockProvider:
         return self._usage
 
     @property
+    def totals(self) -> tuple[int, int]:
+        """Cumulative input and output tokens across every call."""
+        return (self._totals[0], self._totals[1])
+
+    @property
     def calls(self) -> int:
         """Number of model calls made."""
         return self._calls
+
+    @property
+    def model(self) -> str:
+        """The model tag, for result labelling."""
+        return self.model_id
 
     def propose(
         self, diagnosis: Diagnosis, source: str, previous_error: str | None = None
@@ -111,6 +124,8 @@ class BedrockProvider:
         tokens_in = int(usage.get("inputTokens", 0))
         tokens_out = int(usage.get("outputTokens", 0))
         self._usage = (tokens_in, tokens_out)
+        self._totals[0] += tokens_in
+        self._totals[1] += tokens_out
         log.info(
             "bedrock.call",
             attempt=self._calls,
@@ -121,6 +136,57 @@ class BedrockProvider:
             model=self.model_id.split("/")[-1],
         )
         return self._extract(response)
+
+    def propose_patch(self, *, system_extra: str, user: str) -> str:
+        """Return rewritten source for a file — the unconstrained baseline path.
+
+        ChronoTrace itself never calls this: INV-1 says the model emits typed
+        intents and nothing else. Measuring what an unconstrained model does
+        requires letting one write code, so the baseline arms get a channel the
+        product deliberately does not have.
+
+        Args:
+            system_extra: Arm-specific addition to the system prompt.
+            user: The full user prompt for this arm.
+
+        Returns:
+            The model's raw response, expected to be file contents.
+
+        Raises:
+            ProviderError: The response carried no text.
+
+        """
+        system = PATCH_SYSTEM + (f"\n\n{system_extra}" if system_extra else "")
+        started = time.monotonic()
+        response = self.client.converse(
+            modelId=self.model_id,
+            system=[{"text": system}],
+            messages=[{"role": "user", "content": [{"text": user}]}],
+            inferenceConfig={
+                "temperature": self.settings.model_temperature,
+                "maxTokens": self.settings.model_max_tokens,
+            },
+        )
+        self._calls += 1
+        usage = response.get("usage", {})
+        tokens_in = int(usage.get("inputTokens", 0))
+        tokens_out = int(usage.get("outputTokens", 0))
+        self._usage = (tokens_in, tokens_out)
+        self._totals[0] += tokens_in
+        self._totals[1] += tokens_out
+        log.info(
+            "bedrock.patch",
+            seconds=round(time.monotonic() - started, 1),
+            tokens_in=tokens_in,
+            tokens_out=tokens_out,
+            arm=self.context.get("arm", ""),
+            case=self.context.get("case", ""),
+        )
+        blocks = response.get("output", {}).get("message", {}).get("content", [])
+        text = "".join(block.get("text", "") for block in blocks if "text" in block)
+        if not text:
+            raise ProviderError("model returned no source text")
+        return text
 
     def _extract(self, response: dict[str, Any]) -> RepairIntent:
         for block in response.get("output", {}).get("message", {}).get("content", []):
