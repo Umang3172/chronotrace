@@ -24,6 +24,7 @@ TOOL_NAMES = [
     "source_context",
     "diagnose_now",
     "check_patch",
+    "propose_repair",
     "run_once",
 ]
 

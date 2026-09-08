@@ -16,6 +16,7 @@ advice sent people to a console page that no longer exists.
 
 from __future__ import annotations
 
+import os
 import sys
 
 from chronotrace.config import get_settings
@@ -40,20 +41,27 @@ def main() -> int:
     print(f"model    : {model_id}")
 
     session = boto3.Session(region_name=region)
+    bearer = bool(os.environ.get("AWS_BEARER_TOKEN_BEDROCK"))
     credentials = session.get_credentials()
-    if credentials is None:
+    if bearer:
+        # A Bedrock API key signs bedrock-runtime only. It populates no SigV4
+        # credential chain and cannot call STS, so both checks below would
+        # report a failure that does not exist.
+        print("creds    : AWS_BEARER_TOKEN_BEDROCK (Bedrock API key)")
+    elif credentials is None:
         print("\nFAIL  no AWS credentials found.")
-        print("      export AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY, or write")
-        print("      ~/.aws/credentials, then re-run.")
+        print("      Either export AWS_BEARER_TOKEN_BEDROCK with a Bedrock API key,")
+        print("      or export AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY, or write")
+        print("      ~/.aws/credentials. Then re-run.")
         return 1
-    print(f"creds    : found ({credentials.method})")
-
-    try:
-        identity = session.client("sts").get_caller_identity()
-        print(f"account  : {identity['Account']}  as {identity['Arn'].split('/')[-1]}")
-    except (ClientError, BotoCoreError) as exc:
-        print(f"\nFAIL  credentials present but rejected: {exc}")
-        return 1
+    else:
+        print(f"creds    : found ({credentials.method})")
+        try:
+            identity = session.client("sts").get_caller_identity()
+            print(f"account  : {identity['Account']}  as {identity['Arn'].split('/')[-1]}")
+        except (ClientError, BotoCoreError) as exc:
+            print(f"\nFAIL  credentials present but rejected: {exc}")
+            return 1
 
     try:
         listed = {
@@ -61,11 +69,17 @@ def main() -> int:
             for summary in session.client("bedrock").list_foundation_models()["modelSummaries"]
         }
     except (ClientError, BotoCoreError) as exc:
-        print(f"\nWARN  could not list models ({exc}); trying the invocation anyway.")
+        reason = "a Bedrock API key signs runtime calls only" if bearer else str(exc)
+        print(f"\nnote     : could not list models ({reason}); invoking anyway.")
         listed = set()
 
     for wanted in WANTED:
-        state = "available" if wanted in listed else "NOT LISTED in this region"
+        if wanted in listed:
+            state = "available"
+        elif listed:
+            state = "NOT LISTED in this region"
+        else:
+            state = "not checked"
         print(f"  {wanted:<28} {state}")
 
     print(f"\ninvoking {model_id} ...")

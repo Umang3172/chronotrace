@@ -15,19 +15,26 @@ fallback string representation and blowing past its payload limit (E4).
 
 from __future__ import annotations
 
+import uuid
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any, TypeVar
 
+from pydantic import ValidationError
+
 from chronotrace.capture.collect import collect
-from chronotrace.contracts import CaptureBundle, Diagnosis
+from chronotrace.contracts import CaptureBundle, Diagnosis, RepairIntent
 from chronotrace.diagnose.depth import ConfirmationBudget, confirm
 from chronotrace.diagnose.engine import diagnose
 from chronotrace.diagnose.graph import build
 from chronotrace.diagnose.rank import candidates as rank_candidates
 from chronotrace.diagnose.slice import backward_slice
+from chronotrace.errors import PatchError
 from chronotrace.govern.gate import review
+from chronotrace.synthesize.apply import apply_intent
+from chronotrace.verify.regression import append_regression_test, regression_test_name
 from chronotrace.verify.runner import run_test
+from chronotrace.verify.tiers import verify
 
 __all__ = ["AgentTools"]
 
@@ -55,6 +62,7 @@ class AgentTools:
         self.test_id = test_id
         self.cwd = cwd
         self.timeout_s = timeout_s
+        self.incident_id = uuid.uuid4().hex[:8]
         self._bundle: CaptureBundle | None = None
         self._diagnosis: Diagnosis | None = None
 
@@ -243,6 +251,138 @@ class AgentTools:
                 for rule in verdict.rules_evaluated
                 if not rule.passed
             ],
+        }
+
+    @tool
+    def propose_repair(
+        self,
+        transformation: str,
+        primitive: str,
+        rationale: str,
+        shared_scope: str = "FIXTURE",
+        signal_operation: str | None = None,
+        wait_operation: str | None = None,
+        scope_target: str | None = None,
+    ) -> dict[str, Any]:
+        """Propose a repair, then have it patched, governed and verified.
+
+        This is the only way to act. The proposal is a typed intent, never
+        source: deterministic code applies it, the governor decides whether it
+        is permitted, and forced replay decides whether it works. A rejection
+        here is information -- read the violations or the tier and propose
+        something else.
+
+        Args:
+            transformation: ``INJECT_ASYNC_EVENT`` when a reader observed state a
+                writer had not yet published, ``AWAIT_UNFINISHED_TASK`` when the
+                assertion depends on a task completing rather than on one write
+                landing, or ``NO_REPAIR`` to abstain with a reason.
+            primitive: ``asyncio.Event`` for INJECT_ASYNC_EVENT, ``task_await``
+                for AWAIT_UNFINISHED_TASK, otherwise ``none``.
+            rationale: Why this transformation fits what forcing established.
+            shared_scope: Where the primitive lives: ``FIXTURE``, ``CLASS_ATTR``,
+                ``MODULE`` or ``NONE``.
+            signal_operation: For INJECT_ASYNC_EVENT, the writing operation's key
+                as `compare_orderings` reported it, e.g. ``commit_value#0``.
+            wait_operation: For INJECT_ASYNC_EVENT, the reading operation's key.
+            scope_target: For AWAIT_UNFINISHED_TASK, the task variable the test
+                already holds.
+
+        Returns:
+            What each deterministic stage decided: whether a patch could be
+            applied, the governor's verdict with any violated rules, and the
+            verification tier forced replay reached.
+
+        """
+        bundle = self._require_bundle()
+        diagnosis = self._diagnosis
+        if diagnosis is None:
+            self.diagnose_now()  # type: ignore[call-arg]
+            diagnosis = self._diagnosis
+        if diagnosis is None or diagnosis.proven_inversion is None:
+            return {
+                "applied": False,
+                "error": "no proven inversion; there is nothing established to repair",
+                "diagnosis_status": diagnosis.status if diagnosis else None,
+            }
+
+        inversion = diagnosis.proven_inversion
+        by_key = {inversion.op_a.key: inversion.op_a, inversion.op_b.key: inversion.op_b}
+        try:
+            intent = RepairIntent(
+                transformation=transformation,  # type: ignore[arg-type]
+                shared_scope=shared_scope,  # type: ignore[arg-type]
+                scope_target=scope_target,
+                signal_site=by_key.get(signal_operation) if signal_operation else None,
+                wait_site=by_key.get(wait_operation) if wait_operation else None,
+                primitive=primitive,  # type: ignore[arg-type]
+                rationale=rationale,
+            )
+        except ValidationError as exc:
+            return {
+                "applied": False,
+                "error": str(exc),
+                "known_operations": sorted(by_key),
+            }
+
+        if intent.transformation in {"NO_REPAIR", "RELAX_ASSERTION"}:
+            return {"applied": False, "abstained": True, "transformation": intent.transformation}
+
+        target = self.cwd / inversion.op_a.source_file
+        source = target.read_text()
+        try:
+            patch = apply_intent(
+                source,
+                intent,
+                path=inversion.op_a.source_file,
+                is_test_module=inversion.op_a.is_test_scope,
+            )
+        except PatchError as exc:
+            return {"applied": False, "error": f"the intent produced no patch: {exc}"}
+
+        verdict = review(before=patch.original, after=patch.patched, path=patch.path)
+        if not verdict.approved:
+            return {
+                "applied": True,
+                "governor_approved": False,
+                "violations": [
+                    {"rule": rule.rule_id, "why": rule.detail}
+                    for rule in verdict.rules_evaluated
+                    if not rule.passed
+                ],
+            }
+
+        # The guard, not the patch, is the artifact: a race that appeared once in
+        # a few runs becomes a test that reproduces it every run. Verification
+        # runs against the guarded source so the tier describes what ships.
+        guarded = append_regression_test(
+            patch.patched,
+            test_function=self.test_id.split("::")[-1],
+            forced_order=inversion.failing_order,
+            incident_id=self.incident_id,
+            natural_flake_rate=bundle.natural_flake_rate,
+        )
+        verification = verify(
+            test_id=self.test_id,
+            cwd=self.cwd,
+            target=target,
+            patched_source=guarded,
+            forced_order=inversion.failing_order,
+            timeout_s=self.timeout_s,
+        )
+        return {
+            "applied": True,
+            "governor_approved": True,
+            "rules_passed": len(verdict.rules_evaluated),
+            "verification_tier": verification.tier_reached,
+            "causally_proven": verification.causally_proven,
+            "regression_guard": regression_test_name(self.incident_id),
+            "note": (
+                "forced replay confirmed the patch defeats the proven ordering"
+                if verification.causally_proven
+                else "the patch broke no rule and still failed forced replay; it does "
+                "not defeat the ordering that causes the failure"
+            ),
         }
 
     @tool

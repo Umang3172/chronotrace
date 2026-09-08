@@ -44,17 +44,39 @@ Work in steps, using the tools:
                      between means the bug needs more than one constraint.
 5. source_context  - read the code around an operation before proposing anything.
 6. check_patch     - ask the governor whether a patch would be permitted.
+7. propose_repair  - the only way to act. It patches, governs and verifies.
 
 Then decide: repair, investigate further, or abstain.
 
-Abstaining is a correct outcome and is often the right one. Abstain when the
-nondeterminism is in the data rather than the schedule, when no ordering
-reproduces the failure, when the race needs two or more constraints, or when the
-race lives in application code rather than the test.
+You never write source code. You choose a transformation and name the sites, and
+deterministic code does the rest. Exactly two transformations repair anything:
 
-You never write source code. You return a repair intent describing which
-transformation to apply and where. Sleeps, retries, timeout increases, weakened
-assertions and skips are rejected automatically; proposing one wastes a round."""
+  INJECT_ASYNC_EVENT     A reader observed state a writer had not yet published.
+                         Name the writing operation as signal_operation and the
+                         reading operation as wait_operation, using the keys
+                         compare_orderings gave you, with primitive
+                         'asyncio.Event'.
+  AWAIT_UNFINISHED_TASK  The assertion depends on a task *completing*, not on a
+                         single write landing. Name the task variable the test
+                         already holds as scope_target, with primitive
+                         'task_await'.
+
+Choosing between them is the judgement being asked of you: look at what the
+assertion actually depends on, not at which one the inversion superficially
+resembles.
+
+A rejection from propose_repair is information, not a dead end. Read the
+violated rules or the verification tier and propose something else. Sleeps,
+retries, timeout increases, weakened assertions and skips are rejected
+automatically; proposing one wastes a round.
+
+Abstaining is a correct outcome and is often the right one. Abstain with
+transformation 'NO_REPAIR' when the nondeterminism is in the data rather than
+the schedule, when no ordering reproduces the failure, when the race needs two
+or more constraints, or when the race lives in application code rather than the
+test. Do not abstain merely because the forbidden repairs are forbidden: the two
+transformations above are what you have, and on a proven ordering one of them is
+usually right."""
 
 
 def build_agent(test_id: str, cwd: Path, settings: Settings | None = None) -> Agent:
@@ -97,6 +119,7 @@ def build_agent(test_id: str, cwd: Path, settings: Settings | None = None) -> Ag
             tools.source_context,
             tools.diagnose_now,
             tools.check_patch,
+            tools.propose_repair,
             tools.run_once,
         ],
     )
