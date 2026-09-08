@@ -1,8 +1,15 @@
 """Check that a Bedrock run will work before spending an eval on finding out.
 
 Every failure here is one that otherwise shows up partway through a benchmark
-run: no credentials, a region with no Nova, or model access that was never
-requested in the console. Run it first.
+run: no credentials, a region with no Nova, or an IAM policy that denies
+`bedrock:InvokeModel`. Run it first.
+
+There is no model-access step to forget any more. The Bedrock console's model
+access page has been retired: serverless foundation models enable themselves on
+first invocation in every commercial region, so for Amazon Nova the first
+`converse` call *is* the enablement. A denial here is therefore a real IAM or
+SCP denial, not a missing opt-in -- which is worth saying, because the old
+advice sent people to a console page that no longer exists.
 
     uv run python scripts/bedrock_preflight.py
 """
@@ -70,8 +77,10 @@ def main() -> int:
         )
     except (ClientError, BotoCoreError) as exc:
         print(f"FAIL  {exc}")
-        print("\n      AccessDeniedException usually means model access has not been")
-        print("      requested: Bedrock console -> Model access -> enable Amazon Nova.")
+        print("\n      Amazon Nova needs no access request: serverless models enable on")
+        print("      first invocation. So AccessDenied here is an IAM policy or an SCP")
+        print("      denying bedrock:InvokeModel, and ValidationException usually means")
+        print("      the model id is not served in this region -- try us-east-1.")
         return 1
 
     usage = response.get("usage", {})
