@@ -5,6 +5,8 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
 [![AWS Strands Agents](https://img.shields.io/badge/AWS-Strands%20Agents%20SDK-orange.svg)](https://github.com/strands-agents)
 [![Amazon Bedrock](https://img.shields.io/badge/Amazon%20Bedrock-Nova%20Pro%20%7C%20Nova%20Lite-232F3E.svg)](https://aws.amazon.com/bedrock/)
+[![YouTube Demo](https://img.shields.io/badge/YouTube-Demo%20Video-FF0000.svg?logo=youtube)](https://youtu.be/rVpdhkXdIgU)
+[![AWS Builder Post](https://img.shields.io/badge/AWS%20Builder-Story-FF9900.svg?logo=amazon-aws)](https://builder.aws.com/post/3J3xhnusTT8tD8z4ALJ2hiobWeJ_p/agents-for-humans-what-happens-when-an-ai-agent-isnt-allowed-to-cheat-fixing-flaky-tests)
 [![Hackathon Track](https://img.shields.io/badge/Devpost-Professional%20Agents-blueviolet.svg)](https://agentsforhumans.devpost.com)
 
 **Repairs concurrency-induced flaky asyncio tests by proving which ordering
@@ -497,7 +499,12 @@ verdict, the verification tiers reached, and the proposed diff. See
 
 ## Demo Video
 
-The 5-minute demo video (`chronotrace-video/out/chronotrace-demo.mp4`) demonstrates the complete ChronoTrace pipeline from flakiness detection to causal proof, Bedrock synthesis, and governor enforcement:
+[![ChronoTrace Demo Video](https://img.youtube.com/vi/rVpdhkXdIgU/maxresdefault.jpg)](https://youtu.be/rVpdhkXdIgU)
+
+> 📺 **Watch the Full Demo (5:19)**: [https://youtu.be/rVpdhkXdIgU](https://youtu.be/rVpdhkXdIgU)  
+> 📝 **AWS Builder Story**: [Read the build journey on builder.aws.com](https://builder.aws.com/post/3J3xhnusTT8tD8z4ALJ2hiobWeJ_p/agents-for-humans-what-happens-when-an-ai-agent-isnt-allowed-to-cheat-fixing-flaky-tests)
+
+The video demonstrates the complete ChronoTrace pipeline from flakiness detection to causal proof, Bedrock synthesis, and governor enforcement:
 
 - **The Flakiness Problem**: `chronotrace flake-check` runs R01 20 times, detecting 11 failures (55% flake rate) in a clean, non-scrolling terminal display.
 - **Industrial Context**: Why industry quarantine solutions (Trunk, Develocity) and unconstrained agents (which insert `sleep(2)`) fail to fix the underlying concurrency defects.
