@@ -16,6 +16,11 @@ A race that appeared once in a handful of runs becomes a deterministic
 regression test that reproduces it every run, in milliseconds. That artifact —
 not the patch — is the product.
 
+**Try it live:** [main.d3k7wvrz5f9b6h.amplifyapp.com](https://main.d3k7wvrz5f9b6h.amplifyapp.com)
+— the incident dashboard, 15 investigated flaky tests, on AWS Amplify Hosting.
+It is a static export of a completed run, so it reads the same evidence offline
+that the pipeline produced; it does not run the pipeline for you.
+
 ---
 
 ## The problem
@@ -532,6 +537,15 @@ measurement possible.
 
 ## Dashboard
 
+**Live:** [https://main.d3k7wvrz5f9b6h.amplifyapp.com](https://main.d3k7wvrz5f9b6h.amplifyapp.com)
+(AWS Amplify Hosting, `us-east-1`). The deployed site is the `ui/out` static
+export — no runtime, no credentials and no model call behind it, which is why it
+can be published at all. `scripts/verify_deploy.py` re-checks that live URL with
+Playwright: HTTP 200, real incident rows rather than the empty state, and no
+console errors.
+
+To run it locally instead:
+
 ```bash
 uv run chronotrace eval --arm C --cases all
 cd ui && npm install && npm run dev
@@ -635,9 +649,39 @@ It takes a `mode`: `agent` runs the Strands loop, `pipeline` runs the fixed
 sequence and returns the full incident report. Everything crossing that boundary
 is primitive JSON.
 
-**Not yet deployed.** The entrypoint, the config and the IAM actions are in the
-repository and the handler is exercised by tests; a running AgentCore deployment
-is not part of this submission, and nothing here should be read as one.
+**Deployed and invoked**, in `agent` mode, on 2026-09-09:
+
+- Runtime ARN: `arn:aws:bedrock-agentcore:us-east-1:044468733589:runtime/chronotrace-W8r1r453Mi`
+- Region: `us-east-1`; model `amazon.nova-pro-v1:0`; deployment type direct code deploy.
+- **`agent` mode responds.** `pipeline` mode was not invoked, so nothing is
+  claimed about it either way.
+
+The loop runs end to end inside the runtime, including the parts that shell out:
+`capture_traces` spawned pytest subprocesses and measured a 0.7 flake rate over
+10 runs (7 failing, 3 passing), and `force_replay` forced the candidate ordering
+to a failure rate of 1.0. The governor then approved the synthesized patch
+(`governor.verdict approved=True violations=[]`).
+
+**What does not work there: applying the repair.** `propose_repair` fails with a
+permission error when it writes the patched file — the deployed bundle is not a
+writable checkout — so the agent abstains rather than repairing. The runtime is
+therefore a working investigator and not a working repairer, and the repair path
+remains something you run locally. The error is reported by the tool result as
+the model received it; the raw traceback was not captured in the runtime logs.
+
+Verbatim response from `bedrock-agentcore:InvokeAgentRuntime` (the run quoted
+above is a second, independent invocation with the same outcome):
+
+```json
+{"mode": "agent", "test_id": "benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py::test_reader_sees_committed_value", "stop_reason": "end_turn", "cycles": 6, "tool_calls": {"capture_traces": 1, "compare_orderings": 1, "force_replay": 1, "propose_repair": 1, "trace_slice": 1}, "usage": {"inputTokens": 15536, "outputTokens": 811, "totalTokens": 16347}, "conclusion": "<thinking> The `propose_repair` tool encountered a permission error while attempting to apply the repair. This suggests that I do not have the necessary permissions to modify the file. In this case, I will abstain from making any repairs and provide a reason for the abstention. </thinking>\n\nI abstain from making any repairs to the test `benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py::test_reader_sees_committed_value` due to a permission error. The analysis suggests that injecting an asyncio event to ensure the reader waits for the writer to commit the value would be an appropriate repair. However, I do not have the necessary permissions to modify the file. Please ensure that the necessary permissions are granted to proceed with the repair."}
+```
+
+The deployment bundle is described by [`requirements.txt`](requirements.txt) and
+[`agentcore_entry.py`](agentcore_entry.py); `agentcore_entry.py` is a shim that
+forwards the payload to this same handler and adds no logic of its own.
+
+> This IAM user is deleted after submission, so the ARN above will stop
+> answering. It is recorded as evidence of what ran, not as a live endpoint.
 
 ### 4. What is *not* wired to AWS
 

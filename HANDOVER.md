@@ -15,6 +15,8 @@
 - **Demo Video (YouTube)**: `https://youtu.be/rVpdhkXdIgU` (1080p, 30fps). NOTE: the published cut is 5:19 and the hackathon caps video at 5:00. A 4:59 re-cut exists locally and must be re-uploaded.
 - **AWS Builder Community Post (Bonus Points)**: `https://builder.aws.com/post/3J3xhnusTT8tD8z4ALJ2hiobWeJ_p/agents-for-humans-what-happens-when-an-ai-agent-isnt-allowed-to-cheat-fixing-flaky-tests`
 - **GitHub Repository**: `https://github.com/Umang3172/chronotrace`
+- **Live Dashboard (AWS Amplify Hosting)**: `https://main.d3k7wvrz5f9b6h.amplifyapp.com` — app id `d3k7wvrz5f9b6h`, branch `main`, `us-east-1`, deployed 2026-09-09 by manual zip deploy (not Git-connected). Verified against the live URL with `scripts/verify_deploy.py`: HTTP 200, 15 incident rows, no console errors. Screenshots in `assets/deploy/`.
+- **AgentCore Runtime**: `arn:aws:bedrock-agentcore:us-east-1:044468733589:runtime/chronotrace-W8r1r453Mi` — deployed and invoked 2026-09-09 in `agent` mode with `amazon.nova-pro-v1:0`. The loop runs, including the pytest subprocesses; `propose_repair` fails on a permission error because the bundle is not writable, so the agent abstains. Not a submittable "try it out" link: the deploy IAM user is deleted after submission and the ARN then stops answering. Full transcript in README §"AgentCore Runtime entrypoint".
 
 ## 3. Architecture & Technical Contracts
 - **Problem Space**: Order-dependency and concurrency races in Python asyncio tests (59% of Python flakes; 84% post-submit CI failures at Google; $1.14M/yr Microsoft).

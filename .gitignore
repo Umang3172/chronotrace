@@ -20,3 +20,9 @@ node_modules/
 # Three-arm sweep recordings are committed deliberately (fixtures/three_arm),
 # so a reader can replay the published numbers with no model and no GPU.
 !fixtures/three_arm/
+
+# AgentCore starter-toolkit state: machine-specific absolute paths and a
+# 10MB dependency cache. The deployable inputs (agentcore_entry.py,
+# requirements.txt, chronotrace/agent/deploy/agentcore.yaml) are committed.
+.bedrock_agentcore.yaml
+.bedrock_agentcore/
