@@ -1,10 +1,14 @@
 # YouTube re-upload pack
 
-**File**: `/Users/umangsingh/chronotrace-video/out/chronotrace-demo.mp4`
+**Published**: <https://youtu.be/rkoeqMt3cDk> — uploaded 2026-09-10, duration confirmed
+287.941 s on the live player.
+
+**Source**: `/Users/umangsingh/chronotrace-video/out/chronotrace-demo.mp4`
 1920x1080 · 30fps · 8636 frames · **4:47.9** · 74.9 MB · h264/aac
 
-I could not perform the upload: the browser automation's file-upload path caps at 10 MB
-and this file is 74.9 MB. Everything below is ready to paste.
+The upload was done by hand: the browser automation's file-upload path caps at 10 MB
+against this file's 74.9 MB. What follows is the copy as published, kept so the
+description can be re-pasted or corrected without rebuilding it.
 
 ---
 
@@ -74,20 +78,22 @@ YouTube needs 0:00 present and at least three chapters to render them.
 
 ---
 
-## After the upload — five places carry the old video ID
+## Done — every reference now carries `rkoeqMt3cDk`
 
-The old URL is `https://youtu.be/xyjV-UmbvmA`. YouTube cannot replace a file in place, so
-the new upload has a new ID and every one of these needs it:
+The superseded URL was `https://youtu.be/xyjV-UmbvmA` (the 4:59 cut). YouTube cannot
+replace a file in place, so the corrected render is a separate video with a new ID.
 
-| File | Line |
+| Where | State |
 |---|---|
-| `README.md` | 8 — badge link |
-| `README.md` | 562 — thumbnail image URL **and** link (the ID appears twice) |
-| `README.md` | 564 — "Watch the Full Demo (4:59)" — the runtime also changes to 4:47 |
-| `HANDOVER.md` | 15 |
-| Devpost | `software[video_url]` |
+| `README.md` badge link | updated |
+| `README.md` demo thumbnail + link (ID appears twice on one line) | updated |
+| `README.md` "Watch the Full Demo" — runtime 4:59 → 4:47 | updated |
+| `HANDOVER.md` §2 | updated |
+| Devpost `software[video_url]` | updated |
+| AWS Builder Center post | video link added |
 
-`grep -rn "xyjV-UmbvmA" .` finds them all.
+`grep -rn "xyjV-UmbvmA" .` now returns only this file and `HANDOVER.md` §2, both of
+which name the old ID deliberately, as the record of what it superseded.
 
-Keep the old video unlisted rather than deleted until you have confirmed nothing still
-points at it.
+**Keep the old video unlisted rather than deleted.** It is the cut that was linked from
+anywhere those references were copied before 2026-09-10.

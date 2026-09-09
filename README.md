@@ -5,7 +5,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
 [![AWS Strands Agents](https://img.shields.io/badge/AWS-Strands%20Agents%20SDK-orange.svg)](https://github.com/strands-agents)
 [![Amazon Bedrock](https://img.shields.io/badge/Amazon%20Bedrock-Nova%20Pro%20%7C%20Nova%20Lite-232F3E.svg)](https://aws.amazon.com/bedrock/)
-[![YouTube Demo](https://img.shields.io/badge/YouTube-Demo%20Video-FF0000.svg?logo=youtube)](https://youtu.be/xyjV-UmbvmA)
+[![YouTube Demo](https://img.shields.io/badge/YouTube-Demo%20Video-FF0000.svg?logo=youtube)](https://youtu.be/rkoeqMt3cDk)
 [![AWS Builder Post](https://img.shields.io/badge/AWS%20Builder-Story-FF9900.svg?logo=amazon-aws)](https://builder.aws.com/post/3J3xhnusTT8tD8z4ALJ2hiobWeJ_p/agents-for-humans-what-happens-when-an-ai-agent-isnt-allowed-to-cheat-fixing-flaky-tests)
 [![Hackathon Track](https://img.shields.io/badge/Devpost-Professional%20Agents-blueviolet.svg)](https://agentsforhumans.devpost.com)
 
@@ -24,6 +24,10 @@ that the pipeline produced; it does not run the pipeline for you.
 ---
 
 ## The problem
+
+![chronotrace flake-check: 20 runs of one test, 11 failures and 9 passes, flake rate 55%](assets/readme/01-flake-check.png)
+
+*Same code, same commit, 20 runs. Nothing changed except the order two tasks happened to run in.*
 
 At Google, **84% of pass-to-fail transitions** in post-submit CI are caused by
 flaky tests rather than real regressions.¹ When the build turns red, five times
@@ -110,6 +114,10 @@ contacting a model, so the wiring is checkable with no AWS account:
 uv run chronotrace agent --demo --dry-run
 ```
 
+![chronotrace repair --demo on Amazon Bedrock: Nova Pro returns a typed RepairIntent, the governor passes it 15/15, forced replay reaches FORCED_HARMLESS](assets/readme/03-forced-replay.png)
+
+*`chronotrace repair --demo` against `amazon.nova-pro-v1:0`. The model emits a typed `RepairIntent` and never source; the governor passes it 15/15; the forced ordering that failed before the patch passes after it, at tier `FORCED_HARMLESS`. The regression guard it leaves behind reproduces the race on every run.*
+
 ### Option C: Local Model (Ollama)
 
 No AWS account and no credentials required — a local model is enough:
@@ -187,6 +195,10 @@ visible rather than only the rule that fired.
   graph; no production file without an explicit opt-in; never `site-packages`;
   the result parses.
 
+![The governor gauntlet: 17 adversarial patches, every one rejected, each by the rule that targets it](assets/readme/02-gauntlet.png)
+
+*`chronotrace gauntlet` — 17 attacks, 17 rejections. Every rule reports, so the gauntlet is auditable rather than a single fired rule. No credentials, no model.*
+
 Rules that cannot be decided from the patched file alone — timeout inflation, a
 weakened assertion, a decollected test — compare before against after.
 
@@ -247,6 +259,10 @@ ChronoTrace did not. They each wrote `await handle`, commented "ensure the batch
 worker completes before the assertion". Arm C chose to inject an event, and
 forced replay rejected it.
 
+![chronotrace repair --demo-r14: forced replay returns FAILED, while a rerun-based gate reads 15/20 failures before the patch and 14/20 after as an improvement](assets/readme/04-r14-rejected.png)
+
+*`chronotrace repair --demo-r14`. The patch broke no rule and the gate passed it. Forced replay failed it: the ordering failed before the patch and still fails after. On this run a rerun-based gate saw 75% → 70% and would have shipped it.*
+
 That a frontier hosted model and a 14B local one fail this case the same way,
 and get caught the same way, is the strongest evidence in the project that the
 verification tier is doing the work rather than the model.
@@ -296,7 +312,9 @@ uv run chronotrace repair --demo-r14
 
 On one measured run of R14, the patch ChronoTrace proposed and then rejected
 took the flake rate from **80% to 45%** — 16 of 20 runs failing before, 9 of 20
-after.
+after. On the run recorded for the [demo video](#demo-video) the same patch
+measured 75% to 70%, 15 of 20 against 14 of 20. Both are the rerun signal; that
+they disagree this much about the same patch is the point of this section.
 
 **A rerun-based verification gate would have accepted that patch.** The test
 used to fail most of the time and now fails less than half; every rerun-based
@@ -544,6 +562,8 @@ can be published at all. `scripts/verify_deploy.py` re-checks that live URL with
 Playwright: HTTP 200, real incident rows rather than the empty state, and no
 console errors.
 
+![The ChronoTrace incident dashboard on AWS Amplify Hosting, listing investigated flaky tests as Fixed, Needs investigation or Abstained](assets/deploy/amplify-live.png)
+
 To run it locally instead:
 
 ```bash
@@ -559,21 +579,35 @@ verdict, the verification tiers reached, and the proposed diff. See
 
 ## Demo Video
 
-[![ChronoTrace Demo Video](https://img.youtube.com/vi/xyjV-UmbvmA/maxresdefault.jpg)](https://youtu.be/xyjV-UmbvmA)
+[![ChronoTrace Demo Video](https://img.youtube.com/vi/rkoeqMt3cDk/maxresdefault.jpg)](https://youtu.be/rkoeqMt3cDk)
 
-> 📺 **Watch the Full Demo (4:59)**: [https://youtu.be/xyjV-UmbvmA](https://youtu.be/xyjV-UmbvmA)  
+> 📺 **Watch the Full Demo (4:47)**: [https://youtu.be/rkoeqMt3cDk](https://youtu.be/rkoeqMt3cDk)  
 > 📝 **AWS Builder Story**: [Read the build journey on builder.aws.com](https://builder.aws.com/post/3J3xhnusTT8tD8z4ALJ2hiobWeJ_p/agents-for-humans-what-happens-when-an-ai-agent-isnt-allowed-to-cheat-fixing-flaky-tests)
 
-The video demonstrates the complete ChronoTrace pipeline from flakiness detection to causal proof, Bedrock synthesis, and governor enforcement:
+Every figure spoken in the video is the figure printed by the command on
+screen in that shot. Where a number below differs from the tables above, it is
+because the video shows one recorded run and the tables aggregate the sweep.
 
-- **The Flakiness Problem**: `chronotrace flake-check` runs R01 20 times, detecting 11 failures (55% flake rate) in a clean, non-scrolling terminal display.
-- **Industrial Context**: Why industry quarantine solutions (Trunk, Develocity) and unconstrained agents (which insert `sleep(2)`) fail to fix the underlying concurrency defects.
-- **6-Stage Architecture**: Full walkthrough of the pipeline from execution fingerprints to causal backward slicing.
-- **Causal Differential Trace**: Proving causality — forcing the candidate ordering produces 20/20 failures; forcing the opposite produces 20/20 passes.
-- **Governor Gauntlet**: Live execution of `chronotrace gauntlet` — 15 rules rejecting 17 adversarial patches, each by the rule that targets it, before any code runs.
-- **Live Repair with Amazon Bedrock**: Amazon Nova Lite synthesizes an `INJECT_ASYNC_EVENT` repair in 2.8 seconds, verified to Tier 1 via forced replay.
-- **The R14 Case Study**: Demonstrating why rerun-based gates fail — an unconstrained patch makes a race rarer (80% -> 45%) and passes rerun gates, but forced replay catches and rejects it.
-- **Benchmark Gauntlet & Results**: Systematic 15-case evaluation proving 0 band-aids and 0 false repairs.
+| | |
+|---|---|
+| **0:00** | A failing test, 20 runs — `chronotrace flake-check` on R01: 11 failures, 9 passes, 55% flake rate, same commit throughout. |
+| **0:18** | What a flaky test actually is — the race, without jargon, plus Google's 84% figure. |
+| **0:58** | What everyone else does about it — quarantine (Trunk, Develocity, Datadog), repair agents (BuildPulse), and the research systems that read source instead of runs. |
+| **1:27** | How ChronoTrace works — the six stages, from paired traces to forced replay. |
+| **2:06** | Act I — R01 repaired and proven. `amazon.nova-pro-v1:0` returns a typed `INJECT_ASYNC_EVENT` intent in 3.0s (2,693 in / 296 out); governor 15/15; tier `FORCED_HARMLESS`; a regression guard is left behind. |
+| **2:39** | The governor gauntlet — `chronotrace gauntlet`, 17 adversarial patches, 17 rejections, each by the rule that targets it. |
+| **3:06** | Act II — a caught mistake. Our own agent's patch breaks no rule and passes the gate 15/15. Forced replay fails it. A rerun-based gate saw 15/20 failures before and 14/20 after — 75% → 70% — and would have shipped it. |
+| **4:09** | Results — the three-arm table. |
+| **4:35** | What this is and isn't — the generalization limit, stated. |
+
+![The three-arm results table from the video: Arm C repairs 6/6 with 0 band-aids where the unconstrained arms repair 4/6 with 3/6 band-aids, and falsely repairs 0 of 5 negative controls against their 4 of 5](assets/readme/05-results.png)
+
+*The results scene shows the **qwen2.5-coder:14b** run, which is what the
+narration over it speaks. The Amazon Bedrock / Nova Pro figures are the tables
+in [Results](#results) above, and they are stronger for Arm C's argument, not
+weaker: Nova Pro band-aids **6/6** unconstrained where qwen band-aids 3/6, and
+falsely repairs **5/5** controls where qwen falsely repairs 4/5. Neither run is
+pooled with the other anywhere.*
 
 ## AWS & Strands Agents Architecture
 
