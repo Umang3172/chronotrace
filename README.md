@@ -188,18 +188,26 @@ weakened assertion, a decollected test — compare before against after.
 ## Results
 
 Produced by `uv run chronotrace three-arm`. Every number comes from that
-command; none is hand-entered. Local model throughout: **qwen2.5-coder:14b**
-(14.8B, Q4_K_M) via Ollama, temperature 0.0, seed 1729. A Bedrock run is
-planned; these are not those numbers. Full write-up in
-[eval/results/FINDINGS.md](eval/results/FINDINGS.md), which is the canonical
-source for every figure below. Two other results directories exist and
-neither is one of these numbers: `eval-results/` is the last run's working
-output that the dashboard reads, and [docs/results/](docs/results/) is
-reference-policy output with no model in the loop at all.
+command; none is hand-entered. **Two models, reported separately and never
+pooled:** `amazon.nova-pro-v1:0` on Amazon Bedrock, and **qwen2.5-coder:14b**
+(14.8B, Q4_K_M) via Ollama. Temperature 0.0, seed 1729, same token cap, attempt
+budget and timeout for both.
 
-Three arms, same model, same temperature, seed, token cap, attempt budget and
-timeout. Capture and diagnosis run once per case and are shared by all three, so
-no arm is compared against a luckier set of runs.
+The two runs share the *same recorded traces and diagnoses* — capture and
+diagnosis are deterministic and involve no model, so they were replayed rather
+than re-run. Only the model differs, which is what makes the two columns
+comparable case by case.
+
+Full write-up in [eval/results/FINDINGS.md](eval/results/FINDINGS.md);
+the Bedrock tables are in
+[eval/results/bedrock/](eval/results/bedrock/three_arm_table.md). Two other
+results directories exist and neither is one of these numbers: `eval-results/`
+is the last run's working output that the dashboard reads, and
+[docs/results/](docs/results/) is reference-policy output with no model in the
+loop at all.
+
+Capture and diagnosis run once per case and are shared by all three arms, so no
+arm is compared against a luckier set of runs.
 
 * **Arm A** — the model gets the test and the failure. No traces, no gate.
 * **Arm B** — the same, plus the trace diff and ranked candidate inversions.
@@ -212,8 +220,15 @@ R14 is a different shape. Combining them would hide the finding.
 
 | Metric | Arm A | Arm B | Arm C |
 |---|---|---|---|
-| Repaired, verified by forced replay | 4 / 6 | 4 / 6 | **6 / 6** |
-| **Timing band-aids injected** | **3 / 6** | **3 / 6** | **0 / 6** |
+| Repaired, verified — **Nova Pro** | 1 / 6 | 3 / 6 | **6 / 6** |
+| Repaired, verified — qwen2.5-coder | 4 / 6 | 4 / 6 | **6 / 6** |
+| **Band-aids injected — Nova Pro** | **6 / 6** | **3 / 6** | **0 / 6** |
+| **Band-aids injected — qwen2.5-coder** | **3 / 6** | **3 / 6** | **0 / 6** |
+
+**Nova Pro reached for `asyncio.sleep` on all six.** Given the test and the
+failure and nothing else, the larger model band-aided *more* often than the
+small local one, not less — on R01 it added both a sleep and a retry loop. The
+trace diff alone (Arm B) halved that without being told to; the gate removed it.
 
 ### R14 — a task-lifecycle race, the one case of a different shape
 
@@ -222,20 +237,27 @@ R14 is a different shape. Combining them would hide the finding.
 | Repaired, verified | **yes** | **yes** | **no** |
 | Verification tier | `FORCED_UNREACHABLE` | `FORCED_UNREACHABLE` | `FAILED` |
 
-**Both unconstrained baselines repaired R14 and ChronoTrace did not.** They each
-wrote `await handle`, commented "ensure the batch worker completes before the
-assertion". Arm C chose to inject an event, and forced replay rejected it.
+**Identical on both models.** Both unconstrained baselines repaired R14 and
+ChronoTrace did not. They each wrote `await handle`, commented "ensure the batch
+worker completes before the assertion". Arm C chose to inject an event, and
+forced replay rejected it.
 
-Those same two baselines injected band-aids on 3 of 6 of the other cases and
-falsely repaired 4 of 5 negative controls. They are not
-safer; they are unconstrained, and on this one case that happened to help.
+That a frontier hosted model and a 14B local one fail this case the same way,
+and get caught the same way, is the strongest evidence in the project that the
+verification tier is doing the work rather than the model.
+
+Those same two baselines injected band-aids on most of the other cases and
+falsely repaired **5 of 5** negative controls under Nova Pro (4 of 5 under
+qwen). They are not safer; they are unconstrained, and on this one case that
+happened to help.
 
 ### Negative controls
 
 | Metric | Arm A | Arm B | Arm C |
 |---|---|---|---|
-| **False repairs on non-races** | **4 / 5** | **4 / 5** | **0 / 5** |
-| Abstention accuracy | — | — | 5 / 5, correct reason |
+| **False repairs — Nova Pro** | **5 / 5** | **5 / 5** | **0 / 5** |
+| **False repairs — qwen2.5-coder** | **4 / 5** | **4 / 5** | **0 / 5** |
+| Abstention accuracy | — | — | 5 / 5, correct reason (both) |
 
 **Read that abstention number with its caveat.** Four of the five controls are
 refused during *diagnosis*, before the model is consulted at all — `NOT_A_RACE`
@@ -288,19 +310,21 @@ experiment with a control rather than a sample.
 Stated as it would have to be answered:
 
 > Six of our seven repairable cases are read-after-write races on a shared
-> resource. The intent prompt names that condition explicitly. On those six, the
-> model chooses correctly six times out of six. On the one case we added of a
-> different shape, it chose wrong — and the unconstrained baselines, which were
-> given no rule to follow, chose right. We have evidence that the system works
-> on the shape it was told about. We do not have evidence that it generalizes,
-> and the one experiment we ran on that question came back negative.
+> resource. The intent prompt names that condition explicitly. On those six,
+> both models choose correctly six times out of six. On the one case we added of
+> a different shape, both chose wrong — and the unconstrained baselines, which
+> were given no rule to follow, chose right, on both models. We have evidence
+> that the system works on the shape it was told about. We do not have evidence
+> that it generalizes, and the one experiment we ran on that question came back
+> negative twice.
 
 **No repair rate is quoted as a headline here, deliberately.** With one race
 shape dominating the corpus it would not mean what it appears to mean. What the
 evidence supports is narrower and holds across every run and both models tested:
 
-* **Constraint prevents harm.** 0 band-aids against 3/6, and 0/5 false repairs
-  against 4/5. The most reproducible result in the project.
+* **Constraint prevents harm.** 0 band-aids against 6/6 (Nova Pro) and 3/6
+  (qwen), and 0/5 false repairs against 5/5 and 4/5. The most reproducible
+  result in the project, and the gap is *wider* on the larger model.
 * **Verification catches wrong repairs, including our own.** R12 and R14.
 * **Constraint does not confer judgement.** The model still has to choose the
   right pattern, and on a shape the prompt does not name, it did not.
@@ -433,10 +457,10 @@ make it weaker.
 8. **One transformation family is fully implemented.** `INJECT_ASYNC_EVENT` and
    `AWAIT_UNFINISHED_TASK`. `ISOLATE_FIXTURE_SCOPE` and cross-module shared
    scope are refused with an explicit error rather than half-applied.
-9. **Baseline arms A and B did not run here.** They require a real model
-   provider; running them against the offline reference policy would produce a
-   baseline that describes this repository rather than a model. The harness
-   refuses rather than reporting a caveated number.
+9. **The corpus is twelve cases, not fifteen.** R08, R12 and R13 have no
+   recorded evidence, so the replayed three-arm comparison excludes them; R12's
+   depth-2 finding below comes from a separate `chronotrace eval` run. Every
+   arm-versus-arm number is out of the twelve that ran.
 10. **Docker isolation is implemented but unexercised** on the development
    machine. Process isolation — one process per run — is the default and is what
    the reported numbers used.

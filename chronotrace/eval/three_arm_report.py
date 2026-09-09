@@ -8,6 +8,7 @@ cost-per-repair for an arm with zero repairs is undefined, not zero.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -282,6 +283,9 @@ def write_results(
     }
     if extra:
         payload.update(extra)
-    json_path = out_dir / "three_arm_ollama_qwen3_8b.json"
+    # Named for what actually ran. This was hardcoded to one Ollama tag, so a
+    # Bedrock sweep wrote its results to a file claiming to be qwen3:8b.
+    slug = re.sub(r"[^0-9a-zA-Z]+", "_", f"{sweep.provider}_{sweep.model}").strip("_").lower()
+    json_path = out_dir / f"three_arm_{slug}.json"
     json_path.write_text(json.dumps(payload, indent=2, sort_keys=True))
     return json_path, markdown_path
