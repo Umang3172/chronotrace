@@ -12,7 +12,7 @@
 ## 2. Live URLs & Submissions
 - **Hackathon**: AWS & Devpost "Agents for Humans Hackathon" (Track: Professional Agents)
 - **Devpost Submission Edit**: `https://devpost.com/submit-to/30317-agents-for-humans-hackathon/manage/submissions/1175750-chronotrace/project_details/edit`
-- **Demo Video (YouTube)**: `https://youtu.be/rVpdhkXdIgU` (1080p, 30fps). NOTE: the published cut is 5:19 and the hackathon caps video at 5:00. A 4:59 re-cut exists locally and must be re-uploaded.
+- **Demo Video (YouTube)**: `https://youtu.be/xyjV-UmbvmA` (1080p, 30fps, 4:59). Compliant with hackathon 5:00 cap.
 - **AWS Builder Community Post (Bonus Points)**: `https://builder.aws.com/post/3J3xhnusTT8tD8z4ALJ2hiobWeJ_p/agents-for-humans-what-happens-when-an-ai-agent-isnt-allowed-to-cheat-fixing-flaky-tests`
 - **GitHub Repository**: `https://github.com/Umang3172/chronotrace`
 - **Live Dashboard (AWS Amplify Hosting)**: `https://main.d3k7wvrz5f9b6h.amplifyapp.com` — app id `d3k7wvrz5f9b6h`, branch `main`, `us-east-1`, deployed 2026-09-09 by manual zip deploy (not Git-connected). Verified against the live URL with `scripts/verify_deploy.py`: HTTP 200, 15 incident rows, no console errors. Screenshots in `assets/deploy/`.
