@@ -1,0 +1,21 @@
+# AWS Amplify Hosting build spec. The dashboard is a static export, so this needs
+# no runtime, no credentials and no model: `prebuild` falls back to the committed
+# incidents.json snapshot when eval-results/ is absent, which it always is in CI.
+version: 1
+applications:
+  - appRoot: ui
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - npm ci
+        build:
+          commands:
+            - npm run build
+      artifacts:
+        baseDirectory: out
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*

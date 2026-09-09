@@ -10,6 +10,36 @@ uv run chronotrace eval --arm C --cases all   # produces the JSON
 cd ui && npm install && npm run dev           # http://localhost:3939
 ```
 
+## Deploying it
+
+`npm run build` emits a fully static site into `ui/out` — no Node server, so it
+can sit on S3 behind CloudFront, on Amplify Hosting, or on any static host, and
+a demo cannot stall on a request. Every route is already static or SSG.
+
+```bash
+cd ui && npm run build      # -> ui/out
+```
+
+**AWS Amplify Hosting** is the shortest path. Point it at the repository with
+`ui` as the app root, `npm run build` as the build command and `out` as the
+artifact directory:
+
+```yaml
+version: 1
+applications:
+  - appRoot: ui
+    frontend:
+      phases:
+        preBuild: { commands: ["npm ci"] }
+        build: { commands: ["npm run build"] }
+      artifacts: { baseDirectory: out, files: ["**/*"] }
+      cache: { paths: ["node_modules/**/*"] }
+```
+
+`prebuild` refreshes `public/incidents.json` from `../eval-results/` when a local
+eval has been run, and otherwise builds from the committed snapshot — so a fresh
+clone, and a CI build that has no model and no credentials, both work.
+
 ## Routes
 
 | Route | Shows |

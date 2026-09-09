@@ -6,7 +6,8 @@
     "dev": "next dev -p 3939",
     "build": "next build",
     "start": "next start -p 3939",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prebuild": "node -e \"const fs=require('fs'),p=require('path');const src=p.join('..','eval-results','incidents.json'),dst=p.join('public','incidents.json');if(fs.existsSync(src)){fs.mkdirSync('public',{recursive:true});fs.copyFileSync(src,dst);console.log('incidents.json refreshed from eval-results')}else if(fs.existsSync(dst)){console.log('using the committed incidents.json snapshot')}else{console.error('no incident data: run `uv run chronotrace eval --arm C --cases all`');process.exit(1)}\""
   },
   "dependencies": {
     "framer-motion": "^11.5.4",
