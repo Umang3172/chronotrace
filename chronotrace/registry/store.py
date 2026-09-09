@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
+from collections.abc import Iterable
 from contextlib import closing
 from pathlib import Path
 
@@ -70,9 +71,22 @@ class IncidentStore:
             ).fetchall()
         return [IncidentReport.model_validate_json(row[0]) for row in rows]
 
-    def export(self, path: Path) -> None:
-        """Write every incident to a JSON file, for the UI and for audit export."""
+    def export(self, path: Path, *, only: Iterable[str] | None = None) -> None:
+        """Write incidents to a JSON file, for the UI and for audit export.
+
+        Args:
+            path: File to write.
+            only: Incident ids to include. The store is an audit log and keeps
+                every run, so exporting all of it puts yesterday's result for a
+                test next to today's, which in the dashboard reads as the same
+                test appearing twice. Pass one run's ids to export that run.
+
+        """
+        wanted = None if only is None else set(only)
+        reports = [
+            report for report in self.list() if wanted is None or report.incident_id in wanted
+        ]
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(
-            json.dumps([report.model_dump(mode="json") for report in self.list()], indent=2)
+            json.dumps([report.model_dump(mode="json") for report in reports], indent=2)
         )

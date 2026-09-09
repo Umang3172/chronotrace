@@ -85,10 +85,10 @@ callable, and the SDK has no schema to send:
 ```python
 from strands import tool
 
+
 class AgentTools:
     @tool
-    def capture_traces(self, runs: int = 20) -> dict[str, Any]:
-        ...
+    def capture_traces(self, runs: int = 20) -> dict[str, Any]: ...
 ```
 
 That is the entire fix. `@tool` works fine on instance methods — `self` is

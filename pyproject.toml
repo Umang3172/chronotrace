@@ -48,7 +48,9 @@ packages = ["chronotrace"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-extend-exclude = ["benchmark/cases", "demo"]
+# docs/posts holds prose with illustrative snippets, including deliberately
+# wrong ones; formatting them rewrites the example being explained.
+extend-exclude = ["benchmark/cases", "demo", "docs/posts"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "SIM", "ARG", "PTH", "RUF", "ANN", "D"]

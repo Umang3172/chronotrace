@@ -437,10 +437,12 @@ def eval_cmd(
         for name in arms
     ]
     store = _store(settings)
+    produced = []
     for arm_result in results:
         for _case, incident in arm_result.results:
             store.save(incident)
-    store.export(out / "incidents.json")
+            produced.append(incident.incident_id)
+    store.export(out / "incidents.json", only=produced)
     markdown_path, json_path = write_report(results, out)
     typer.echo(markdown_path.read_text())
     typer.echo(f"written: {markdown_path} and {json_path}")

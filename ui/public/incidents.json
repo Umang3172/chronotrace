@@ -1,6 +1,6 @@
 [
   {
-    "incident_id": "112b3cd9",
+    "incident_id": "782a134d",
     "test_id": "benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py::test_batch_is_complete",
     "ui_state": "NEEDS_INVESTIGATION",
     "diagnosis": {
@@ -27,7 +27,7 @@
           "access": "write",
           "resource": "batch.items"
         },
-        "causal_position": 1,
+        "causal_position": 0,
         "ochiai_score": 1.0,
         "in_backward_slice": true,
         "classification": "CAUSALLY_SUFFICIENT",
@@ -38,7 +38,7 @@
         ]
       },
       "bug_depth": 1,
-      "candidates_evaluated": 2,
+      "candidates_evaluated": 3,
       "candidates": [
         {
           "op_a": {
@@ -61,7 +61,7 @@
             "access": "write",
             "resource": "batch.items"
           },
-          "causal_position": 1,
+          "causal_position": 0,
           "ochiai_score": 1.0,
           "in_backward_slice": true,
           "classification": "CAUSALLY_SUFFICIENT",
@@ -92,14 +92,45 @@
             "access": "write",
             "resource": "batch.items"
           },
-          "causal_position": 1,
-          "ochiai_score": 0.7559,
+          "causal_position": 0,
+          "ochiai_score": 0.9428,
           "in_backward_slice": true,
           "classification": "UNTESTED",
           "forced_failure_rate": null,
           "failing_order": [
             "read_batch#0",
             "record_item#1"
+          ]
+        },
+        {
+          "op_a": {
+            "span_name": "read_batch",
+            "occurrence": 0,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 31,
+            "qualname": "read_batch",
+            "is_test_scope": true,
+            "access": "read",
+            "resource": "batch.items"
+          },
+          "op_b": {
+            "span_name": "record_item",
+            "occurrence": 0,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py",
+            "source_line": 25,
+            "qualname": "record_item",
+            "is_test_scope": true,
+            "access": "write",
+            "resource": "batch.items"
+          },
+          "causal_position": 0,
+          "ochiai_score": 0.5774,
+          "in_backward_slice": true,
+          "classification": "UNTESTED",
+          "forced_failure_rate": null,
+          "failing_order": [
+            "read_batch#0",
+            "record_item#0"
           ]
         }
       ],
@@ -116,7 +147,7 @@
         "source_line": 25,
         "qualname": "record_item",
         "is_test_scope": true,
-        "access": "unknown",
+        "access": "write",
         "resource": "batch.items"
       },
       "wait_site": {
@@ -126,11 +157,11 @@
         "source_line": 31,
         "qualname": "read_batch",
         "is_test_scope": true,
-        "access": "unknown",
+        "access": "read",
         "resource": "batch.items"
       },
       "primitive": "asyncio.Event",
-      "rationale": "The read operation observed state the write had not yet published, indicating a race condition. Injecting an asyncio.Event to synchronize the write and read operations."
+      "rationale": "The two operations in `proven_inversion` name the same `resource`, and one has `access: 'write'` while the other has `access: 'read'`. The reader observed state the writer had not yet published."
     },
     "verdict": {
       "approved": true,
@@ -240,10 +271,10 @@
       "pct_runs": 0,
       "pct_failures": 0,
       "statistical_runs": 20,
-      "statistical_failures": 15,
-      "pre_patch_natural_failures": 13,
+      "statistical_failures": 11,
+      "pre_patch_natural_failures": 18,
       "deadlock_detected": false,
-      "measured_overhead_ms": -0.078,
+      "measured_overhead_ms": -0.017,
       "reproduction_seed": {
         "random_seed_base": "1729",
         "random_seed_sweep": "1729..1733",
@@ -254,21 +285,21 @@
       "isolation": "process",
       "symptom_patch_suspected": false
     },
-    "unified_diff": "--- a/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py\n+++ b/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py\n@@ -17,6 +17,18 @@\n \n from benchmark.support import io_latency\n from chronotrace.capture.instrument import assertion, operation\n+from chronotrace.schedule.harness import ScheduleHarness, force_order\n+\n+_chronotrace_gate_batch_items = asyncio.Event()\n+\n+\n+@pytest.fixture(autouse=True)\n+def _chronotrace_reset_batch_items():\n+    \"\"\"Provide a fresh synchronization gate for each test.\"\"\"\n+    global _chronotrace_gate_batch_items\n+    _chronotrace_gate_batch_items = asyncio.Event()\n+    yield\n+\n \n BATCH: list[str] = []\n EXPECTED = [\"alpha\", \"beta\", \"gamma\"]\n@@ -26,11 +38,13 @@\n async def record_item(item: str) -> None:\n     \"\"\"Publish one item into the batch.\"\"\"\n     BATCH.append(item)\n+    _chronotrace_gate_batch_items.set()\n \n \n @operation(\"read_batch\", resource=\"batch.items\", access=\"read\")\n async def read_batch() -> list[str]:\n     \"\"\"Read everything published so far.\"\"\"\n+    await _chronotrace_gate_batch_items.wait()\n     return list(BATCH)\n \n \n@@ -50,3 +64,19 @@\n     with assertion(\"batch.items\"):\n         assert observed == EXPECTED\n     await handle\n+\n+\n+@pytest.mark.asyncio\n+async def test_chronotrace_regression_112b3cd9() -> None:\n+    \"\"\"Reproduce the interleaving that used to fail, deterministically.\n+\n+    Generated by ChronoTrace for incident 112b3cd9. Before the repair this\n+    race appeared in roughly 70% of runs; this guard forces the\n+    exact ordering that caused it, so a regression fails here on every run\n+    rather than once in a while.\n+    \"\"\"\n+    forced_order = ['read_batch#0', 'record_item#2']\n+    harness = ScheduleHarness(forced_order, timeout_s=5.0)\n+    with force_order(harness):\n+        await test_batch_is_complete()\n+    assert harness.reached == forced_order\n",
+    "unified_diff": "--- a/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py\n+++ b/benchmark/cases/R14_batch_completion_lifecycle/test_R14_batch_completion_lifecycle.py\n@@ -17,6 +17,18 @@\n \n from benchmark.support import io_latency\n from chronotrace.capture.instrument import assertion, operation\n+from chronotrace.schedule.harness import ScheduleHarness, force_order\n+\n+_chronotrace_gate_batch_items = asyncio.Event()\n+\n+\n+@pytest.fixture(autouse=True)\n+def _chronotrace_reset_batch_items():\n+    \"\"\"Provide a fresh synchronization gate for each test.\"\"\"\n+    global _chronotrace_gate_batch_items\n+    _chronotrace_gate_batch_items = asyncio.Event()\n+    yield\n+\n \n BATCH: list[str] = []\n EXPECTED = [\"alpha\", \"beta\", \"gamma\"]\n@@ -26,11 +38,13 @@\n async def record_item(item: str) -> None:\n     \"\"\"Publish one item into the batch.\"\"\"\n     BATCH.append(item)\n+    _chronotrace_gate_batch_items.set()\n \n \n @operation(\"read_batch\", resource=\"batch.items\", access=\"read\")\n async def read_batch() -> list[str]:\n     \"\"\"Read everything published so far.\"\"\"\n+    await _chronotrace_gate_batch_items.wait()\n     return list(BATCH)\n \n \n@@ -50,3 +64,19 @@\n     with assertion(\"batch.items\"):\n         assert observed == EXPECTED\n     await handle\n+\n+\n+@pytest.mark.asyncio\n+async def test_chronotrace_regression_782a134d() -> None:\n+    \"\"\"Reproduce the interleaving that used to fail, deterministically.\n+\n+    Generated by ChronoTrace for incident 782a134d. Before the repair this\n+    race appeared in roughly 90% of runs; this guard forces the\n+    exact ordering that caused it, so a regression fails here on every run\n+    rather than once in a while.\n+    \"\"\"\n+    forced_order = ['read_batch#0', 'record_item#2']\n+    harness = ScheduleHarness(forced_order, timeout_s=5.0)\n+    with force_order(harness):\n+        await test_batch_is_complete()\n+    assert harness.reached == forced_order\n",
     "regression_test_path": null,
     "regression_verified": false,
-    "natural_flake_rate": 0.7,
+    "natural_flake_rate": 0.9,
     "probe_effect_delta": null,
     "pass_lane": {
       "outcome": "PASS",
-      "run_id": "2e4bd69e3afd",
-      "total_ms": 1.4613,
+      "run_id": "2347f781d0b9",
+      "total_ms": 2.4216,
       "spans": [
         {
           "key": "record_item#0",
           "name": "record_item",
           "start_ms": 0.0,
-          "duration_ms": 0.0081,
+          "duration_ms": 0.0063,
           "task_name": "Task-2",
           "source_line": 25,
           "access": "write",
@@ -278,8 +309,8 @@
         {
           "key": "record_item#1",
           "name": "record_item",
-          "start_ms": 0.8316,
-          "duration_ms": 0.0018,
+          "start_ms": 1.58,
+          "duration_ms": 0.0021,
           "task_name": "Task-2",
           "source_line": 25,
           "access": "write",
@@ -289,7 +320,7 @@
         {
           "key": "record_item#2",
           "name": "record_item",
-          "start_ms": 1.002,
+          "start_ms": 2.3956,
           "duration_ms": 0.0012,
           "task_name": "Task-2",
           "source_line": 25,
@@ -300,8 +331,8 @@
         {
           "key": "read_batch#0",
           "name": "read_batch",
-          "start_ms": 1.4463,
-          "duration_ms": 0.0013,
+          "start_ms": 2.409,
+          "duration_ms": 0.0012,
           "task_name": "Task-1",
           "source_line": 31,
           "access": "read",
@@ -311,7 +342,7 @@
         {
           "key": "assert#0",
           "name": "assert",
-          "start_ms": 1.4603,
+          "start_ms": 2.4206,
           "duration_ms": 0.001,
           "task_name": "Task-1",
           "source_line": null,
@@ -323,25 +354,14 @@
     },
     "fail_lane": {
       "outcome": "FAIL",
-      "run_id": "156a54b9c4fd",
-      "total_ms": 0.4836,
+      "run_id": "31cb2b80fa2e",
+      "total_ms": 0.2971,
       "spans": [
-        {
-          "key": "record_item#0",
-          "name": "record_item",
-          "start_ms": 0.0,
-          "duration_ms": 0.0109,
-          "task_name": "Task-2",
-          "source_line": 25,
-          "access": "write",
-          "in_inversion": false,
-          "is_assertion": false
-        },
         {
           "key": "read_batch#0",
           "name": "read_batch",
-          "start_ms": 0.3039,
-          "duration_ms": 0.0028,
+          "start_ms": 0.0,
+          "duration_ms": 0.0067,
           "task_name": "Task-1",
           "source_line": 31,
           "access": "read",
@@ -351,8 +371,8 @@
         {
           "key": "assert#0",
           "name": "assert",
-          "start_ms": 0.3278,
-          "duration_ms": 0.1557,
+          "start_ms": 0.0674,
+          "duration_ms": 0.2297,
           "task_name": "Task-1",
           "source_line": null,
           "access": "read",
@@ -365,30 +385,22 @@
     "intent_attempts": [
       {
         "attempt": 1,
-        "accepted": false,
-        "transformation": null,
-        "error": "model returned an invalid RepairIntent: 1 validation error for RepairIntent\n  Value error, INJECT_ASYNC_EVENT requires signal_site and wait_site: name the writing operation as signal_site and the reading operation as wait_site, copying them from proven_inversion [type=value_error, input_value={'transformation': 'INJEC...he appropriate repair.\"}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error",
-        "tokens_input": 1971,
-        "tokens_output": 97
-      },
-      {
-        "attempt": 2,
         "accepted": true,
         "transformation": "INJECT_ASYNC_EVENT",
         "error": null,
-        "tokens_input": 2083,
-        "tokens_output": 260
+        "tokens_input": 3386,
+        "tokens_output": 300
       }
     ],
     "abstain_reason": null,
-    "tokens_input": 4054,
-    "tokens_output": 357,
-    "llm_calls": 2,
-    "wall_clock_s": 107.19,
-    "provider": "ollama"
+    "tokens_input": 3386,
+    "tokens_output": 300,
+    "llm_calls": 1,
+    "wall_clock_s": 82.24,
+    "provider": "bedrock"
   },
   {
-    "incident_id": "338d7121",
+    "incident_id": "daeae925",
     "test_id": "benchmark/cases/R12_depth2_two_constraints/test_R12_depth2_two_constraints.py::test_at_least_one_replica_is_up",
     "ui_state": "NEEDS_INVESTIGATION",
     "diagnosis": {
@@ -420,7 +432,7 @@
             "resource": "state.secondary"
           },
           "causal_position": 1,
-          "ochiai_score": 1.0,
+          "ochiai_score": 0.7071,
           "in_backward_slice": true,
           "classification": "NECESSARY_INSUFFICIENT",
           "forced_failure_rate": 0.6,
@@ -451,7 +463,7 @@
             "resource": "state.primary"
           },
           "causal_position": 0,
-          "ochiai_score": 0.9258,
+          "ochiai_score": 0.5345,
           "in_backward_slice": true,
           "classification": "NECESSARY_INSUFFICIENT",
           "forced_failure_rate": 0.4,
@@ -469,18 +481,18 @@
     "unified_diff": null,
     "regression_test_path": null,
     "regression_verified": false,
-    "natural_flake_rate": 0.6,
+    "natural_flake_rate": 0.2,
     "probe_effect_delta": null,
     "pass_lane": {
       "outcome": "PASS",
-      "run_id": "c8efa9a82135",
-      "total_ms": 1.0235,
+      "run_id": "0287b0a8cdbf",
+      "total_ms": 0.3524,
       "spans": [
         {
           "key": "set_secondary#0",
           "name": "set_secondary",
           "start_ms": 0.0,
-          "duration_ms": 0.2106,
+          "duration_ms": 0.0095,
           "task_name": "Task-3",
           "source_line": 24,
           "access": "write",
@@ -490,8 +502,8 @@
         {
           "key": "read_primary#0",
           "name": "read_primary",
-          "start_ms": 0.5459,
-          "duration_ms": 0.0024,
+          "start_ms": 0.1803,
+          "duration_ms": 0.0027,
           "task_name": "Task-1",
           "source_line": 30,
           "access": "read",
@@ -501,8 +513,8 @@
         {
           "key": "read_secondary#0",
           "name": "read_secondary",
-          "start_ms": 0.5628,
-          "duration_ms": 0.001,
+          "start_ms": 0.2098,
+          "duration_ms": 0.0012,
           "task_name": "Task-1",
           "source_line": 36,
           "access": "read",
@@ -512,8 +524,8 @@
         {
           "key": "assert#0",
           "name": "assert",
-          "start_ms": 0.5757,
-          "duration_ms": 0.0011,
+          "start_ms": 0.253,
+          "duration_ms": 0.001,
           "task_name": "Task-1",
           "source_line": null,
           "access": "read",
@@ -523,8 +535,8 @@
         {
           "key": "set_primary#0",
           "name": "set_primary",
-          "start_ms": 1.0223,
-          "duration_ms": 0.0013,
+          "start_ms": 0.351,
+          "duration_ms": 0.0014,
           "task_name": "Task-2",
           "source_line": 18,
           "access": "write",
@@ -535,14 +547,14 @@
     },
     "fail_lane": {
       "outcome": "FAIL",
-      "run_id": "df8f0ccee0d5",
-      "total_ms": 0.1852,
+      "run_id": "a42db1ec1273",
+      "total_ms": 0.1352,
       "spans": [
         {
           "key": "read_primary#0",
           "name": "read_primary",
           "start_ms": 0.0,
-          "duration_ms": 0.0095,
+          "duration_ms": 0.007,
           "task_name": "Task-1",
           "source_line": 30,
           "access": "read",
@@ -552,8 +564,8 @@
         {
           "key": "read_secondary#0",
           "name": "read_secondary",
-          "start_ms": 0.1038,
-          "duration_ms": 0.0018,
+          "start_ms": 0.0733,
+          "duration_ms": 0.0017,
           "task_name": "Task-1",
           "source_line": 36,
           "access": "read",
@@ -563,8 +575,8 @@
         {
           "key": "assert#0",
           "name": "assert",
-          "start_ms": 0.1198,
-          "duration_ms": 0.0654,
+          "start_ms": 0.0893,
+          "duration_ms": 0.0458,
           "task_name": "Task-1",
           "source_line": null,
           "access": "read",
@@ -576,39 +588,39 @@
     "rejected_attempts": [],
     "intent_attempts": [],
     "abstain_reason": null,
-    "tokens_input": 1577,
-    "tokens_output": 262,
+    "tokens_input": 2755,
+    "tokens_output": 74,
     "llm_calls": 0,
-    "wall_clock_s": 18.05,
-    "provider": "ollama"
+    "wall_clock_s": 23.55,
+    "provider": "bedrock"
   },
   {
-    "incident_id": "d4b8d106",
-    "test_id": "benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py::test_reader_sees_committed_value",
-    "ui_state": "FIXED",
+    "incident_id": "5edddd00",
+    "test_id": "benchmark/cases/R13_production_scope_race/test_R13_production_scope_race.py::test_service_serves_warm_config",
+    "ui_state": "ABSTAINED",
     "diagnosis": {
-      "status": "RACE_PROVEN",
-      "abstain_reason": null,
+      "status": "ABSTAINED",
+      "abstain_reason": "PRODUCTION_SCOPE_RACE",
       "proven_inversion": {
         "op_a": {
-          "span_name": "read_value",
+          "span_name": "cache_get",
           "occurrence": 0,
-          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
-          "source_line": 23,
-          "qualname": "read_value",
-          "is_test_scope": true,
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R13_production_scope_race/app_service.py",
+          "source_line": 19,
+          "qualname": "cache_get",
+          "is_test_scope": false,
           "access": "read",
-          "resource": "store.value"
+          "resource": "cache.entry"
         },
         "op_b": {
-          "span_name": "commit_value",
+          "span_name": "cache_fill",
           "occurrence": 0,
-          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
-          "source_line": 17,
-          "qualname": "commit_value",
-          "is_test_scope": true,
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R13_production_scope_race/app_service.py",
+          "source_line": 13,
+          "qualname": "cache_fill",
+          "is_test_scope": false,
           "access": "write",
-          "resource": "store.value"
+          "resource": "cache.entry"
         },
         "causal_position": 0,
         "ochiai_score": 1.0,
@@ -616,33 +628,33 @@
         "classification": "CAUSALLY_SUFFICIENT",
         "forced_failure_rate": 1.0,
         "failing_order": [
-          "read_value#0",
-          "commit_value#0"
+          "cache_get#0",
+          "cache_fill#0"
         ]
       },
-      "bug_depth": 1,
+      "bug_depth": null,
       "candidates_evaluated": 1,
       "candidates": [
         {
           "op_a": {
-            "span_name": "read_value",
+            "span_name": "cache_get",
             "occurrence": 0,
-            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
-            "source_line": 23,
-            "qualname": "read_value",
-            "is_test_scope": true,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R13_production_scope_race/app_service.py",
+            "source_line": 19,
+            "qualname": "cache_get",
+            "is_test_scope": false,
             "access": "read",
-            "resource": "store.value"
+            "resource": "cache.entry"
           },
           "op_b": {
-            "span_name": "commit_value",
+            "span_name": "cache_fill",
             "occurrence": 0,
-            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
-            "source_line": 17,
-            "qualname": "commit_value",
-            "is_test_scope": true,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R13_production_scope_race/app_service.py",
+            "source_line": 13,
+            "qualname": "cache_fill",
+            "is_test_scope": false,
             "access": "write",
-            "resource": "store.value"
+            "resource": "cache.entry"
           },
           "causal_position": 0,
           "ochiai_score": 1.0,
@@ -650,39 +662,411 @@
           "classification": "CAUSALLY_SUFFICIENT",
           "forced_failure_rate": 1.0,
           "failing_order": [
-            "read_value#0",
-            "commit_value#0"
+            "cache_get#0",
+            "cache_fill#0"
           ]
         }
       ],
-      "explanation": "Forcing read_value to start before commit_value reproduced the failure on every attempt, so that ordering is a sufficient condition for the failure."
+      "explanation": "The proven race is between operations in application code (/Users/umangsingh/Chronotrace/benchmark/cases/R13_production_scope_race/app_service.py), not test code. Repairing the test would hide a real product defect. Re-run with --allow-production-repair to proceed deliberately."
+    },
+    "intent": null,
+    "verdict": null,
+    "verification": null,
+    "unified_diff": null,
+    "regression_test_path": null,
+    "regression_verified": false,
+    "natural_flake_rate": 0.5,
+    "probe_effect_delta": null,
+    "pass_lane": {
+      "outcome": "PASS",
+      "run_id": "63f69b96812d",
+      "total_ms": 1.1135,
+      "spans": [
+        {
+          "key": "cache_fill#0",
+          "name": "cache_fill",
+          "start_ms": 0.0,
+          "duration_ms": 0.0065,
+          "task_name": "Task-2",
+          "source_line": 13,
+          "access": "write",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "cache_get#0",
+          "name": "cache_get",
+          "start_ms": 1.0911,
+          "duration_ms": 0.0025,
+          "task_name": "Task-1",
+          "source_line": 19,
+          "access": "read",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "assert#0",
+          "name": "assert",
+          "start_ms": 1.1124,
+          "duration_ms": 0.0011,
+          "task_name": "Task-1",
+          "source_line": null,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": true
+        }
+      ]
+    },
+    "fail_lane": {
+      "outcome": "FAIL",
+      "run_id": "ee481b667770",
+      "total_ms": 0.2631,
+      "spans": [
+        {
+          "key": "cache_get#0",
+          "name": "cache_get",
+          "start_ms": 0.0,
+          "duration_ms": 0.0064,
+          "task_name": "Task-1",
+          "source_line": 19,
+          "access": "read",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "assert#0",
+          "name": "assert",
+          "start_ms": 0.0668,
+          "duration_ms": 0.1963,
+          "task_name": "Task-1",
+          "source_line": null,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": true
+        }
+      ]
+    },
+    "rejected_attempts": [],
+    "intent_attempts": [],
+    "abstain_reason": null,
+    "tokens_input": 2755,
+    "tokens_output": 74,
+    "llm_calls": 0,
+    "wall_clock_s": 14.34,
+    "provider": "bedrock"
+  },
+  {
+    "incident_id": "e0d54ea0",
+    "test_id": "benchmark/cases/R08_gather_order_assumption/test_R08_gather_order_assumption.py::test_completion_order_is_alpha_then_beta",
+    "ui_state": "NEEDS_INVESTIGATION",
+    "diagnosis": {
+      "status": "RACE_PROVEN",
+      "abstain_reason": null,
+      "proven_inversion": {
+        "op_a": {
+          "span_name": "finish_beta",
+          "occurrence": 0,
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R08_gather_order_assumption/test_R08_gather_order_assumption.py",
+          "source_line": 25,
+          "qualname": "finish_beta",
+          "is_test_scope": true,
+          "access": "write",
+          "resource": "completions.order"
+        },
+        "op_b": {
+          "span_name": "finish_alpha",
+          "occurrence": 0,
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R08_gather_order_assumption/test_R08_gather_order_assumption.py",
+          "source_line": 19,
+          "qualname": "finish_alpha",
+          "is_test_scope": true,
+          "access": "write",
+          "resource": "completions.order"
+        },
+        "causal_position": 0,
+        "ochiai_score": 1.0,
+        "in_backward_slice": true,
+        "classification": "CAUSALLY_SUFFICIENT",
+        "forced_failure_rate": 1.0,
+        "failing_order": [
+          "finish_beta#0",
+          "finish_alpha#0"
+        ]
+      },
+      "bug_depth": 1,
+      "candidates_evaluated": 1,
+      "candidates": [
+        {
+          "op_a": {
+            "span_name": "finish_beta",
+            "occurrence": 0,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R08_gather_order_assumption/test_R08_gather_order_assumption.py",
+            "source_line": 25,
+            "qualname": "finish_beta",
+            "is_test_scope": true,
+            "access": "write",
+            "resource": "completions.order"
+          },
+          "op_b": {
+            "span_name": "finish_alpha",
+            "occurrence": 0,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R08_gather_order_assumption/test_R08_gather_order_assumption.py",
+            "source_line": 19,
+            "qualname": "finish_alpha",
+            "is_test_scope": true,
+            "access": "write",
+            "resource": "completions.order"
+          },
+          "causal_position": 0,
+          "ochiai_score": 1.0,
+          "in_backward_slice": true,
+          "classification": "CAUSALLY_SUFFICIENT",
+          "forced_failure_rate": 1.0,
+          "failing_order": [
+            "finish_beta#0",
+            "finish_alpha#0"
+          ]
+        }
+      ],
+      "explanation": "Forcing finish_beta to start before finish_alpha reproduced the failure on every attempt, so that ordering is a sufficient condition for the failure."
+    },
+    "intent": {
+      "transformation": "RELAX_ASSERTION",
+      "shared_scope": "NONE",
+      "scope_target": null,
+      "signal_site": null,
+      "wait_site": null,
+      "primitive": "none",
+      "rationale": "Both operations have 'access: \"write\"' and neither reads what the other produced. Their relative order is not established by the code under test, so the assertion demands an ordering nothing promises."
+    },
+    "verdict": null,
+    "verification": null,
+    "unified_diff": null,
+    "regression_test_path": null,
+    "regression_verified": false,
+    "natural_flake_rate": 0.1,
+    "probe_effect_delta": null,
+    "pass_lane": {
+      "outcome": "PASS",
+      "run_id": "73ca91c81f75",
+      "total_ms": 0.1575,
+      "spans": [
+        {
+          "key": "finish_alpha#0",
+          "name": "finish_alpha",
+          "start_ms": 0.0,
+          "duration_ms": 0.0101,
+          "task_name": "Task-2",
+          "source_line": 19,
+          "access": "write",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "finish_beta#0",
+          "name": "finish_beta",
+          "start_ms": 0.0872,
+          "duration_ms": 0.0017,
+          "task_name": "Task-3",
+          "source_line": 25,
+          "access": "write",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "read_completions#0",
+          "name": "read_completions",
+          "start_ms": 0.1415,
+          "duration_ms": 0.0013,
+          "task_name": "Task-1",
+          "source_line": 31,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": false
+        },
+        {
+          "key": "assert#0",
+          "name": "assert",
+          "start_ms": 0.1563,
+          "duration_ms": 0.0012,
+          "task_name": "Task-1",
+          "source_line": null,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": true
+        }
+      ]
+    },
+    "fail_lane": {
+      "outcome": "FAIL",
+      "run_id": "724f61fe049f",
+      "total_ms": 0.4177,
+      "spans": [
+        {
+          "key": "finish_beta#0",
+          "name": "finish_beta",
+          "start_ms": 0.0,
+          "duration_ms": 0.0119,
+          "task_name": "Task-3",
+          "source_line": 25,
+          "access": "write",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "finish_alpha#0",
+          "name": "finish_alpha",
+          "start_ms": 0.1197,
+          "duration_ms": 0.0023,
+          "task_name": "Task-2",
+          "source_line": 19,
+          "access": "write",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "read_completions#0",
+          "name": "read_completions",
+          "start_ms": 0.2028,
+          "duration_ms": 0.0026,
+          "task_name": "Task-1",
+          "source_line": 31,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": false
+        },
+        {
+          "key": "assert#0",
+          "name": "assert",
+          "start_ms": 0.2289,
+          "duration_ms": 0.1888,
+          "task_name": "Task-1",
+          "source_line": null,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": true
+        }
+      ]
+    },
+    "rejected_attempts": [],
+    "intent_attempts": [
+      {
+        "attempt": 1,
+        "accepted": true,
+        "transformation": "RELAX_ASSERTION",
+        "error": null,
+        "tokens_input": 2755,
+        "tokens_output": 74
+      }
+    ],
+    "abstain_reason": null,
+    "tokens_input": 2755,
+    "tokens_output": 74,
+    "llm_calls": 1,
+    "wall_clock_s": 20.2,
+    "provider": "bedrock"
+  },
+  {
+    "incident_id": "ef292eae",
+    "test_id": "benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py::test_subscriber_waits_for_ready",
+    "ui_state": "FIXED",
+    "diagnosis": {
+      "status": "RACE_PROVEN",
+      "abstain_reason": null,
+      "proven_inversion": {
+        "op_a": {
+          "span_name": "subscribe",
+          "occurrence": 0,
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+          "source_line": 19,
+          "qualname": "subscribe",
+          "is_test_scope": true,
+          "access": "read",
+          "resource": "broker.ready"
+        },
+        "op_b": {
+          "span_name": "publish_ready",
+          "occurrence": 0,
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+          "source_line": 13,
+          "qualname": "publish_ready",
+          "is_test_scope": true,
+          "access": "write",
+          "resource": "broker.ready"
+        },
+        "causal_position": 0,
+        "ochiai_score": 1.0,
+        "in_backward_slice": true,
+        "classification": "CAUSALLY_SUFFICIENT",
+        "forced_failure_rate": 1.0,
+        "failing_order": [
+          "subscribe#0",
+          "publish_ready#0"
+        ]
+      },
+      "bug_depth": 1,
+      "candidates_evaluated": 1,
+      "candidates": [
+        {
+          "op_a": {
+            "span_name": "subscribe",
+            "occurrence": 0,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+            "source_line": 19,
+            "qualname": "subscribe",
+            "is_test_scope": true,
+            "access": "read",
+            "resource": "broker.ready"
+          },
+          "op_b": {
+            "span_name": "publish_ready",
+            "occurrence": 0,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+            "source_line": 13,
+            "qualname": "publish_ready",
+            "is_test_scope": true,
+            "access": "write",
+            "resource": "broker.ready"
+          },
+          "causal_position": 0,
+          "ochiai_score": 1.0,
+          "in_backward_slice": true,
+          "classification": "CAUSALLY_SUFFICIENT",
+          "forced_failure_rate": 1.0,
+          "failing_order": [
+            "subscribe#0",
+            "publish_ready#0"
+          ]
+        }
+      ],
+      "explanation": "Forcing subscribe to start before publish_ready reproduced the failure on every attempt, so that ordering is a sufficient condition for the failure."
     },
     "intent": {
       "transformation": "INJECT_ASYNC_EVENT",
       "shared_scope": "FIXTURE",
       "scope_target": null,
       "signal_site": {
-        "span_name": "commit_value",
+        "span_name": "publish_ready",
         "occurrence": 0,
-        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
-        "source_line": 17,
-        "qualname": "commit_value",
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+        "source_line": 13,
+        "qualname": "publish_ready",
         "is_test_scope": true,
-        "access": "unknown",
-        "resource": "store.value"
+        "access": "write",
+        "resource": "broker.ready"
       },
       "wait_site": {
-        "span_name": "read_value",
+        "span_name": "subscribe",
         "occurrence": 0,
-        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
-        "source_line": 23,
-        "qualname": "read_value",
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py",
+        "source_line": 19,
+        "qualname": "subscribe",
         "is_test_scope": true,
-        "access": "unknown",
-        "resource": "store.value"
+        "access": "read",
+        "resource": "broker.ready"
       },
       "primitive": "asyncio.Event",
-      "rationale": "The read operation observed state the write had not yet published, indicating a race condition. Injecting an asyncio.Event to synchronize the operations is the appropriate repair."
+      "rationale": "The two operations in `proven_inversion` name the same `resource`, and one has `access: \"write\"` while the other has `access: \"read\"`. The reader observed state the writer had not yet published."
     },
     "verdict": {
       "approved": true,
@@ -793,47 +1177,47 @@
       "pct_failures": 0,
       "statistical_runs": 20,
       "statistical_failures": 0,
-      "pre_patch_natural_failures": 10,
+      "pre_patch_natural_failures": 9,
       "deadlock_detected": false,
-      "measured_overhead_ms": -0.026,
+      "measured_overhead_ms": -0.564,
       "reproduction_seed": {
         "random_seed_base": "1729",
         "random_seed_sweep": "1729..1733",
         "pythonhashseed": "0",
         "python_version": "3.12.13",
-        "forced_order": "read_value#0 -> commit_value#0"
+        "forced_order": "subscribe#0 -> publish_ready#0"
       },
       "isolation": "process",
       "symptom_patch_suspected": false
     },
-    "unified_diff": "--- a/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py\n+++ b/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py\n@@ -10,6 +10,18 @@\n \n from benchmark.support import io_latency\n from chronotrace.capture.instrument import assertion, operation\n+from chronotrace.schedule.harness import ScheduleHarness, force_order\n+\n+_chronotrace_gate_store_value = asyncio.Event()\n+\n+\n+@pytest.fixture(autouse=True)\n+def _chronotrace_reset_store_value():\n+    \"\"\"Provide a fresh synchronization gate for each test.\"\"\"\n+    global _chronotrace_gate_store_value\n+    _chronotrace_gate_store_value = asyncio.Event()\n+    yield\n+\n \n STORE: dict[str, str] = {}\n \n@@ -18,11 +30,13 @@\n async def commit_value(value: str) -> None:\n     \"\"\"Publish ``value`` into the shared store.\"\"\"\n     STORE[\"value\"] = value\n+    _chronotrace_gate_store_value.set()\n \n \n @operation(\"read_value\", resource=\"store.value\", access=\"read\")\n async def read_value() -> str | None:\n     \"\"\"Read the shared store.\"\"\"\n+    await _chronotrace_gate_store_value.wait()\n     return STORE.get(\"value\")\n \n \n@@ -41,3 +55,19 @@\n     with assertion(\"store.value\"):\n         assert observed == \"ready\"\n     await task\n+\n+\n+@pytest.mark.asyncio\n+async def test_chronotrace_regression_d4b8d106() -> None:\n+    \"\"\"Reproduce the interleaving that used to fail, deterministically.\n+\n+    Generated by ChronoTrace for incident d4b8d106. Before the repair this\n+    race appeared in roughly 70% of runs; this guard forces the\n+    exact ordering that caused it, so a regression fails here on every run\n+    rather than once in a while.\n+    \"\"\"\n+    forced_order = ['read_value#0', 'commit_value#0']\n+    harness = ScheduleHarness(forced_order, timeout_s=5.0)\n+    with force_order(harness):\n+        await test_reader_sees_committed_value()\n+    assert harness.reached == forced_order\n",
-    "regression_test_path": "benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py::test_chronotrace_regression_d4b8d106",
+    "unified_diff": "--- a/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py\n+++ b/benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py\n@@ -6,6 +6,18 @@\n \n from benchmark.support import io_latency\n from chronotrace.capture.instrument import assertion, operation\n+from chronotrace.schedule.harness import ScheduleHarness, force_order\n+\n+_chronotrace_gate_broker_ready = asyncio.Event()\n+\n+\n+@pytest.fixture(autouse=True)\n+def _chronotrace_reset_broker_ready():\n+    \"\"\"Provide a fresh synchronization gate for each test.\"\"\"\n+    global _chronotrace_gate_broker_ready\n+    _chronotrace_gate_broker_ready = asyncio.Event()\n+    yield\n+\n \n BROKER: dict[str, object] = {}\n \n@@ -14,11 +26,13 @@\n async def publish_ready() -> None:\n     \"\"\"Mark the broker as ready to accept subscribers.\"\"\"\n     BROKER[\"ready\"] = True\n+    _chronotrace_gate_broker_ready.set()\n \n \n @operation(\"subscribe\", resource=\"broker.ready\", access=\"read\")\n async def subscribe() -> bool:\n     \"\"\"Subscribe, which is only valid once the broker is ready.\"\"\"\n+    await _chronotrace_gate_broker_ready.wait()\n     return bool(BROKER.get(\"ready\", False))\n \n \n@@ -37,3 +51,19 @@\n     with assertion(\"broker.ready\"):\n         assert accepted is True\n     await startup\n+\n+\n+@pytest.mark.asyncio\n+async def test_chronotrace_regression_ef292eae() -> None:\n+    \"\"\"Reproduce the interleaving that used to fail, deterministically.\n+\n+    Generated by ChronoTrace for incident ef292eae. Before the repair this\n+    race appeared in roughly 70% of runs; this guard forces the\n+    exact ordering that caused it, so a regression fails here on every run\n+    rather than once in a while.\n+    \"\"\"\n+    forced_order = ['subscribe#0', 'publish_ready#0']\n+    harness = ScheduleHarness(forced_order, timeout_s=5.0)\n+    with force_order(harness):\n+        await test_subscriber_waits_for_ready()\n+    assert harness.reached == forced_order\n",
+    "regression_test_path": "benchmark/cases/R05_event_set_after_wait/test_R05_event_set_after_wait.py::test_chronotrace_regression_ef292eae",
     "regression_verified": true,
     "natural_flake_rate": 0.7,
     "probe_effect_delta": null,
     "pass_lane": {
       "outcome": "PASS",
-      "run_id": "aba80a033547",
-      "total_ms": 0.683,
+      "run_id": "5f584f6c3178",
+      "total_ms": 0.2971,
       "spans": [
         {
-          "key": "commit_value#0",
-          "name": "commit_value",
+          "key": "publish_ready#0",
+          "name": "publish_ready",
           "start_ms": 0.0,
-          "duration_ms": 0.0062,
+          "duration_ms": 0.0078,
           "task_name": "Task-2",
-          "source_line": 17,
+          "source_line": 13,
           "access": "write",
           "in_inversion": true,
           "is_assertion": false
         },
         {
-          "key": "read_value#0",
-          "name": "read_value",
-          "start_ms": 0.6639,
-          "duration_ms": 0.0022,
+          "key": "subscribe#0",
+          "name": "subscribe",
+          "start_ms": 0.2491,
+          "duration_ms": 0.0025,
           "task_name": "Task-1",
-          "source_line": 23,
+          "source_line": 19,
           "access": "read",
           "in_inversion": true,
           "is_assertion": false
@@ -841,7 +1225,639 @@
         {
           "key": "assert#0",
           "name": "assert",
-          "start_ms": 0.682,
+          "start_ms": 0.2857,
+          "duration_ms": 0.0115,
+          "task_name": "Task-1",
+          "source_line": null,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": true
+        }
+      ]
+    },
+    "fail_lane": {
+      "outcome": "FAIL",
+      "run_id": "ea9be98f8ba8",
+      "total_ms": 0.1532,
+      "spans": [
+        {
+          "key": "subscribe#0",
+          "name": "subscribe",
+          "start_ms": 0.0,
+          "duration_ms": 0.0078,
+          "task_name": "Task-1",
+          "source_line": 19,
+          "access": "read",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "assert#0",
+          "name": "assert",
+          "start_ms": 0.0784,
+          "duration_ms": 0.0748,
+          "task_name": "Task-1",
+          "source_line": null,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": true
+        }
+      ]
+    },
+    "rejected_attempts": [],
+    "intent_attempts": [
+      {
+        "attempt": 1,
+        "accepted": true,
+        "transformation": "INJECT_ASYNC_EVENT",
+        "error": null,
+        "tokens_input": 2591,
+        "tokens_output": 304
+      }
+    ],
+    "abstain_reason": null,
+    "tokens_input": 2591,
+    "tokens_output": 304,
+    "llm_calls": 1,
+    "wall_clock_s": 81.93,
+    "provider": "bedrock"
+  },
+  {
+    "incident_id": "dbe0093b",
+    "test_id": "benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py::test_consumer_drains_produced_job",
+    "ui_state": "FIXED",
+    "diagnosis": {
+      "status": "RACE_PROVEN",
+      "abstain_reason": null,
+      "proven_inversion": {
+        "op_a": {
+          "span_name": "drain_queue",
+          "occurrence": 0,
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+          "source_line": 19,
+          "qualname": "drain_queue",
+          "is_test_scope": true,
+          "access": "read",
+          "resource": "queue.items"
+        },
+        "op_b": {
+          "span_name": "enqueue_job",
+          "occurrence": 0,
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+          "source_line": 13,
+          "qualname": "enqueue_job",
+          "is_test_scope": true,
+          "access": "write",
+          "resource": "queue.items"
+        },
+        "causal_position": 0,
+        "ochiai_score": 1.0,
+        "in_backward_slice": true,
+        "classification": "CAUSALLY_SUFFICIENT",
+        "forced_failure_rate": 1.0,
+        "failing_order": [
+          "drain_queue#0",
+          "enqueue_job#0"
+        ]
+      },
+      "bug_depth": 1,
+      "candidates_evaluated": 1,
+      "candidates": [
+        {
+          "op_a": {
+            "span_name": "drain_queue",
+            "occurrence": 0,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+            "source_line": 19,
+            "qualname": "drain_queue",
+            "is_test_scope": true,
+            "access": "read",
+            "resource": "queue.items"
+          },
+          "op_b": {
+            "span_name": "enqueue_job",
+            "occurrence": 0,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+            "source_line": 13,
+            "qualname": "enqueue_job",
+            "is_test_scope": true,
+            "access": "write",
+            "resource": "queue.items"
+          },
+          "causal_position": 0,
+          "ochiai_score": 1.0,
+          "in_backward_slice": true,
+          "classification": "CAUSALLY_SUFFICIENT",
+          "forced_failure_rate": 1.0,
+          "failing_order": [
+            "drain_queue#0",
+            "enqueue_job#0"
+          ]
+        }
+      ],
+      "explanation": "Forcing drain_queue to start before enqueue_job reproduced the failure on every attempt, so that ordering is a sufficient condition for the failure."
+    },
+    "intent": {
+      "transformation": "INJECT_ASYNC_EVENT",
+      "shared_scope": "FIXTURE",
+      "scope_target": null,
+      "signal_site": {
+        "span_name": "enqueue_job",
+        "occurrence": 0,
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+        "source_line": 13,
+        "qualname": "enqueue_job",
+        "is_test_scope": true,
+        "access": "write",
+        "resource": "queue.items"
+      },
+      "wait_site": {
+        "span_name": "drain_queue",
+        "occurrence": 0,
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py",
+        "source_line": 19,
+        "qualname": "drain_queue",
+        "is_test_scope": true,
+        "access": "read",
+        "resource": "queue.items"
+      },
+      "primitive": "asyncio.Event",
+      "rationale": "The two operations in `proven_inversion` name the same `resource`, and one has `access: 'write'` while the other has `access: 'read'`. The reader observed state the writer had not yet published."
+    },
+    "verdict": {
+      "approved": true,
+      "negative_violations": [],
+      "positive_check_passed": true,
+      "deadlock_cycle_detected": false,
+      "scope_violation": false,
+      "diff_checks": [],
+      "rules_evaluated": [
+        {
+          "rule_id": "N1",
+          "description": "no sleep calls introduced",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N2",
+          "description": "no aliased sleep imports introduced",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N3",
+          "description": "no timeout marker added or inflated",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N4",
+          "description": "no retry or flaky decorator added",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N5",
+          "description": "no retry loop wrapped around the assertion",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N6",
+          "description": "no assertion removed or weakened",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N7",
+          "description": "no exception handler swallowing the failure",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N8",
+          "description": "no test skipped, xfailed or renamed out of collection",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "P1",
+          "description": "a real synchronization primitive was added",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "P2",
+          "description": "the primitive is reachable from both the signal and the wait site",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "P3",
+          "description": "the patch is not a no-op",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S1",
+          "description": "the proposed wait edge creates no wait-for cycle",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S2",
+          "description": "no production-scope file modified without opt-in",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S3",
+          "description": "no third-party or vendored file modified",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S4",
+          "description": "the patched module parses",
+          "passed": true,
+          "detail": ""
+        }
+      ]
+    },
+    "verification": {
+      "tier_reached": "FORCED_HARMLESS",
+      "pre_patch_forced_failed": true,
+      "post_patch_forced_passed": true,
+      "post_patch_forced_infeasible": false,
+      "pct_runs": 0,
+      "pct_failures": 0,
+      "statistical_runs": 20,
+      "statistical_failures": 0,
+      "pre_patch_natural_failures": 9,
+      "deadlock_detected": false,
+      "measured_overhead_ms": 0.151,
+      "reproduction_seed": {
+        "random_seed_base": "1729",
+        "random_seed_sweep": "1729..1733",
+        "pythonhashseed": "0",
+        "python_version": "3.12.13",
+        "forced_order": "drain_queue#0 -> enqueue_job#0"
+      },
+      "isolation": "process",
+      "symptom_patch_suspected": false
+    },
+    "unified_diff": "--- a/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py\n+++ b/benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py\n@@ -6,6 +6,18 @@\n \n from benchmark.support import io_latency\n from chronotrace.capture.instrument import assertion, operation\n+from chronotrace.schedule.harness import ScheduleHarness, force_order\n+\n+_chronotrace_gate_queue_items = asyncio.Event()\n+\n+\n+@pytest.fixture(autouse=True)\n+def _chronotrace_reset_queue_items():\n+    \"\"\"Provide a fresh synchronization gate for each test.\"\"\"\n+    global _chronotrace_gate_queue_items\n+    _chronotrace_gate_queue_items = asyncio.Event()\n+    yield\n+\n \n QUEUE: list[str] = []\n \n@@ -14,11 +26,13 @@\n async def enqueue_job(job: str) -> None:\n     \"\"\"Append a job to the work queue.\"\"\"\n     QUEUE.append(job)\n+    _chronotrace_gate_queue_items.set()\n \n \n @operation(\"drain_queue\", resource=\"queue.items\", access=\"read\")\n async def drain_queue() -> list[str]:\n     \"\"\"Take everything currently queued.\"\"\"\n+    await _chronotrace_gate_queue_items.wait()\n     taken = list(QUEUE)\n     QUEUE.clear()\n     return taken\n@@ -39,3 +53,19 @@\n     with assertion(\"queue.items\"):\n         assert drained == [\"job-1\"]\n     await task\n+\n+\n+@pytest.mark.asyncio\n+async def test_chronotrace_regression_dbe0093b() -> None:\n+    \"\"\"Reproduce the interleaving that used to fail, deterministically.\n+\n+    Generated by ChronoTrace for incident dbe0093b. Before the repair this\n+    race appeared in roughly 60% of runs; this guard forces the\n+    exact ordering that caused it, so a regression fails here on every run\n+    rather than once in a while.\n+    \"\"\"\n+    forced_order = ['drain_queue#0', 'enqueue_job#0']\n+    harness = ScheduleHarness(forced_order, timeout_s=5.0)\n+    with force_order(harness):\n+        await test_consumer_drains_produced_job()\n+    assert harness.reached == forced_order\n",
+    "regression_test_path": "benchmark/cases/R06_queue_consumer_early/test_R06_queue_consumer_early.py::test_chronotrace_regression_dbe0093b",
+    "regression_verified": true,
+    "natural_flake_rate": 0.6,
+    "probe_effect_delta": null,
+    "pass_lane": {
+      "outcome": "PASS",
+      "run_id": "5f6212439af9",
+      "total_ms": 0.5492,
+      "spans": [
+        {
+          "key": "enqueue_job#0",
+          "name": "enqueue_job",
+          "start_ms": 0.0,
+          "duration_ms": 0.006,
+          "task_name": "Task-2",
+          "source_line": 13,
+          "access": "write",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "drain_queue#0",
+          "name": "drain_queue",
+          "start_ms": 0.526,
+          "duration_ms": 0.0028,
+          "task_name": "Task-1",
+          "source_line": 19,
+          "access": "read",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "assert#0",
+          "name": "assert",
+          "start_ms": 0.5479,
+          "duration_ms": 0.0013,
+          "task_name": "Task-1",
+          "source_line": null,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": true
+        }
+      ]
+    },
+    "fail_lane": {
+      "outcome": "FAIL",
+      "run_id": "dea688ebfc62",
+      "total_ms": 0.2317,
+      "spans": [
+        {
+          "key": "drain_queue#0",
+          "name": "drain_queue",
+          "start_ms": 0.0,
+          "duration_ms": 0.0063,
+          "task_name": "Task-1",
+          "source_line": 19,
+          "access": "read",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "assert#0",
+          "name": "assert",
+          "start_ms": 0.0929,
+          "duration_ms": 0.1388,
+          "task_name": "Task-1",
+          "source_line": null,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": true
+        }
+      ]
+    },
+    "rejected_attempts": [],
+    "intent_attempts": [
+      {
+        "attempt": 1,
+        "accepted": true,
+        "transformation": "INJECT_ASYNC_EVENT",
+        "error": null,
+        "tokens_input": 2596,
+        "tokens_output": 300
+      }
+    ],
+    "abstain_reason": null,
+    "tokens_input": 2596,
+    "tokens_output": 300,
+    "llm_calls": 1,
+    "wall_clock_s": 65.44,
+    "provider": "bedrock"
+  },
+  {
+    "incident_id": "9caf24e0",
+    "test_id": "benchmark/cases/R03_taskgroup_teardown/test_R03_taskgroup_teardown.py::test_report_is_finalized",
+    "ui_state": "FIXED",
+    "diagnosis": {
+      "status": "RACE_PROVEN",
+      "abstain_reason": null,
+      "proven_inversion": {
+        "op_a": {
+          "span_name": "read_status",
+          "occurrence": 0,
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R03_taskgroup_teardown/test_R03_taskgroup_teardown.py",
+          "source_line": 19,
+          "qualname": "read_status",
+          "is_test_scope": true,
+          "access": "read",
+          "resource": "report.status"
+        },
+        "op_b": {
+          "span_name": "finalize_report",
+          "occurrence": 0,
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R03_taskgroup_teardown/test_R03_taskgroup_teardown.py",
+          "source_line": 13,
+          "qualname": "finalize_report",
+          "is_test_scope": true,
+          "access": "write",
+          "resource": "report.status"
+        },
+        "causal_position": 0,
+        "ochiai_score": 1.0,
+        "in_backward_slice": true,
+        "classification": "CAUSALLY_SUFFICIENT",
+        "forced_failure_rate": 1.0,
+        "failing_order": [
+          "read_status#0",
+          "finalize_report#0"
+        ]
+      },
+      "bug_depth": 1,
+      "candidates_evaluated": 1,
+      "candidates": [
+        {
+          "op_a": {
+            "span_name": "read_status",
+            "occurrence": 0,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R03_taskgroup_teardown/test_R03_taskgroup_teardown.py",
+            "source_line": 19,
+            "qualname": "read_status",
+            "is_test_scope": true,
+            "access": "read",
+            "resource": "report.status"
+          },
+          "op_b": {
+            "span_name": "finalize_report",
+            "occurrence": 0,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R03_taskgroup_teardown/test_R03_taskgroup_teardown.py",
+            "source_line": 13,
+            "qualname": "finalize_report",
+            "is_test_scope": true,
+            "access": "write",
+            "resource": "report.status"
+          },
+          "causal_position": 0,
+          "ochiai_score": 1.0,
+          "in_backward_slice": true,
+          "classification": "CAUSALLY_SUFFICIENT",
+          "forced_failure_rate": 1.0,
+          "failing_order": [
+            "read_status#0",
+            "finalize_report#0"
+          ]
+        }
+      ],
+      "explanation": "Forcing read_status to start before finalize_report reproduced the failure on every attempt, so that ordering is a sufficient condition for the failure."
+    },
+    "intent": {
+      "transformation": "INJECT_ASYNC_EVENT",
+      "shared_scope": "FIXTURE",
+      "scope_target": null,
+      "signal_site": {
+        "span_name": "finalize_report",
+        "occurrence": 0,
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R03_taskgroup_teardown/test_R03_taskgroup_teardown.py",
+        "source_line": 13,
+        "qualname": "finalize_report",
+        "is_test_scope": true,
+        "access": "write",
+        "resource": "report.status"
+      },
+      "wait_site": {
+        "span_name": "read_status",
+        "occurrence": 0,
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R03_taskgroup_teardown/test_R03_taskgroup_teardown.py",
+        "source_line": 19,
+        "qualname": "read_status",
+        "is_test_scope": true,
+        "access": "read",
+        "resource": "report.status"
+      },
+      "primitive": "asyncio.Event",
+      "rationale": "The two operations in `proven_inversion` name the same `resource`, and one has `access: 'write'` while the other has `access: 'read'`. The reader observed state the writer had not yet published."
+    },
+    "verdict": {
+      "approved": true,
+      "negative_violations": [],
+      "positive_check_passed": true,
+      "deadlock_cycle_detected": false,
+      "scope_violation": false,
+      "diff_checks": [],
+      "rules_evaluated": [
+        {
+          "rule_id": "N1",
+          "description": "no sleep calls introduced",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N2",
+          "description": "no aliased sleep imports introduced",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N3",
+          "description": "no timeout marker added or inflated",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N4",
+          "description": "no retry or flaky decorator added",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N5",
+          "description": "no retry loop wrapped around the assertion",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N6",
+          "description": "no assertion removed or weakened",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N7",
+          "description": "no exception handler swallowing the failure",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N8",
+          "description": "no test skipped, xfailed or renamed out of collection",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "P1",
+          "description": "a real synchronization primitive was added",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "P2",
+          "description": "the primitive is reachable from both the signal and the wait site",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "P3",
+          "description": "the patch is not a no-op",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S1",
+          "description": "the proposed wait edge creates no wait-for cycle",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S2",
+          "description": "no production-scope file modified without opt-in",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S3",
+          "description": "no third-party or vendored file modified",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S4",
+          "description": "the patched module parses",
+          "passed": true,
+          "detail": ""
+        }
+      ]
+    },
+    "verification": {
+      "tier_reached": "FORCED_HARMLESS",
+      "pre_patch_forced_failed": true,
+      "post_patch_forced_passed": true,
+      "post_patch_forced_infeasible": false,
+      "pct_runs": 0,
+      "pct_failures": 0,
+      "statistical_runs": 20,
+      "statistical_failures": 0,
+      "pre_patch_natural_failures": 11,
+      "deadlock_detected": false,
+      "measured_overhead_ms": 0.322,
+      "reproduction_seed": {
+        "random_seed_base": "1729",
+        "random_seed_sweep": "1729..1733",
+        "pythonhashseed": "0",
+        "python_version": "3.12.13",
+        "forced_order": "read_status#0 -> finalize_report#0"
+      },
+      "isolation": "process",
+      "symptom_patch_suspected": false
+    },
+    "unified_diff": "--- a/benchmark/cases/R03_taskgroup_teardown/test_R03_taskgroup_teardown.py\n+++ b/benchmark/cases/R03_taskgroup_teardown/test_R03_taskgroup_teardown.py\n@@ -6,6 +6,18 @@\n \n from benchmark.support import io_latency\n from chronotrace.capture.instrument import assertion, operation\n+from chronotrace.schedule.harness import ScheduleHarness, force_order\n+\n+_chronotrace_gate_report_status = asyncio.Event()\n+\n+\n+@pytest.fixture(autouse=True)\n+def _chronotrace_reset_report_status():\n+    \"\"\"Provide a fresh synchronization gate for each test.\"\"\"\n+    global _chronotrace_gate_report_status\n+    _chronotrace_gate_report_status = asyncio.Event()\n+    yield\n+\n \n REPORT: dict[str, str] = {}\n \n@@ -14,11 +26,13 @@\n async def finalize_report() -> None:\n     \"\"\"Write the terminal status of the report.\"\"\"\n     REPORT[\"status\"] = \"done\"\n+    _chronotrace_gate_report_status.set()\n \n \n @operation(\"read_status\", resource=\"report.status\", access=\"read\")\n async def read_status() -> str | None:\n     \"\"\"Read the report status.\"\"\"\n+    await _chronotrace_gate_report_status.wait()\n     return REPORT.get(\"status\")\n \n \n@@ -37,3 +51,19 @@\n     with assertion(\"report.status\"):\n         assert status == \"done\"\n     await handle\n+\n+\n+@pytest.mark.asyncio\n+async def test_chronotrace_regression_9caf24e0() -> None:\n+    \"\"\"Reproduce the interleaving that used to fail, deterministically.\n+\n+    Generated by ChronoTrace for incident 9caf24e0. Before the repair this\n+    race appeared in roughly 60% of runs; this guard forces the\n+    exact ordering that caused it, so a regression fails here on every run\n+    rather than once in a while.\n+    \"\"\"\n+    forced_order = ['read_status#0', 'finalize_report#0']\n+    harness = ScheduleHarness(forced_order, timeout_s=5.0)\n+    with force_order(harness):\n+        await test_report_is_finalized()\n+    assert harness.reached == forced_order\n",
+    "regression_test_path": "benchmark/cases/R03_taskgroup_teardown/test_R03_taskgroup_teardown.py::test_chronotrace_regression_9caf24e0",
+    "regression_verified": true,
+    "natural_flake_rate": 0.6,
+    "probe_effect_delta": null,
+    "pass_lane": {
+      "outcome": "PASS",
+      "run_id": "1386b5518f88",
+      "total_ms": 1.2972,
+      "spans": [
+        {
+          "key": "finalize_report#0",
+          "name": "finalize_report",
+          "start_ms": 0.0,
+          "duration_ms": 0.0051,
+          "task_name": "Task-2",
+          "source_line": 13,
+          "access": "write",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "read_status#0",
+          "name": "read_status",
+          "start_ms": 1.2778,
+          "duration_ms": 0.0023,
+          "task_name": "Task-1",
+          "source_line": 19,
+          "access": "read",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "assert#0",
+          "name": "assert",
+          "start_ms": 1.2962,
           "duration_ms": 0.001,
           "task_name": "Task-1",
           "source_line": null,
@@ -853,16 +1869,16 @@
     },
     "fail_lane": {
       "outcome": "FAIL",
-      "run_id": "00c559dc1152",
-      "total_ms": 0.3745,
+      "run_id": "1ddbef67be49",
+      "total_ms": 0.3221,
       "spans": [
         {
-          "key": "read_value#0",
-          "name": "read_value",
+          "key": "read_status#0",
+          "name": "read_status",
           "start_ms": 0.0,
-          "duration_ms": 0.0094,
+          "duration_ms": 0.0083,
           "task_name": "Task-1",
-          "source_line": 23,
+          "source_line": 19,
           "access": "read",
           "in_inversion": true,
           "is_assertion": false
@@ -870,24 +1886,13 @@
         {
           "key": "assert#0",
           "name": "assert",
-          "start_ms": 0.0773,
-          "duration_ms": 0.243,
+          "start_ms": 0.0772,
+          "duration_ms": 0.2448,
           "task_name": "Task-1",
           "source_line": null,
           "access": "read",
           "in_inversion": false,
           "is_assertion": true
-        },
-        {
-          "key": "commit_value#0",
-          "name": "commit_value",
-          "start_ms": 0.3724,
-          "duration_ms": 0.0021,
-          "task_name": "Task-2",
-          "source_line": 17,
-          "access": "write",
-          "in_inversion": true,
-          "is_assertion": false
         }
       ]
     },
@@ -898,19 +1903,651 @@
         "accepted": true,
         "transformation": "INJECT_ASYNC_EVENT",
         "error": null,
-        "tokens_input": 1577,
-        "tokens_output": 262
+        "tokens_input": 2567,
+        "tokens_output": 298
       }
     ],
     "abstain_reason": null,
-    "tokens_input": 1577,
-    "tokens_output": 262,
+    "tokens_input": 2567,
+    "tokens_output": 298,
     "llm_calls": 1,
-    "wall_clock_s": 104.31,
-    "provider": "ollama"
+    "wall_clock_s": 74.74,
+    "provider": "bedrock"
   },
   {
-    "incident_id": "d8b14ca5",
+    "incident_id": "ef5d95de",
+    "test_id": "benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py::test_request_uses_refreshed_token",
+    "ui_state": "FIXED",
+    "diagnosis": {
+      "status": "RACE_PROVEN",
+      "abstain_reason": null,
+      "proven_inversion": {
+        "op_a": {
+          "span_name": "use_token",
+          "occurrence": 0,
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+          "source_line": 25,
+          "qualname": "use_token",
+          "is_test_scope": true,
+          "access": "read",
+          "resource": "session.token"
+        },
+        "op_b": {
+          "span_name": "refresh_token",
+          "occurrence": 0,
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+          "source_line": 19,
+          "qualname": "refresh_token",
+          "is_test_scope": true,
+          "access": "write",
+          "resource": "session.token"
+        },
+        "causal_position": 0,
+        "ochiai_score": 1.0,
+        "in_backward_slice": true,
+        "classification": "CAUSALLY_SUFFICIENT",
+        "forced_failure_rate": 1.0,
+        "failing_order": [
+          "use_token#0",
+          "refresh_token#0"
+        ]
+      },
+      "bug_depth": 1,
+      "candidates_evaluated": 1,
+      "candidates": [
+        {
+          "op_a": {
+            "span_name": "use_token",
+            "occurrence": 0,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+            "source_line": 25,
+            "qualname": "use_token",
+            "is_test_scope": true,
+            "access": "read",
+            "resource": "session.token"
+          },
+          "op_b": {
+            "span_name": "refresh_token",
+            "occurrence": 0,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+            "source_line": 19,
+            "qualname": "refresh_token",
+            "is_test_scope": true,
+            "access": "write",
+            "resource": "session.token"
+          },
+          "causal_position": 0,
+          "ochiai_score": 1.0,
+          "in_backward_slice": true,
+          "classification": "CAUSALLY_SUFFICIENT",
+          "forced_failure_rate": 1.0,
+          "failing_order": [
+            "use_token#0",
+            "refresh_token#0"
+          ]
+        }
+      ],
+      "explanation": "Forcing use_token to start before refresh_token reproduced the failure on every attempt, so that ordering is a sufficient condition for the failure."
+    },
+    "intent": {
+      "transformation": "INJECT_ASYNC_EVENT",
+      "shared_scope": "FIXTURE",
+      "scope_target": null,
+      "signal_site": {
+        "span_name": "refresh_token",
+        "occurrence": 0,
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+        "source_line": 19,
+        "qualname": "refresh_token",
+        "is_test_scope": true,
+        "access": "write",
+        "resource": "session.token"
+      },
+      "wait_site": {
+        "span_name": "use_token",
+        "occurrence": 0,
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py",
+        "source_line": 25,
+        "qualname": "use_token",
+        "is_test_scope": true,
+        "access": "read",
+        "resource": "session.token"
+      },
+      "primitive": "asyncio.Event",
+      "rationale": "The two operations in `proven_inversion` name the same `resource`, and one has `access: 'write'` while the other has `access: 'read'`. The reader observed state the writer had not yet published."
+    },
+    "verdict": {
+      "approved": true,
+      "negative_violations": [],
+      "positive_check_passed": true,
+      "deadlock_cycle_detected": false,
+      "scope_violation": false,
+      "diff_checks": [],
+      "rules_evaluated": [
+        {
+          "rule_id": "N1",
+          "description": "no sleep calls introduced",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N2",
+          "description": "no aliased sleep imports introduced",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N3",
+          "description": "no timeout marker added or inflated",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N4",
+          "description": "no retry or flaky decorator added",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N5",
+          "description": "no retry loop wrapped around the assertion",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N6",
+          "description": "no assertion removed or weakened",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N7",
+          "description": "no exception handler swallowing the failure",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N8",
+          "description": "no test skipped, xfailed or renamed out of collection",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "P1",
+          "description": "a real synchronization primitive was added",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "P2",
+          "description": "the primitive is reachable from both the signal and the wait site",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "P3",
+          "description": "the patch is not a no-op",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S1",
+          "description": "the proposed wait edge creates no wait-for cycle",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S2",
+          "description": "no production-scope file modified without opt-in",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S3",
+          "description": "no third-party or vendored file modified",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S4",
+          "description": "the patched module parses",
+          "passed": true,
+          "detail": ""
+        }
+      ]
+    },
+    "verification": {
+      "tier_reached": "FORCED_HARMLESS",
+      "pre_patch_forced_failed": true,
+      "post_patch_forced_passed": true,
+      "post_patch_forced_infeasible": false,
+      "pct_runs": 0,
+      "pct_failures": 0,
+      "statistical_runs": 20,
+      "statistical_failures": 0,
+      "pre_patch_natural_failures": 11,
+      "deadlock_detected": false,
+      "measured_overhead_ms": 0.212,
+      "reproduction_seed": {
+        "random_seed_base": "1729",
+        "random_seed_sweep": "1729..1733",
+        "pythonhashseed": "0",
+        "python_version": "3.12.13",
+        "forced_order": "use_token#0 -> refresh_token#0"
+      },
+      "isolation": "process",
+      "symptom_patch_suspected": false
+    },
+    "unified_diff": "--- a/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py\n+++ b/benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py\n@@ -7,6 +7,17 @@\n \n from benchmark.support import io_latency\n from chronotrace.capture.instrument import assertion, operation\n+from chronotrace.schedule.harness import ScheduleHarness, force_order\n+\n+_chronotrace_gate_session_token = asyncio.Event()\n+\n+\n+@pytest.fixture(autouse=True)\n+def _chronotrace_reset_session_token():\n+    \"\"\"Provide a fresh synchronization gate for each test.\"\"\"\n+    global _chronotrace_gate_session_token\n+    _chronotrace_gate_session_token = asyncio.Event()\n+    yield\n \n \n class Session:\n@@ -20,11 +31,13 @@\n async def refresh_token(session: Session) -> None:\n     \"\"\"Install a fresh token on the session.\"\"\"\n     session.token = \"tok-2\"\n+    _chronotrace_gate_session_token.set()\n \n \n @operation(\"use_token\", resource=\"session.token\", access=\"read\")\n async def use_token(session: Session) -> str | None:\n     \"\"\"Read the token the request will be signed with.\"\"\"\n+    await _chronotrace_gate_session_token.wait()\n     return session.token\n \n \n@@ -48,3 +61,19 @@\n     with assertion(\"session.token\"):\n         assert token == \"tok-2\"\n     await task\n+\n+\n+@pytest.mark.asyncio\n+async def test_chronotrace_regression_ef5d95de(session) -> None:\n+    \"\"\"Reproduce the interleaving that used to fail, deterministically.\n+\n+    Generated by ChronoTrace for incident ef5d95de. Before the repair this\n+    race appeared in roughly 10% of runs; this guard forces the\n+    exact ordering that caused it, so a regression fails here on every run\n+    rather than once in a while.\n+    \"\"\"\n+    forced_order = ['use_token#0', 'refresh_token#0']\n+    harness = ScheduleHarness(forced_order, timeout_s=5.0)\n+    with force_order(harness):\n+        await test_request_uses_refreshed_token(session)\n+    assert harness.reached == forced_order\n",
+    "regression_test_path": "benchmark/cases/R04_fixture_dirty_read/test_R04_fixture_dirty_read.py::test_chronotrace_regression_ef5d95de",
+    "regression_verified": true,
+    "natural_flake_rate": 0.1,
+    "probe_effect_delta": null,
+    "pass_lane": {
+      "outcome": "PASS",
+      "run_id": "aa5040cdb0f4",
+      "total_ms": 0.5952,
+      "spans": [
+        {
+          "key": "refresh_token#0",
+          "name": "refresh_token",
+          "start_ms": 0.0,
+          "duration_ms": 0.0071,
+          "task_name": "Task-3",
+          "source_line": 19,
+          "access": "write",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "use_token#0",
+          "name": "use_token",
+          "start_ms": 0.5674,
+          "duration_ms": 0.0027,
+          "task_name": "Task-2",
+          "source_line": 25,
+          "access": "read",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "assert#0",
+          "name": "assert",
+          "start_ms": 0.5941,
+          "duration_ms": 0.0011,
+          "task_name": "Task-2",
+          "source_line": null,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": true
+        }
+      ]
+    },
+    "fail_lane": {
+      "outcome": "FAIL",
+      "run_id": "80d5fabe4414",
+      "total_ms": 0.429,
+      "spans": [
+        {
+          "key": "use_token#0",
+          "name": "use_token",
+          "start_ms": 0.0,
+          "duration_ms": 0.0085,
+          "task_name": "Task-2",
+          "source_line": 25,
+          "access": "read",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "assert#0",
+          "name": "assert",
+          "start_ms": 0.0801,
+          "duration_ms": 0.3489,
+          "task_name": "Task-2",
+          "source_line": null,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": true
+        }
+      ]
+    },
+    "rejected_attempts": [],
+    "intent_attempts": [
+      {
+        "attempt": 1,
+        "accepted": true,
+        "transformation": "INJECT_ASYNC_EVENT",
+        "error": null,
+        "tokens_input": 2685,
+        "tokens_output": 300
+      }
+    ],
+    "abstain_reason": null,
+    "tokens_input": 2685,
+    "tokens_output": 300,
+    "llm_calls": 1,
+    "wall_clock_s": 107.25,
+    "provider": "bedrock"
+  },
+  {
+    "incident_id": "c355d54b",
+    "test_id": "benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py::test_select_sees_committed_row",
+    "ui_state": "FIXED",
+    "diagnosis": {
+      "status": "RACE_PROVEN",
+      "abstain_reason": null,
+      "proven_inversion": {
+        "op_a": {
+          "span_name": "db_select",
+          "occurrence": 0,
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+          "source_line": 19,
+          "qualname": "db_select",
+          "is_test_scope": true,
+          "access": "read",
+          "resource": "db.rows"
+        },
+        "op_b": {
+          "span_name": "db_commit",
+          "occurrence": 0,
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+          "source_line": 13,
+          "qualname": "db_commit",
+          "is_test_scope": true,
+          "access": "write",
+          "resource": "db.rows"
+        },
+        "causal_position": 0,
+        "ochiai_score": 1.0,
+        "in_backward_slice": true,
+        "classification": "CAUSALLY_SUFFICIENT",
+        "forced_failure_rate": 1.0,
+        "failing_order": [
+          "db_select#0",
+          "db_commit#0"
+        ]
+      },
+      "bug_depth": 1,
+      "candidates_evaluated": 1,
+      "candidates": [
+        {
+          "op_a": {
+            "span_name": "db_select",
+            "occurrence": 0,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+            "source_line": 19,
+            "qualname": "db_select",
+            "is_test_scope": true,
+            "access": "read",
+            "resource": "db.rows"
+          },
+          "op_b": {
+            "span_name": "db_commit",
+            "occurrence": 0,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+            "source_line": 13,
+            "qualname": "db_commit",
+            "is_test_scope": true,
+            "access": "write",
+            "resource": "db.rows"
+          },
+          "causal_position": 0,
+          "ochiai_score": 1.0,
+          "in_backward_slice": true,
+          "classification": "CAUSALLY_SUFFICIENT",
+          "forced_failure_rate": 1.0,
+          "failing_order": [
+            "db_select#0",
+            "db_commit#0"
+          ]
+        }
+      ],
+      "explanation": "Forcing db_select to start before db_commit reproduced the failure on every attempt, so that ordering is a sufficient condition for the failure."
+    },
+    "intent": {
+      "transformation": "INJECT_ASYNC_EVENT",
+      "shared_scope": "FIXTURE",
+      "scope_target": null,
+      "signal_site": {
+        "span_name": "db_commit",
+        "occurrence": 0,
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+        "source_line": 13,
+        "qualname": "db_commit",
+        "is_test_scope": true,
+        "access": "write",
+        "resource": "db.rows"
+      },
+      "wait_site": {
+        "span_name": "db_select",
+        "occurrence": 0,
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py",
+        "source_line": 19,
+        "qualname": "db_select",
+        "is_test_scope": true,
+        "access": "read",
+        "resource": "db.rows"
+      },
+      "primitive": "asyncio.Event",
+      "rationale": "The two operations in `proven_inversion` name the same `resource`, and one has `access: 'write'` while the other has `access: 'read'`. The reader observed state the writer had not yet published."
+    },
+    "verdict": {
+      "approved": true,
+      "negative_violations": [],
+      "positive_check_passed": true,
+      "deadlock_cycle_detected": false,
+      "scope_violation": false,
+      "diff_checks": [],
+      "rules_evaluated": [
+        {
+          "rule_id": "N1",
+          "description": "no sleep calls introduced",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N2",
+          "description": "no aliased sleep imports introduced",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N3",
+          "description": "no timeout marker added or inflated",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N4",
+          "description": "no retry or flaky decorator added",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N5",
+          "description": "no retry loop wrapped around the assertion",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N6",
+          "description": "no assertion removed or weakened",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N7",
+          "description": "no exception handler swallowing the failure",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N8",
+          "description": "no test skipped, xfailed or renamed out of collection",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "P1",
+          "description": "a real synchronization primitive was added",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "P2",
+          "description": "the primitive is reachable from both the signal and the wait site",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "P3",
+          "description": "the patch is not a no-op",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S1",
+          "description": "the proposed wait edge creates no wait-for cycle",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S2",
+          "description": "no production-scope file modified without opt-in",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S3",
+          "description": "no third-party or vendored file modified",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S4",
+          "description": "the patched module parses",
+          "passed": true,
+          "detail": ""
+        }
+      ]
+    },
+    "verification": {
+      "tier_reached": "FORCED_HARMLESS",
+      "pre_patch_forced_failed": true,
+      "post_patch_forced_passed": true,
+      "post_patch_forced_infeasible": false,
+      "pct_runs": 0,
+      "pct_failures": 0,
+      "statistical_runs": 20,
+      "statistical_failures": 0,
+      "pre_patch_natural_failures": 9,
+      "deadlock_detected": false,
+      "measured_overhead_ms": 0.359,
+      "reproduction_seed": {
+        "random_seed_base": "1729",
+        "random_seed_sweep": "1729..1733",
+        "pythonhashseed": "0",
+        "python_version": "3.12.13",
+        "forced_order": "db_select#0 -> db_commit#0"
+      },
+      "isolation": "process",
+      "symptom_patch_suspected": false
+    },
+    "unified_diff": "--- a/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py\n+++ b/benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py\n@@ -6,6 +6,18 @@\n \n from benchmark.support import io_latency\n from chronotrace.capture.instrument import assertion, operation\n+from chronotrace.schedule.harness import ScheduleHarness, force_order\n+\n+_chronotrace_gate_db_rows = asyncio.Event()\n+\n+\n+@pytest.fixture(autouse=True)\n+def _chronotrace_reset_db_rows():\n+    \"\"\"Provide a fresh synchronization gate for each test.\"\"\"\n+    global _chronotrace_gate_db_rows\n+    _chronotrace_gate_db_rows = asyncio.Event()\n+    yield\n+\n \n ROWS: list[dict[str, str]] = []\n \n@@ -14,11 +26,13 @@\n async def db_commit(row: dict[str, str]) -> None:\n     \"\"\"Commit a row into the table.\"\"\"\n     ROWS.append(row)\n+    _chronotrace_gate_db_rows.set()\n \n \n @operation(\"db_select\", resource=\"db.rows\", access=\"read\")\n async def db_select(key: str) -> dict[str, str] | None:\n     \"\"\"Select the row with ``key``.\"\"\"\n+    await _chronotrace_gate_db_rows.wait()\n     return next((row for row in ROWS if row[\"id\"] == key), None)\n \n \n@@ -37,3 +51,19 @@\n     with assertion(\"db.rows\"):\n         assert row is not None\n     await tx\n+\n+\n+@pytest.mark.asyncio\n+async def test_chronotrace_regression_c355d54b() -> None:\n+    \"\"\"Reproduce the interleaving that used to fail, deterministically.\n+\n+    Generated by ChronoTrace for incident c355d54b. Before the repair this\n+    race appeared in roughly 40% of runs; this guard forces the\n+    exact ordering that caused it, so a regression fails here on every run\n+    rather than once in a while.\n+    \"\"\"\n+    forced_order = ['db_select#0', 'db_commit#0']\n+    harness = ScheduleHarness(forced_order, timeout_s=5.0)\n+    with force_order(harness):\n+        await test_select_sees_committed_row()\n+    assert harness.reached == forced_order\n",
+    "regression_test_path": "benchmark/cases/R02_commit_before_select/test_R02_commit_before_select.py::test_chronotrace_regression_c355d54b",
+    "regression_verified": true,
+    "natural_flake_rate": 0.4,
+    "probe_effect_delta": null,
+    "pass_lane": {
+      "outcome": "PASS",
+      "run_id": "40cd232dcd00",
+      "total_ms": 1.3607,
+      "spans": [
+        {
+          "key": "db_commit#0",
+          "name": "db_commit",
+          "start_ms": 0.0,
+          "duration_ms": 0.006,
+          "task_name": "Task-2",
+          "source_line": 13,
+          "access": "write",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "db_select#0",
+          "name": "db_select",
+          "start_ms": 1.3378,
+          "duration_ms": 0.0045,
+          "task_name": "Task-1",
+          "source_line": 19,
+          "access": "read",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "assert#0",
+          "name": "assert",
+          "start_ms": 1.3599,
+          "duration_ms": 0.0008,
+          "task_name": "Task-1",
+          "source_line": null,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": true
+        }
+      ]
+    },
+    "fail_lane": {
+      "outcome": "FAIL",
+      "run_id": "7516492d7d60",
+      "total_ms": 0.1382,
+      "spans": [
+        {
+          "key": "db_select#0",
+          "name": "db_select",
+          "start_ms": 0.0,
+          "duration_ms": 0.0065,
+          "task_name": "Task-1",
+          "source_line": 19,
+          "access": "read",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "assert#0",
+          "name": "assert",
+          "start_ms": 0.069,
+          "duration_ms": 0.0692,
+          "task_name": "Task-1",
+          "source_line": null,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": true
+        }
+      ]
+    },
+    "rejected_attempts": [],
+    "intent_attempts": [
+      {
+        "attempt": 1,
+        "accepted": true,
+        "transformation": "INJECT_ASYNC_EVENT",
+        "error": null,
+        "tokens_input": 2633,
+        "tokens_output": 300
+      }
+    ],
+    "abstain_reason": null,
+    "tokens_input": 2633,
+    "tokens_output": 300,
+    "llm_calls": 1,
+    "wall_clock_s": 62.97,
+    "provider": "bedrock"
+  },
+  {
+    "incident_id": "69aa7036",
     "test_id": "benchmark/cases/N07_threading_race/test_N07_threading_race.py::test_counter_reaches_total",
     "ui_state": "ABSTAINED",
     "diagnosis": {
@@ -933,7 +2570,7 @@
     "pass_lane": null,
     "fail_lane": {
       "outcome": "FAIL",
-      "run_id": "ee865a8a0a77",
+      "run_id": "517266377150",
       "total_ms": 0.0,
       "spans": []
     },
@@ -943,7 +2580,663 @@
     "tokens_input": 0,
     "tokens_output": 0,
     "llm_calls": 0,
-    "wall_clock_s": 16.09,
-    "provider": "ollama"
+    "wall_clock_s": 17.7,
+    "provider": "bedrock"
+  },
+  {
+    "incident_id": "f8947f30",
+    "test_id": "benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py::test_reader_sees_committed_value",
+    "ui_state": "FIXED",
+    "diagnosis": {
+      "status": "RACE_PROVEN",
+      "abstain_reason": null,
+      "proven_inversion": {
+        "op_a": {
+          "span_name": "read_value",
+          "occurrence": 0,
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+          "source_line": 23,
+          "qualname": "read_value",
+          "is_test_scope": true,
+          "access": "read",
+          "resource": "store.value"
+        },
+        "op_b": {
+          "span_name": "commit_value",
+          "occurrence": 0,
+          "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+          "source_line": 17,
+          "qualname": "commit_value",
+          "is_test_scope": true,
+          "access": "write",
+          "resource": "store.value"
+        },
+        "causal_position": 0,
+        "ochiai_score": 1.0,
+        "in_backward_slice": true,
+        "classification": "CAUSALLY_SUFFICIENT",
+        "forced_failure_rate": 1.0,
+        "failing_order": [
+          "read_value#0",
+          "commit_value#0"
+        ]
+      },
+      "bug_depth": 1,
+      "candidates_evaluated": 1,
+      "candidates": [
+        {
+          "op_a": {
+            "span_name": "read_value",
+            "occurrence": 0,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 23,
+            "qualname": "read_value",
+            "is_test_scope": true,
+            "access": "read",
+            "resource": "store.value"
+          },
+          "op_b": {
+            "span_name": "commit_value",
+            "occurrence": 0,
+            "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+            "source_line": 17,
+            "qualname": "commit_value",
+            "is_test_scope": true,
+            "access": "write",
+            "resource": "store.value"
+          },
+          "causal_position": 0,
+          "ochiai_score": 1.0,
+          "in_backward_slice": true,
+          "classification": "CAUSALLY_SUFFICIENT",
+          "forced_failure_rate": 1.0,
+          "failing_order": [
+            "read_value#0",
+            "commit_value#0"
+          ]
+        }
+      ],
+      "explanation": "Forcing read_value to start before commit_value reproduced the failure on every attempt, so that ordering is a sufficient condition for the failure."
+    },
+    "intent": {
+      "transformation": "INJECT_ASYNC_EVENT",
+      "shared_scope": "FIXTURE",
+      "scope_target": null,
+      "signal_site": {
+        "span_name": "commit_value",
+        "occurrence": 0,
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+        "source_line": 17,
+        "qualname": "commit_value",
+        "is_test_scope": true,
+        "access": "write",
+        "resource": "store.value"
+      },
+      "wait_site": {
+        "span_name": "read_value",
+        "occurrence": 0,
+        "source_file": "/Users/umangsingh/Chronotrace/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py",
+        "source_line": 23,
+        "qualname": "read_value",
+        "is_test_scope": true,
+        "access": "read",
+        "resource": "store.value"
+      },
+      "primitive": "asyncio.Event",
+      "rationale": "The two operations in `proven_inversion` name the same `resource`, and one has `access: 'write'` while the other has `access: 'read'`. The reader observed state the writer had not yet published."
+    },
+    "verdict": {
+      "approved": true,
+      "negative_violations": [],
+      "positive_check_passed": true,
+      "deadlock_cycle_detected": false,
+      "scope_violation": false,
+      "diff_checks": [],
+      "rules_evaluated": [
+        {
+          "rule_id": "N1",
+          "description": "no sleep calls introduced",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N2",
+          "description": "no aliased sleep imports introduced",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N3",
+          "description": "no timeout marker added or inflated",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N4",
+          "description": "no retry or flaky decorator added",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N5",
+          "description": "no retry loop wrapped around the assertion",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N6",
+          "description": "no assertion removed or weakened",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N7",
+          "description": "no exception handler swallowing the failure",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "N8",
+          "description": "no test skipped, xfailed or renamed out of collection",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "P1",
+          "description": "a real synchronization primitive was added",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "P2",
+          "description": "the primitive is reachable from both the signal and the wait site",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "P3",
+          "description": "the patch is not a no-op",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S1",
+          "description": "the proposed wait edge creates no wait-for cycle",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S2",
+          "description": "no production-scope file modified without opt-in",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S3",
+          "description": "no third-party or vendored file modified",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "rule_id": "S4",
+          "description": "the patched module parses",
+          "passed": true,
+          "detail": ""
+        }
+      ]
+    },
+    "verification": {
+      "tier_reached": "FORCED_HARMLESS",
+      "pre_patch_forced_failed": true,
+      "post_patch_forced_passed": true,
+      "post_patch_forced_infeasible": false,
+      "pct_runs": 0,
+      "pct_failures": 0,
+      "statistical_runs": 20,
+      "statistical_failures": 0,
+      "pre_patch_natural_failures": 7,
+      "deadlock_detected": false,
+      "measured_overhead_ms": 0.102,
+      "reproduction_seed": {
+        "random_seed_base": "1729",
+        "random_seed_sweep": "1729..1733",
+        "pythonhashseed": "0",
+        "python_version": "3.12.13",
+        "forced_order": "read_value#0 -> commit_value#0"
+      },
+      "isolation": "process",
+      "symptom_patch_suspected": false
+    },
+    "unified_diff": "--- a/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py\n+++ b/benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py\n@@ -10,6 +10,18 @@\n \n from benchmark.support import io_latency\n from chronotrace.capture.instrument import assertion, operation\n+from chronotrace.schedule.harness import ScheduleHarness, force_order\n+\n+_chronotrace_gate_store_value = asyncio.Event()\n+\n+\n+@pytest.fixture(autouse=True)\n+def _chronotrace_reset_store_value():\n+    \"\"\"Provide a fresh synchronization gate for each test.\"\"\"\n+    global _chronotrace_gate_store_value\n+    _chronotrace_gate_store_value = asyncio.Event()\n+    yield\n+\n \n STORE: dict[str, str] = {}\n \n@@ -18,11 +30,13 @@\n async def commit_value(value: str) -> None:\n     \"\"\"Publish ``value`` into the shared store.\"\"\"\n     STORE[\"value\"] = value\n+    _chronotrace_gate_store_value.set()\n \n \n @operation(\"read_value\", resource=\"store.value\", access=\"read\")\n async def read_value() -> str | None:\n     \"\"\"Read the shared store.\"\"\"\n+    await _chronotrace_gate_store_value.wait()\n     return STORE.get(\"value\")\n \n \n@@ -41,3 +55,19 @@\n     with assertion(\"store.value\"):\n         assert observed == \"ready\"\n     await task\n+\n+\n+@pytest.mark.asyncio\n+async def test_chronotrace_regression_f8947f30() -> None:\n+    \"\"\"Reproduce the interleaving that used to fail, deterministically.\n+\n+    Generated by ChronoTrace for incident f8947f30. Before the repair this\n+    race appeared in roughly 40% of runs; this guard forces the\n+    exact ordering that caused it, so a regression fails here on every run\n+    rather than once in a while.\n+    \"\"\"\n+    forced_order = ['read_value#0', 'commit_value#0']\n+    harness = ScheduleHarness(forced_order, timeout_s=5.0)\n+    with force_order(harness):\n+        await test_reader_sees_committed_value()\n+    assert harness.reached == forced_order\n",
+    "regression_test_path": "benchmark/cases/R01_unawaited_writer/test_R01_unawaited_writer.py::test_chronotrace_regression_f8947f30",
+    "regression_verified": true,
+    "natural_flake_rate": 0.4,
+    "probe_effect_delta": null,
+    "pass_lane": {
+      "outcome": "PASS",
+      "run_id": "d322b3eec23a",
+      "total_ms": 0.9979,
+      "spans": [
+        {
+          "key": "commit_value#0",
+          "name": "commit_value",
+          "start_ms": 0.0,
+          "duration_ms": 0.0063,
+          "task_name": "Task-2",
+          "source_line": 17,
+          "access": "write",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "read_value#0",
+          "name": "read_value",
+          "start_ms": 0.9796,
+          "duration_ms": 0.0019,
+          "task_name": "Task-1",
+          "source_line": 23,
+          "access": "read",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "assert#0",
+          "name": "assert",
+          "start_ms": 0.997,
+          "duration_ms": 0.0009,
+          "task_name": "Task-1",
+          "source_line": null,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": true
+        }
+      ]
+    },
+    "fail_lane": {
+      "outcome": "FAIL",
+      "run_id": "f95d60743973",
+      "total_ms": 0.2964,
+      "spans": [
+        {
+          "key": "read_value#0",
+          "name": "read_value",
+          "start_ms": 0.0,
+          "duration_ms": 0.0059,
+          "task_name": "Task-1",
+          "source_line": 23,
+          "access": "read",
+          "in_inversion": true,
+          "is_assertion": false
+        },
+        {
+          "key": "assert#0",
+          "name": "assert",
+          "start_ms": 0.0742,
+          "duration_ms": 0.2222,
+          "task_name": "Task-1",
+          "source_line": null,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": true
+        }
+      ]
+    },
+    "rejected_attempts": [],
+    "intent_attempts": [
+      {
+        "attempt": 1,
+        "accepted": true,
+        "transformation": "INJECT_ASYNC_EVENT",
+        "error": null,
+        "tokens_input": 2619,
+        "tokens_output": 296
+      }
+    ],
+    "abstain_reason": null,
+    "tokens_input": 2619,
+    "tokens_output": 296,
+    "llm_calls": 1,
+    "wall_clock_s": 58.18,
+    "provider": "bedrock"
+  },
+  {
+    "incident_id": "30f8ab29",
+    "test_id": "benchmark/cases/N06_wrong_assertion/test_N06_wrong_assertion.py::test_cart_total",
+    "ui_state": "ABSTAINED",
+    "diagnosis": {
+      "status": "ABSTAINED",
+      "abstain_reason": "NO_TRACE_PAIR",
+      "proven_inversion": null,
+      "bug_depth": null,
+      "candidates_evaluated": 0,
+      "candidates": [],
+      "explanation": "The capture budget produced only failing runs (20 runs). Diagnosis compares a passing execution against a failing one; there is nothing to compare."
+    },
+    "intent": null,
+    "verdict": null,
+    "verification": null,
+    "unified_diff": null,
+    "regression_test_path": null,
+    "regression_verified": false,
+    "natural_flake_rate": 1.0,
+    "probe_effect_delta": null,
+    "pass_lane": null,
+    "fail_lane": {
+      "outcome": "FAIL",
+      "run_id": "fbf19547e6bb",
+      "total_ms": 0.348,
+      "spans": [
+        {
+          "key": "compute_total#0",
+          "name": "compute_total",
+          "start_ms": 0.0,
+          "duration_ms": 0.0077,
+          "task_name": "Task-1",
+          "source_line": 14,
+          "access": "write",
+          "in_inversion": false,
+          "is_assertion": false
+        },
+        {
+          "key": "read_total#0",
+          "name": "read_total",
+          "start_ms": 0.0825,
+          "duration_ms": 0.0017,
+          "task_name": "Task-1",
+          "source_line": 20,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": false
+        },
+        {
+          "key": "assert#0",
+          "name": "assert",
+          "start_ms": 0.0973,
+          "duration_ms": 0.2507,
+          "task_name": "Task-1",
+          "source_line": null,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": true
+        }
+      ]
+    },
+    "rejected_attempts": [],
+    "intent_attempts": [],
+    "abstain_reason": null,
+    "tokens_input": 0,
+    "tokens_output": 0,
+    "llm_calls": 0,
+    "wall_clock_s": 17.41,
+    "provider": "bedrock"
+  },
+  {
+    "incident_id": "4d1ad174",
+    "test_id": "benchmark/cases/N02_network_timeout/test_N02_network_timeout.py::test_upstream_returns_ok",
+    "ui_state": "ABSTAINED",
+    "diagnosis": {
+      "status": "ABSTAINED",
+      "abstain_reason": "NOT_A_RACE",
+      "proven_inversion": null,
+      "bug_depth": null,
+      "candidates_evaluated": 0,
+      "candidates": [],
+      "explanation": "The failing run did not reach its assertion \u2014 it raised before getting there. That is not evidence about a schedule."
+    },
+    "intent": null,
+    "verdict": null,
+    "verification": null,
+    "unified_diff": null,
+    "regression_test_path": null,
+    "regression_verified": false,
+    "natural_flake_rate": 0.05,
+    "probe_effect_delta": null,
+    "pass_lane": {
+      "outcome": "PASS",
+      "run_id": "7e892aeb30e1",
+      "total_ms": 0.1116,
+      "spans": [
+        {
+          "key": "http_get#0",
+          "name": "http_get",
+          "start_ms": 0.0,
+          "duration_ms": 0.0353,
+          "task_name": "Task-1",
+          "source_line": 17,
+          "access": "write",
+          "in_inversion": false,
+          "is_assertion": false
+        },
+        {
+          "key": "read_response#0",
+          "name": "read_response",
+          "start_ms": 0.0955,
+          "duration_ms": 0.0017,
+          "task_name": "Task-1",
+          "source_line": 26,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": false
+        },
+        {
+          "key": "assert#0",
+          "name": "assert",
+          "start_ms": 0.1108,
+          "duration_ms": 0.0008,
+          "task_name": "Task-1",
+          "source_line": null,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": true
+        }
+      ]
+    },
+    "fail_lane": {
+      "outcome": "FAIL",
+      "run_id": "71d35a3a4261",
+      "total_ms": 0.0395,
+      "spans": [
+        {
+          "key": "http_get#0",
+          "name": "http_get",
+          "start_ms": 0.0,
+          "duration_ms": 0.0395,
+          "task_name": "Task-1",
+          "source_line": 17,
+          "access": "write",
+          "in_inversion": false,
+          "is_assertion": false
+        }
+      ]
+    },
+    "rejected_attempts": [],
+    "intent_attempts": [],
+    "abstain_reason": null,
+    "tokens_input": 0,
+    "tokens_output": 0,
+    "llm_calls": 0,
+    "wall_clock_s": 17.27,
+    "provider": "bedrock"
+  },
+  {
+    "incident_id": "10168091",
+    "test_id": "benchmark/cases/N03_dict_iteration_order/test_N03_dict_iteration_order.py::test_first_tag_is_alpha",
+    "ui_state": "ABSTAINED",
+    "diagnosis": {
+      "status": "ABSTAINED",
+      "abstain_reason": "NO_TRACE_PAIR",
+      "proven_inversion": null,
+      "bug_depth": null,
+      "candidates_evaluated": 0,
+      "candidates": [],
+      "explanation": "The capture budget produced only passing runs (20 runs). Diagnosis compares a passing execution against a failing one; there is nothing to compare."
+    },
+    "intent": null,
+    "verdict": null,
+    "verification": null,
+    "unified_diff": null,
+    "regression_test_path": null,
+    "regression_verified": false,
+    "natural_flake_rate": 0.0,
+    "probe_effect_delta": null,
+    "pass_lane": {
+      "outcome": "PASS",
+      "run_id": "9248a8ef02f1",
+      "total_ms": 0.1034,
+      "spans": [
+        {
+          "key": "collect_tags#0",
+          "name": "collect_tags",
+          "start_ms": 0.0,
+          "duration_ms": 0.007,
+          "task_name": "Task-1",
+          "source_line": 17,
+          "access": "write",
+          "in_inversion": false,
+          "is_assertion": false
+        },
+        {
+          "key": "read_tags#0",
+          "name": "read_tags",
+          "start_ms": 0.0865,
+          "duration_ms": 0.002,
+          "task_name": "Task-1",
+          "source_line": 23,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": false
+        },
+        {
+          "key": "assert#0",
+          "name": "assert",
+          "start_ms": 0.1019,
+          "duration_ms": 0.0015,
+          "task_name": "Task-1",
+          "source_line": null,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": true
+        }
+      ]
+    },
+    "fail_lane": null,
+    "rejected_attempts": [],
+    "intent_attempts": [],
+    "abstain_reason": null,
+    "tokens_input": 0,
+    "tokens_output": 0,
+    "llm_calls": 0,
+    "wall_clock_s": 16.75,
+    "provider": "bedrock"
+  },
+  {
+    "incident_id": "1c349bf0",
+    "test_id": "benchmark/cases/N01_random_seed_flake/test_N01_random_seed_flake.py::test_sample_is_above_threshold",
+    "ui_state": "ABSTAINED",
+    "diagnosis": {
+      "status": "ABSTAINED",
+      "abstain_reason": "NOT_A_RACE",
+      "proven_inversion": null,
+      "bug_depth": null,
+      "candidates_evaluated": 0,
+      "candidates": [],
+      "explanation": "Passing and failing runs executed operations in the same order, and this test draws on unseeded random number generation. The nondeterminism is in the data, not the schedule."
+    },
+    "intent": null,
+    "verdict": null,
+    "verification": null,
+    "unified_diff": null,
+    "regression_test_path": null,
+    "regression_verified": false,
+    "natural_flake_rate": 0.2,
+    "probe_effect_delta": null,
+    "pass_lane": {
+      "outcome": "PASS",
+      "run_id": "4d40de5ce09f",
+      "total_ms": 0.0973,
+      "spans": [
+        {
+          "key": "draw_sample#0",
+          "name": "draw_sample",
+          "start_ms": 0.0,
+          "duration_ms": 0.0097,
+          "task_name": "Task-1",
+          "source_line": 18,
+          "access": "write",
+          "in_inversion": false,
+          "is_assertion": false
+        },
+        {
+          "key": "read_sample#0",
+          "name": "read_sample",
+          "start_ms": 0.0809,
+          "duration_ms": 0.0018,
+          "task_name": "Task-1",
+          "source_line": 26,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": false
+        },
+        {
+          "key": "assert#0",
+          "name": "assert",
+          "start_ms": 0.0963,
+          "duration_ms": 0.001,
+          "task_name": "Task-1",
+          "source_line": null,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": true
+        }
+      ]
+    },
+    "fail_lane": {
+      "outcome": "FAIL",
+      "run_id": "9b959098fa65",
+      "total_ms": 0.1704,
+      "spans": [
+        {
+          "key": "draw_sample#0",
+          "name": "draw_sample",
+          "start_ms": 0.0,
+          "duration_ms": 0.0104,
+          "task_name": "Task-1",
+          "source_line": 18,
+          "access": "write",
+          "in_inversion": false,
+          "is_assertion": false
+        },
+        {
+          "key": "read_sample#0",
+          "name": "read_sample",
+          "start_ms": 0.0759,
+          "duration_ms": 0.0019,
+          "task_name": "Task-1",
+          "source_line": 26,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": false
+        },
+        {
+          "key": "assert#0",
+          "name": "assert",
+          "start_ms": 0.0958,
+          "duration_ms": 0.0746,
+          "task_name": "Task-1",
+          "source_line": null,
+          "access": "read",
+          "in_inversion": false,
+          "is_assertion": true
+        }
+      ]
+    },
+    "rejected_attempts": [],
+    "intent_attempts": [],
+    "abstain_reason": null,
+    "tokens_input": 0,
+    "tokens_output": 0,
+    "llm_calls": 0,
+    "wall_clock_s": 8.46,
+    "provider": "bedrock"
   }
 ]
