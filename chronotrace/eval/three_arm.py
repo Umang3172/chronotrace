@@ -120,6 +120,8 @@ class SweepResult:
     wall_clock_s: float = 0.0
     intent_parse_failures: int = 0
     """Arm C cases lost to invalid RepairIntent JSON rather than to failed repair."""
+    excluded_cases: dict[str, str] = field(default_factory=dict)
+    """Cases that could not run, and why. A subset corpus must say it is one."""
 
     def for_arm(self, arm: str) -> list[ArmCaseResult]:
         """Every result belonging to one arm."""
@@ -170,15 +172,24 @@ def run_sweep(
 
     for case in cases:
         log.info("sweep.case", case=case.case_id, name=case.name)
-        bundle, diagnosis = _evidence(
-            case,
-            cwd=cwd,
-            settings=settings,
-            capture_runs=capture_runs,
-            probe_runs=probe_runs,
-            evidence_dir=evidence_dir,
-            replay=replay,
-        )
+        try:
+            bundle, diagnosis = _evidence(
+                case,
+                cwd=cwd,
+                settings=settings,
+                capture_runs=capture_runs,
+                probe_runs=probe_runs,
+                evidence_dir=evidence_dir,
+                replay=replay,
+            )
+        except ProviderError as exc:
+            # A replay must not capture fresh traces, so a case with no recording
+            # cannot run -- but that is a reason to leave it out of the sweep, not
+            # to discard every case already completed. Excluded cases are named in
+            # the result so a reader can see the corpus is a subset.
+            log.warning("sweep.case_excluded", case=case.case_id, reason=str(exc))
+            sweep.excluded_cases[case.case_id] = str(exc)
+            continue
         sweep.case_flake_rates[case.case_id] = round(bundle.natural_flake_rate, 3)
         sweep.case_diagnoses[case.case_id] = f"{diagnosis.status}" + (
             f"/{diagnosis.abstain_reason}" if diagnosis.abstain_reason else ""

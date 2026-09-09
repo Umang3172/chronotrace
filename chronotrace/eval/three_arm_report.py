@@ -161,21 +161,36 @@ def render_table(summaries: dict[str, ArmSummary]) -> str:
 def render_detail(sweep: SweepResult, summaries: dict[str, ArmSummary]) -> str:
     """Render the per-case breakdown that sits below the table."""
     lines: list[str] = []
+    hosted = sweep.provider == "bedrock"
     lines.append(
-        f"Local-model baseline: **{sweep.model}** via `{sweep.provider}`, "
-        f"{len(sweep.for_arm('A'))} cases per arm "
+        f"{'Hosted model' if hosted else 'Local-model baseline'}: **{sweep.model}** "
+        f"via `{sweep.provider}`, {len(sweep.for_arm('A'))} cases per arm "
         f"({summaries['A'].repairable_cases} repairable races, "
         f"{summaries['A'].controls} negative controls), "
         f"{sweep.wall_clock_s / 60:.0f} min wall clock."
     )
-    lines.append(
-        "These are **local-model numbers, not the submission numbers.** A Bedrock "
-        "re-run against a larger model is planned, and those figures are the ones "
-        "that will be quoted in the submission. A small quantised local model is a "
-        "weak stand-in for what a developer would actually have pointed at this "
-        "problem, in both directions: it may reach for cruder fixes than a frontier "
-        "model would, and it may also fail to produce a usable patch at all."
-    )
+    if hosted:
+        lines.append(
+            "Same corpus, same arms and the same recorded evidence as the local-model "
+            "run, so the two are comparable case by case. Capture and diagnosis are "
+            "deterministic and were replayed rather than re-run; only the model "
+            "differs."
+        )
+    else:
+        lines.append(
+            "These are **local-model numbers.** A small quantised local model is a "
+            "weak stand-in for what a developer would actually have pointed at this "
+            "problem, in both directions: it may reach for cruder fixes than a "
+            "frontier model would, and it may also fail to produce a usable patch at "
+            "all."
+        )
+    if sweep.excluded_cases:
+        excluded = ", ".join(sorted(sweep.excluded_cases))
+        lines.append(
+            f"**Excluded from this run:** {excluded}. No recorded evidence exists for "
+            "them, and a replay must not capture fresh traces. The corpus here is a "
+            "subset, and the counts below are out of what actually ran."
+        )
 
     for arm in ("A", "B"):
         summary = summaries[arm]
@@ -237,6 +252,7 @@ def write_results(
         "started_at": sweep.started_at,
         "wall_clock_s": sweep.wall_clock_s,
         "intent_parse_failures": sweep.intent_parse_failures,
+        "excluded_cases": sweep.excluded_cases,
         "case_flake_rates": sweep.case_flake_rates,
         "case_diagnoses": sweep.case_diagnoses,
         "summaries": {
