@@ -85,8 +85,7 @@ def verify(url: str) -> None:
         _check(count >= MIN_INCIDENTS, f"{count} incident rows rendered (>= {MIN_INCIDENTS})")
 
         first_row_text = rows.first.inner_text()
-        _check("::" in first_row_text or "test_" in first_row_text,
-               "first row names a real test")
+        _check("::" in first_row_text or "test_" in first_row_text, "first row names a real test")
 
         list_shot = OUT_DIR / "amplify-live.png"
         _settle(page)
