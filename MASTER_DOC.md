@@ -13,9 +13,10 @@
 > preferred over prose. Human readability is secondary to machine readability.
 >
 > **DOCUMENT GENERATED:** 2026-09-10. **PROJECT VERSION:** 0.1.0.
-> **REPO STATE:** branch `main`, HEAD `a10b391`, 36 commits, synchronized with
+> **REPO STATE:** branch `main`, HEAD `bc753f0`, 37 commits, synchronized with
 > `origin/main`. Generated at `0df3b49` (34 commits) and amended 2026-09-10; the
-> amendments are marked where they appear.
+> amendments are marked where they appear. See `docs/MASTER_DOC_DELTA.md` for a
+> changes-only brief against the generation-time copy.
 
 ---
 
@@ -1980,7 +1981,8 @@ bugs shipped before that check existed.
 | 09-10 | `fb077a4` | **Publish the corrected demo, illustrate the README, fill the Devpost draft** — adds the 5 README stills + thumbnail, `devpost-project-story.md`, `builder-center-update.md` |
 | 09-10 | **`0df3b49`** | **State what AgentCore actually does in the hosted runtime** |
 | 09-10 | **`5018b00`** | **The Builder Center post is corrected and live; Devpost is at 4/5** |
-| 09-10 | **`a10b391`** | **`ruff format` on `verify_deploy.py`, which had CI red** (current HEAD) |
+| 09-10 | **`a10b391`** | **`ruff format` on `verify_deploy.py`, which had CI red** |
+| 09-10 | **`bc753f0`** | **Make the pre-commit hooks match CI, and add `MASTER_DOC.md`** (current HEAD) |
 
 ### 20.2 Corrections log — every claim that was stated before it was true
 
@@ -2065,7 +2067,7 @@ bugs shipped before that check existed.
 
 | Item | State |
 |---|---|
-| Git | branch `main`, HEAD `a10b391`, 36 commits, synced with `origin/main`. Working tree clean except this file. The README stills, the Devpost story and the Builder Center plan were committed by `fb077a4` and `0df3b49` |
+| Git | branch `main`, HEAD `bc753f0`, 37 commits, synced with `origin/main`. Working tree clean. The README stills, the Devpost story and the Builder Center plan were committed by `fb077a4` and `0df3b49` |
 | Tests | 199 passing |
 | Coverage | 80% (at the gate exactly) |
 | mypy | clean, 74 files, strict |
@@ -2075,7 +2077,7 @@ bugs shipped before that check existed.
 | AgentCore | deployed, `agent` mode verified, `pipeline` mode untested |
 | YouTube | published |
 | Builder Center post | published and corrected |
-| **Devpost** | **DRAFT, 4/5 steps, NOT submitted.** Project details and Additional info are both saved; only the Submit button remains, deliberately left to the user |
+| **Devpost** | **SUBMITTED 2026-09-10, 5/5 steps.** Verified on the manage page: status `SUBMITTED`, not draft. Devpost allows editing after submission until the deadline |
 
 ### 21.2 Devpost submission detail
 - **Project details: filled and SAVED 2026-09-10.** 8,211-character story (source of
