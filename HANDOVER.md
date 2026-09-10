@@ -82,7 +82,7 @@ uv run pytest                     # 199 passed in 106s (spawns a pytest subproce
 ## 6. Current State & Pending Human Actions
 1. **GitHub Remote**: Fully synchronized with `origin/main`.
 2. **Devpost Submission** — still `DRAFT`, now **3/5 steps done**, deadline 2026-09-15.
-   - **Project details: filled and SAVED 2026-09-10.** The step had been empty, not "pre-filled" as this section previously claimed. Now carrying a 7,770-character story (`docs/posts/devpost-project-story.md` is the source of truth — edit there and re-paste), 14 tags, 7 gallery images with captions, `software[video_url]` = `https://youtu.be/rkoeqMt3cDk`, and three try-it-out URLs (Amplify, GitHub, Builder Center).
+   - **Project details: filled and SAVED 2026-09-10.** The step had been empty, not "pre-filled" as this section previously claimed. Now carrying an 8,211-character story (`docs/posts/devpost-project-story.md` is the source of truth — edit there and re-paste), 14 tags, 7 gallery images with captions, `software[video_url]` = `https://youtu.be/rkoeqMt3cDk`, and three try-it-out URLs (Amplify, GitHub, Builder Center).
    - **Additional info: saved, two required fields still blank.** Set: Submitter Type `Individual`, Track `Professional Agents`, repo URL, live demo URL, bonus blog URL, 2,109-character testing instructions, and `assets/video/arch-0-neutral.png` as the required architecture diagram. **Blank and required: Country of Residence, and AWS Builder ID** — neither is knowable from this repository, so both need the user. The step stays unchecked until they are filled.
    - **Not submitted.** The final Submit button was deliberately not pressed.
 

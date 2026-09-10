@@ -63,8 +63,13 @@ reports pass or fail, so the verdict is auditable rather than a single fired rul
 Run `chronotrace gauntlet` with no credentials and no model: **17 adversarial patches, 17
 rejections, each by the rule that targets it.**
 
-**AWS Amplify Hosting** serves the incident dashboard as a static export.
-**Bedrock AgentCore Runtime** hosts the agent entrypoint.
+**AWS Amplify Hosting** serves the incident dashboard as a static export — no runtime, no
+credentials and no model call behind it, which is why it can be published at all.
+**Bedrock AgentCore Runtime** hosts the agent entrypoint: deployed and invoked in `agent`
+mode with Nova Pro, where the loop runs including its pytest subprocesses. Applying a
+repair fails there on a read-only bundle, so the hosted runtime demonstrates the
+investigation half; the repair path is demonstrable locally and in the video. The full
+transcript is in the README rather than summarised away.
 
 ## Challenges we ran into
 
