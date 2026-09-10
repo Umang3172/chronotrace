@@ -1,21 +1,63 @@
 repos:
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.9
+  # Run the project's own ruff, not a pinned copy. rev v0.6.9 ships ruff 0.6.9,
+  # which still had ANN101; this project runs ruff 0.16.6, where that rule was
+  # REMOVED ("Rule `ANN101` was removed and cannot be selected"). Because
+  # pyproject selects "ANN" wholesale, the pinned copy raised 121 phantom errors
+  # -- one for every `self` -- that CI never sees, and that blocked every commit.
+  # A local hook runs exactly what CI runs, so the two cannot drift.
+  - repo: local
     hooks:
       - id: ruff
-        args: [--fix]
+        name: ruff check (project venv, identical to CI)
+        entry: uv run ruff check --force-exclude --fix
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
       - id: ruff-format
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.2
+        name: ruff format (project venv, identical to CI)
+        entry: uv run ruff format --force-exclude
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+  # Run the project's own mypy rather than an isolated copy. mirrors-mypy builds a
+  # separate env whose dependency list has to be maintained by hand, and ours was
+  # missing typer and libcst: every @app.command read as an untyped decorator and
+  # every CSTTransformer subclass as Any -- 34 errors CI never sees, which blocked
+  # every commit. A local hook runs exactly what the CI Type check step runs, so
+  # the two cannot drift.
+  - repo: local
     hooks:
       - id: mypy
-        files: ^chronotrace/
-        additional_dependencies: [pydantic, pydantic-settings, types-networkx]
+        name: mypy (project venv, identical to CI)
+        entry: uv run mypy chronotrace
+        language: system
+        types: [python]
+        pass_filenames: false
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
+      # Two trailing spaces are a hard line break in Markdown. Without this flag
+      # the hook silently joins those lines -- it did exactly that to the demo
+      # links in README.md.
       - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+        exclude: &generated |
+          (?x)^(
+            fixtures/
+            |ui/out/
+            |eval/results/
+            |docs/results/
+            |ui/public/incidents\.json
+            |assets/architecture\.html
+            |ui/tsconfig\.tsbuildinfo
+          )
+      # fixtures/ and eval|docs/results/ are recorded evidence, and ui/out/ is a
+      # built export whose chunk filenames are content hashes. A formatter must
+      # not rewrite any of them.
       - id: end-of-file-fixer
+        exclude: *generated
       - id: check-added-large-files
+        # README stills cut from the demo video run to ~875KB.
+        args: [--maxkb=1000]
       - id: check-merge-conflict
       - id: detect-private-key

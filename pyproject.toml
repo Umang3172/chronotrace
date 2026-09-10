@@ -48,9 +48,11 @@ packages = ["chronotrace"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-# docs/posts holds prose with illustrative snippets, including deliberately
-# wrong ones; formatting them rewrites the example being explained.
-extend-exclude = ["benchmark/cases", "demo", "docs/posts"]
+# docs/posts and MASTER_DOC.md hold prose with illustrative snippets, including
+# deliberately wrong ones; formatting them rewrites the example being explained.
+# ruff formats Python blocks inside Markdown, so a prose file must be excluded
+# by name or it fails `ruff format --check` in CI.
+extend-exclude = ["benchmark/cases", "demo", "docs/posts", "MASTER_DOC.md"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "SIM", "ARG", "PTH", "RUF", "ANN", "D"]
