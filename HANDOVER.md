@@ -84,7 +84,8 @@ uv run pytest                     # 199 passed in 106s (spawns a pytest subproce
 2. **Devpost Submission** — still `DRAFT`, now **3/5 steps done**, deadline 2026-09-15.
    - **Project details: filled and SAVED 2026-09-10.** The step had been empty, not "pre-filled" as this section previously claimed. Now carrying an 8,211-character story (`docs/posts/devpost-project-story.md` is the source of truth — edit there and re-paste), 14 tags, 7 gallery images with captions, `software[video_url]` = `https://youtu.be/rkoeqMt3cDk`, and three try-it-out URLs (Amplify, GitHub, Builder Center).
    - **Additional info: saved, two required fields still blank.** Set: Submitter Type `Individual`, Track `Professional Agents`, repo URL, live demo URL, bonus blog URL, 2,109-character testing instructions, and `assets/video/arch-0-neutral.png` as the required architecture diagram. **Blank and required: Country of Residence, and AWS Builder ID** — neither is knowable from this repository, so both need the user. The step stays unchecked until they are filled.
-   - **Not submitted.** The final Submit button was deliberately not pressed.
+   - **Additional info completed 2026-09-10**: Country of Residence `India` (given by the user) and AWS Builder ID `umang2singh@gmail.com` (read from Builder Center → Settings → Builder ID, and *not* the same address as the git/session email). The submission is now **4/5 steps done**.
+   - **Not submitted.** The final Submit button was deliberately not pressed — the user asked to verify and submit themselves.
 
 ## 12. Corrections applied 2026-09-09
 
@@ -202,9 +203,11 @@ Live and updated. Two of these were worse than the four text claims first found.
   made by the R14 Proof bullet).
 
 **The post is at its 3000-character ceiling.** The Update button is validation-blocked
-above it, and the count includes image markdown, so any future addition needs an equal
-trim first. That is why the Amplify URL, the AgentCore paragraph and the video link are
-*not* in the post.
+above it, and the count includes image markdown *and markdown syntax*, so any addition
+needs an equal trim first. The Amplify URL, the AgentCore line and the video link were cut
+from that pass for space; all three were added on 2026-09-10 by trimming ~260 characters of
+prose. See `docs/posts/builder-center-update.md` for the real character arithmetic and for
+how to drive the Lexical editor safely.
 
 Alt text was added to both replaced images and then shortened to ~50 characters each for
 the same reason.
@@ -277,11 +280,24 @@ were **empty strings**, with the submission at 2/5 steps and five days to the de
 form steps are now filled and saved — see §6 for exactly what is in each and for the two
 required fields that still need the user.
 
-### AWS Builder Center — blocked on sign-in
+### AWS Builder Center — corrected and republished
 
-The Chrome profile the automation is attached to is signed out, and the sign-in dialog wants
-credentials. The full replacement body, the character budget, the reasons for each change
-and the editor hazards are in `docs/posts/builder-center-update.md`. Two of the changes are
-corrections, not additions: the "100% accurate abstention" claim, and a figure caption that
-presents the R14 patch — the one forced replay rejects — as "a repair verified by the 15/15
-AST Governor".
+Applied once the user signed in. Verified by reading the published page back: video link,
+dashboard link and the AgentCore line present; `100% accurate abstention` gone; corrected
+figure caption present; all four body images intact; body 2,800 characters.
+
+Two of the six changes were corrections rather than additions:
+
+- **"0 False Repairs: 100% accurate abstention on non-race controls"** — four of the five
+  controls are refused during *diagnosis*, before the model is consulted at all, which
+  `README.md` says and the post did not. Now reads "abstained on all 5 controls; 4 are
+  refused before the model is called."
+- **The figure caption** read "Amazon Nova Lite synthesizing a repair verified by the 15/15
+  AST Governor." The still is `repair --demo-r14`: the governor did approve it 15/15, and
+  forced replay then rejected it. The caption sold the one case we get wrong as a success.
+
+`docs/posts/builder-center-update.md` records the published text, the character arithmetic
+(the validator counts markdown syntax, not just text + image tags, which is why an
+apparently-fitting 2,986 was rejected), and the Lexical editing route — `toJSON` → mutate →
+`parseEditorState` → `setEditorState`, since both DOM mutation and `execCommand` are
+silently ignored by Lexical.

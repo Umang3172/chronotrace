@@ -1,92 +1,98 @@
-# AWS Builder Center — pending update
+# AWS Builder Center — applied 2026-09-10
 
 **Post**: <https://builder.aws.com/post/3J3xhnusTT8tD8z4ALJ2hiobWeJ_p/agents-for-humans-what-happens-when-an-ai-agent-isnt-allowed-to-cheat-fixing-flaky-tests>
 
-**Status: not applied.** The Chrome profile the automation is attached to is signed out of
-Builder Center, and signing in requires credentials I will not enter. Sign in as
-`connect2tanmayy@gmail.com`, open the post's edit view, and replace the body with the text
-below — then this file can be deleted.
+**Status: live.** Verified by reading the published page back: video link present, dashboard
+link present, AgentCore named, `100% accurate abstention` gone, corrected figure caption
+present, all four body images intact, body 2,800 characters.
 
-## What changes and why
+## What changed
 
-| Change | Reason |
+| Change | Why |
 |---|---|
-| **Add the demo video link** | The post has no video at all. It is the single most valuable thing missing. |
-| **Add the live Amplify dashboard URL** | Judges can click it with no install and no credentials. |
-| **Add one line naming Amplify Hosting and Bedrock AgentCore Runtime** | The post never says the project is actually deployed on AWS. |
-| **Correct "0 False Repairs: 100% accurate abstention"** | Four of the five controls are refused during *diagnosis*, before the model is consulted. `README.md` states this caveat; the post claimed the stronger version. |
-| **Correct the figure caption** | It reads "Amazon Nova Lite synthesizing a repair verified by the 15/15 AST Governor." The still is `repair --demo-r14` — the governor *did* approve it 15/15, and forced replay then **rejected** it. Calling it "a repair" in the How-It-Works section sells the one case we get wrong as a success. |
-| **Trim four sentences** | The post sits at the 3000-character ceiling and Update is validation-blocked above it. |
+| **Added the demo video link** | The post had no video at all. |
+| **Added the live Amplify dashboard URL** | Clickable by a judge with no install and no credentials. |
+| **Added "Deployed on AWS: dashboard on Amplify Hosting, agent entrypoint on Bedrock AgentCore Runtime."** | The post never said the project was actually deployed. |
+| **"0 False Repairs: 100% accurate abstention on non-race controls" → "abstained on all 5 controls; 4 are refused before the model is called"** | Four of five controls are refused during *diagnosis*, before the model is consulted. The old wording claimed the stronger thing. |
+| **Figure caption rewritten** | It read "Amazon Nova Lite synthesizing a repair verified by the 15/15 AST Governor." The still is `repair --demo-r14`: the governor *did* approve it 15/15 and forced replay then **rejected** it. Presenting it as a verified repair sold the one case we get wrong as a success. |
+| **R14 bullet → the video's own numbers (75% → 70%)** | The post now links the video, so the figure a viewer sees should be the figure the post quotes. |
+| **~260 characters trimmed across nine text nodes** | Required — see below. |
 
-The figure itself is correct and stays: `model=amazon.nova-lite-v1:0 schema=RepairIntent
+The figure itself was correct and stayed: `model=amazon.nova-lite-v1:0 schema=RepairIntent
 seconds=2.8 tokens_in=3066 tokens_out=286`, `governor.verdict approved=True violations=[]`.
-Verified against `~/Desktop/ChronoTrace-Blog-Assets/04-nova-governor-clean.png` on 2026-09-10.
 
-## Character budget
+## The 3000-character limit counts more than the visible text
 
-Body below is **2,429 characters** (2,417 without the bold markers, which the editor supplies as formatting rather than text). The ceiling is 3,000 *including image markdown*, which
-measured ~490 on the live post, leaving ~2,510. Headroom ~80. Keep both existing images and
-their short alt texts; adding a third image will not fit.
+Worth recording, because the first attempt was rejected while the arithmetic said it fit.
 
-## Replacement body — paste verbatim
+- Body plain text: 2,438
+- The four images serialise as MDX `<Image url="https://prod-assets.cosmic.aws.dev/..." />`
+  tags totalling **548** characters — 108 for a bare one, 162–170 with alt text
+- 2,438 + 548 = 2,986, under 3,000 — **and the editor still rejected it**
 
-Keep the two images where they already sit (hero after the intro, Nova/governor still after
-the Forced Replay bullet). Headings stay headings.
+So the validator also counts markdown syntax: `**bold**` pairs, `### ` headings, `- ` and
+`1. ` list markers, `---`, blank lines between 20 blocks, and links written as
+`[url](url)` (~84 characters for 40 characters of visible text). Budget roughly **300–350
+characters of hidden overhead** beyond text + image tags.
 
----
+There is no body character counter in the UI. The `93/100 characters` counter belongs to a
+different field. The only ground truth is whether the red *"Post content must be under 3000
+characters"* element is present in the DOM.
 
-A CI build fails on Friday and turns green on rerun with no code change. At Google, 84% of post-submit CI failures are caused by flaky tests. Microsoft measured flakiness costing $1.14M/year.
+## How to edit this post programmatically
 
-For the Agents for Humans Hackathon, we built ChronoTrace: an autonomous agent using the AWS Strands Agents SDK and Amazon Bedrock that isolates causal race conditions from runtime traces and leaves behind a deterministic regression test.
+The editor is **Lexical** (`data-lexical-editor="true"`, `data-testid="draft-content"`).
 
-**The time.sleep(2) Trap**
+- **Direct DOM mutation does not work** — Lexical reconciles from its own state and discards it.
+- **`document.execCommand('insertText')` after setting a DOM Range does not work either.** It
+  returns `true` and changes nothing, because Lexical never registered the selection.
+- **What works**: `editor.getEditorState().toJSON()` → mutate the JSON → `editor.parseEditorState(json)`
+  → `editor.setEditorState(...)`. Images are `type: "jsx"` leaf nodes carrying an `mdastNode`;
+  they round-trip intact. Verify with a parse-only round trip first (block count and `jsx`
+  count in vs out) before applying, and stash the original JSON on `window` as a restore point.
 
-Standard AI coding assistants cheat: they insert time.sleep(2) or a retry loop. The test passes, the race is still live, and CI is permanently slower.
+This route also avoids the hazard that cost the previous session real content: the post's
+`...` menu puts **Delete** 34px below **Edit**.
 
-Worse, a rerun gate cannot separate fixing a race from making it rarer. ChronoTrace is structurally prevented from taking shortcuts.
+## The published text
 
-**How It Works: Strands SDK + Amazon Bedrock**
+Blocks 1, 6, 9 and 11 are images and are not reproduced here.
+
+```
+A CI build fails on Friday and turns green on rerun with no code change. At Google, 84% of post-submit CI failures are flaky tests. Microsoft measured the cost at $1.14M/year.
+
+For the Agents for Humans Hackathon, we built ChronoTrace: an agent on the AWS Strands Agents SDK and Amazon Bedrock that finds causal races in runtime traces and leaves a deterministic regression test.
+
+### The time.sleep(2) Trap
+
+AI coding assistants cheat: they insert time.sleep(2) or a retry loop. The test passes, the race is still live, and CI is permanently slower.
+
+A rerun gate cannot separate fixing a race from making it rarer. ChronoTrace cannot take the shortcut.
+
+How It Works: Strands SDK + Amazon Bedrock
 
 ChronoTrace separates probabilistic reasoning from deterministic execution:
 
-Autonomous Strands Agent Loop: strands.Agent with 9 tools - capture_traces, trace_slice, compare_orderings, force_replay, check_patch.
+1. Autonomous Strands Agent Loop: Using strands.Agent with 9 tools (capture_traces, trace_slice, compare_orderings, force_replay, check_patch).
+2. Amazon Bedrock (Nova Pro & Nova Lite): Nova Pro reasons across coroutines, Nova Lite runs in 2.8s. The model emits a typed RepairIntent JSON schema, never raw code.
+3. 15-Rule AST Governor: before any diff touches disk it rejects sleeps, aliased imports, retry decorators and weakened assertions.
+4. Forced Replay: ChronoTrace gates coroutine entry to force the interleaving. Pre-patch fails 20/20; post-patch passes 20/20.
 
-Amazon Bedrock (Nova Pro & Nova Lite): Nova Pro handles cross-coroutine reasoning, while Nova Lite provides sub-2.8s turnaround. The model emits a structured RepairIntent JSON schema, never raw code.
+Deployed on AWS: dashboard on Amplify Hosting, agent entrypoint on Bedrock AgentCore Runtime.
 
-15-Rule AST Governor: Before diffs touch disk, our policy gate rejects sleeps, aliased imports, retry decorators, and weakened assertions.
+Figure: Nova Lite returns a typed RepairIntent in 2.8s; the governor approves it 15/15. This is R14, the patch forced replay rejects.
 
-Forced Replay: Rather than rerunning, ChronoTrace gates coroutine entry to force candidate interleavings. Pre-patch fails 20/20; post-patch passes 20/20.
+### Benchmark Results
 
-Deployed on AWS: the dashboard runs on Amplify Hosting, the agent entrypoint on Bedrock AgentCore Runtime.
+Amazon Nova Pro, 7 races and 5 non-race controls:
 
-Figure: Nova Lite returns a typed RepairIntent in 2.8s and the governor approves it 15/15. This is R14 - the patch forced replay then rejects.
+- 0 Band-Aids: 0 sleeps or retries across the 7 races (vs 6/7 unconstrained).
+- 0 False Repairs: abstained on all 5 controls; 4 are refused before the model is called.
+- The R14 Proof: our own agent's patch broke no rule and passed the gate 15/15. Forced replay failed it. A rerun gate read 75% to 70% and would have shipped it.
 
-**Benchmark Results**
-
-Tested on Amazon Nova Pro across 7 races and 5 non-race controls:
-
-0 Band-Aids: 0 sleeps or retries across the 7 races (vs 6/7 in unconstrained LLMs).
-
-0 False Repairs: abstained on all 5 controls, though 4 are refused before the model is called.
-
-The R14 Proof: our own agent's patch broke no rule and passed the gate 15/15. Forced replay failed it. A rerun gate read 75% to 70% and would have shipped it.
-
-Watch the 4:47 demo: https://youtu.be/rkoeqMt3cDk
-
-Live dashboard: https://main.d3k7wvrz5f9b6h.amplifyapp.com
-
-Code: https://github.com/Umang3172/chronotrace
-
-How does your team handle flaky tests in CI? Worst flakiness story in the comments.
+### Link : https://github.com/Umang3172/chronotrace
 
 ---
 
-## Editing hazards, learned the hard way on this editor
-
-- **`shift+End` selects to the end of the document, not the end of the line.** It deleted
-  three bullets, the Link line and the CTA in one keystroke. Select a block by triple-clicking
-  it, or double-click the first word and shift-click the last.
-- **Clicking past the end of a heading snaps the caret into the block below** and splits it.
-  Click *inside* the text you mean to edit.
-- Toolbar undo works and recovers both of the above, but it over-undoes: it will walk back
-  past image replacements too.
+Demo (4:47): https://youtu.be/rkoeqMt3cDk | Dashboard: https://main.d3k7wvrz5f9b6h.amplifyapp.com | How does your team handle flaky tests? Worst story in the comments.
+```
